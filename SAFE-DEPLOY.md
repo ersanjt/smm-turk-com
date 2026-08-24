@@ -13,25 +13,76 @@ Goal: develop and update code **without** losing database data or breaking produ
 - Do **not** use `rsync --delete` (wipes `uploads/`, orphan files, etc.).
 - Do **not** leave `github.zip` (or any full source zip) inside `public_html`.
 
-## One-time: connect cPanel to this private repo
+## WHM Terminal (recommended if you have root/WHM shell)
+
+Clone lives **outside** `public_html`. Sync is **rsync without `--delete`**.  
+`config.php`, `uploads/`, `storage/`, `tmp/` are never overwritten.
+
+### One-time setup (run as root in WHM Terminal)
+
+Replace `YOUR_GITHUB_TOKEN` with a GitHub PAT that has `repo` scope.
+
+```bash
+# 0) safety checks
+test -f /home/smmturk/public_html/config.php || { echo "STOP: config.php missing"; exit 1; }
+mkdir -p /home/smmturk/repositories /home/smmturk/backups
+
+# 1) backup config + quick DB dump name hint (run real mysqldump in cPanel if preferred)
+cp -a /home/smmturk/public_html/config.php /home/smmturk/backups/config.php.$(date +%Y%m%d%H%M%S)
+rm -f /home/smmturk/public_html/github.zip
+
+# 2) clone private repo (once)
+if [ ! -d /home/smmturk/repositories/smm-turk-com/.git ]; then
+  git clone https://YOUR_GITHUB_USER:YOUR_GITHUB_TOKEN@github.com/ersanjt/smm-turk-com.git \
+    /home/smmturk/repositories/smm-turk-com
+  chown -R smmturk:smmturk /home/smmturk/repositories/smm-turk-com
+fi
+
+# 3) first safe sync (no --delete, keeps config.php)
+bash /home/smmturk/repositories/smm-turk-com/scripts/deploy-cpanel.sh
+```
+
+Store the token in a root-only file instead of pasting it every time (optional):
+
+```bash
+# /root/.smm-turk-git  (chmod 600)
+# export GIT_ASKPASS or use:
+git -C /home/smmturk/repositories/smm-turk-com remote set-url origin \
+  https://YOUR_GITHUB_USER:YOUR_GITHUB_TOKEN@github.com/ersanjt/smm-turk-com.git
+```
+
+### Every update after we push to GitHub
+
+```bash
+bash /home/smmturk/repositories/smm-turk-com/scripts/deploy-cpanel.sh
+```
+
+That script: `git fetch` + `git reset --hard origin/main` in the clone folder, then rsync **into** `public_html` **without** deleting live files and **without** touching `config.php`.
+
+### Verify after deploy
+
+```bash
+curl -sI https://smm-turk.com/ | head -5
+curl -s https://smm-turk.com/health.php
+test -f /home/smmturk/public_html/config.php && echo "config.php OK"
+```
+
+## One-time: connect via cPanel Git UI (alternative)
 
 1. **Delete** `public_html/github.zip` if it still exists.
 2. In cPanel → **Git™ Version Control** → **Create**:
    - Clone URL: `https://github.com/ersanjt/smm-turk-com.git`
    - Repository Path: `/home/smmturk/repositories/smm-turk-com` (not inside `public_html`)
    - Repository Name: `smm-turk-com`
-3. Private repo: create a GitHub **Personal Access Token** (classic: `repo` scope) or deploy key, and use it when cPanel asks for password (username = your GitHub user, password = token).
-4. After clone succeeds, open the repo → **Manage** → **Pull or Deploy**:
-   - Ensure `.cpanel.yml` is present (this repo has a safe one without `--delete`).
-   - First deploy: only after you confirm live `config.php` already exists in `public_html`.
-5. Do **not** point the Git clone path directly at `public_html` (that risks wiping the live tree on reset).
+3. Private repo: GitHub username + Personal Access Token (`repo` scope).
+4. Prefer WHM Terminal `deploy-cpanel.sh` above instead of pointing clone at `public_html`.
 
 ## Daily workflow (safe)
 
 ```
 Local edit → git commit → git push origin main
                  ↓
-cPanel → Git Version Control → Pull or Deploy
+WHM Terminal: bash /home/smmturk/repositories/smm-turk-com/scripts/deploy-cpanel.sh
                  ↓
 Site updates code only; DB + config.php + uploads untouched
 ```
