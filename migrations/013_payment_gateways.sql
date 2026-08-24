@@ -1,0 +1,21 @@
+-- Payment gateway settings (enable in Admin → Settings)
+INSERT IGNORE INTO settings (`key`, `value`) VALUES
+('payment_smmpaygate_enabled', '0'),
+('payment_smmpaygate_api_url', ''),
+('payment_smmpaygate_api_key', ''),
+('payment_smmpaygate_merchant_id', ''),
+('payment_smmpaygate_secret', ''),
+('payment_heleket_enabled', '0'),
+('payment_heleket_merchant_id', ''),
+('payment_heleket_api_key', ''),
+('payment_usdt_trc20_enabled', '0'),
+('payment_binance_pay_enabled', '0'),
+('payment_binance_pay_api_key', ''),
+('payment_binance_pay_secret', ''),
+('payment_zarinpal_enabled', '0'),
+('payment_zarinpal_merchant_id', ''),
+('payment_zarinpal_usd_rate', '600000'),
+('payment_zarinpal_sandbox', '0'),
+('payment_cryptocloud_enabled', '0'),
+('payment_cryptocloud_shop_id', ''),
+('payment_cryptocloud_api_key', '');

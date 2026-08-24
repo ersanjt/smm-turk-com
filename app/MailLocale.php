@@ -1,0 +1,220 @@
+<?php
+/**
+ * Email copy — Turkish (default) and English.
+ */
+class MailLocale
+{
+    /** @var array<string, array<string, string>> */
+    private static array $strings = [
+        'tr' => [
+            'footer_auto' => 'Bu otomatik bir mesajdır. Lütfen yanıtlamayın.',
+            'footer_en_note' => 'English version available at smm-turk.com',
+            'btn_verify' => 'E-postayı Doğrula',
+            'btn_reset' => 'Şifreyi Sıfırla',
+            'btn_deposit' => 'Sipariş Ver',
+            'btn_orders' => 'Siparişlerim',
+            'btn_ticket' => 'Destek Talebi',
+            'btn_admin' => 'Admin Paneli',
+            'btn_login' => 'Panele Giriş',
+            'copy_link' => 'Veya bu bağlantıyı kopyalayın:',
+            'verify_subject' => 'E-posta adresinizi doğrulayın',
+            'verify_hi' => 'Merhaba {name},',
+            'verify_body' => 'SMM Turk hesabınızı etkinleştirmek için e-posta adresinizi doğrulayın.',
+            'verify_expires' => 'Bu bağlantı 24 saat geçerlidir.',
+            'reset_subject' => 'Şifre sıfırlama',
+            'reset_hi' => 'Merhaba {name},',
+            'reset_body' => 'Şifrenizi sıfırlamak için aşağıdaki düğmeye tıklayın.',
+            'reset_expires' => 'Bağlantı 1 saat geçerlidir.',
+            'reset_ignore' => 'Bu isteği siz yapmadıysanız bu e-postayı yok sayın.',
+            'deposit_subject' => 'Bakiye yüklendi — ${amount}',
+            'deposit_hi' => 'Merhaba {name},',
+            'deposit_body' => '<strong>${amount}</strong> tutarındaki ödemeniz hesabınıza eklendi{ref}.',
+            'deposit_balance' => 'Güncel bakiye:',
+            'order_placed_subject' => 'Sipariş alındı #{id}',
+            'order_placed_hi' => 'Merhaba {name},',
+            'order_placed_body' => 'Siparişiniz başarıyla oluşturuldu ve işleme alındı.',
+            'order_service' => 'Hizmet',
+            'order_qty' => 'Adet',
+            'order_charge' => 'Ücret',
+            'order_link_label' => 'Bağlantı',
+            'order_status_subject' => 'Sipariş #{id} — {status}',
+            'order_status_hi' => 'Merhaba {name},',
+            'order_status_body' => 'Siparişinizin durumu güncellendi.',
+            'order_status_label' => 'Durum',
+            'ticket_reply_subject' => 'Destek yanıtı #{id}',
+            'ticket_reply_hi' => 'Merhaba {name},',
+            'ticket_reply_body' => '<strong>{subject}</strong> konulu talebinize yanıt verildi:',
+            'ticket_new_subject' => 'Yeni destek talebi #{id}',
+            'ticket_new_body' => '<strong>{user}</strong> ({email}) yeni bir destek talebi açtı:',
+            'ticket_subject_label' => 'Konu',
+            'test_subject' => 'Test e-postası',
+            'test_body' => 'E-posta gönderimi çalışıyor.',
+            'test_time' => 'Zaman',
+            'test_from' => 'Gönderen',
+            'status_completed' => 'Tamamlandı',
+            'status_canceled' => 'İptal edildi',
+            'status_partial' => 'Kısmi tamamlandı',
+            'status_pending' => 'Beklemede',
+            'status_processing' => 'İşleniyor',
+            'child_ready_subject' => 'Child panel hazır — {domain}',
+            'child_ready_hi' => 'Merhaba {name},',
+            'child_ready_body' => '<strong>{domain}</strong> child paneliniz aktif edildi ve ana panele bağlandı.',
+            'child_panel_url' => 'Panel adresi',
+            'child_admin_user' => 'Admin kullanıcı',
+            'child_admin_pass' => 'Admin şifre',
+            'child_admin_pass_parent' => 'SMM Turk hesap şifreniz ile aynı',
+            'child_admin_login' => 'Giriş adresi',
+            'child_admin_dashboard' => 'Admin paneli',
+            'child_brand_hint' => 'Markanızı özelleştirmek için panele admin olarak giriş yapın → Admin Panel → Settings: site adı, logo ve favicon yolunu değiştirin (ör. assets/img/logo-icon.svg).',
+            'child_parent_api' => 'Ana panel API',
+            'child_api_key' => 'API anahtarı',
+            'child_connect_hint' => 'Child panel yazılımınızda ana panel API URL ve API anahtarını girin. Siparişler otomatik olarak SMM Turk üzerinden işlenir.',
+            'btn_child_panel' => 'Child Panel Sayfası',
+            'welcome_subject' => 'Hoş geldiniz — hesabınız hazır',
+            'welcome_hi' => 'Merhaba {name},',
+            'welcome_body' => 'SMM Turk hesabınız başarıyla oluşturuldu. Bakiye yükleyerek sipariş vermeye başlayabilirsiniz.',
+            'admin_signup_subject' => 'Yeni üye kaydı — {user}',
+            'admin_signup_body' => '<strong>{user}</strong> ({email}) yeni bir hesap oluşturdu.',
+            'admin_signup_via' => 'Kayıt yöntemi: {method}',
+            'admin_order_subject' => 'Yeni sipariş #{id} — {user}',
+            'admin_order_body' => '<strong>{user}</strong> ({email}) yeni bir sipariş verdi.',
+            'admin_deposit_pending_subject' => 'Yeni yatırım talebi #{id} — ${amount}',
+            'admin_deposit_pending_body' => '<strong>{user}</strong> ({email}) <strong>${amount}</strong> yatırım talebi oluşturdu.',
+            'admin_deposit_tx' => 'TxHash:',
+            'admin_deposit_credited_subject' => 'Yatırım onaylandı #{id} — ${amount}',
+            'admin_deposit_credited_body' => '<strong>{user}</strong> hesabına <strong>${amount}</strong> eklendi. Güncel bakiye: ${balance}',
+            'deposit_pending_subject' => 'Yatırım talebiniz alındı — ${amount}',
+            'deposit_pending_hi' => 'Merhaba {name},',
+            'deposit_pending_body' => '<strong>${amount}</strong> tutarındaki yatırım talebiniz kaydedildi{ref}. Ödemeniz onaylandığında e-posta ile bilgilendirileceksiniz.',
+            'deposit_pending_tx' => ' TxHash kaydedildi — doğrulama devam ediyor.',
+            'btn_funds' => 'Bakiye Yükle',
+            'btn_users' => 'Kullanıcılar',
+            'method_google' => 'Google ile giriş',
+            'method_register' => 'E-posta ile kayıt',
+        ],
+        'en' => [
+            'footer_auto' => 'This is an automated message. Please do not reply.',
+            'footer_en_note' => '',
+            'btn_verify' => 'Verify Email',
+            'btn_reset' => 'Reset Password',
+            'btn_deposit' => 'Place an Order',
+            'btn_orders' => 'My Orders',
+            'btn_ticket' => 'View Ticket',
+            'btn_admin' => 'Open in Admin',
+            'btn_login' => 'Go to Dashboard',
+            'copy_link' => 'Or copy this link:',
+            'verify_subject' => 'Verify your email address',
+            'verify_hi' => 'Hi {name},',
+            'verify_body' => 'Please verify your email to activate your SMM Turk account.',
+            'verify_expires' => 'This link expires in 24 hours.',
+            'reset_subject' => 'Reset your password',
+            'reset_hi' => 'Hi {name},',
+            'reset_body' => 'Click the button below to reset your password.',
+            'reset_expires' => 'This link expires in 1 hour.',
+            'reset_ignore' => 'If you did not request this, you can ignore this email.',
+            'deposit_subject' => 'Deposit confirmed — ${amount}',
+            'deposit_hi' => 'Hi {name},',
+            'deposit_body' => 'Your deposit of <strong>${amount}</strong> has been credited{ref}.',
+            'deposit_balance' => 'New balance:',
+            'order_placed_subject' => 'Order received #{id}',
+            'order_placed_hi' => 'Hi {name},',
+            'order_placed_body' => 'Your order has been placed and is being processed.',
+            'order_service' => 'Service',
+            'order_qty' => 'Quantity',
+            'order_charge' => 'Charge',
+            'order_link_label' => 'Link',
+            'order_status_subject' => 'Order #{id} — {status}',
+            'order_status_hi' => 'Hi {name},',
+            'order_status_body' => 'Your order status has been updated.',
+            'order_status_label' => 'Status',
+            'ticket_reply_subject' => 'Support reply #{id}',
+            'ticket_reply_hi' => 'Hi {name},',
+            'ticket_reply_body' => 'Support replied to <strong>{subject}</strong>:',
+            'ticket_new_subject' => 'New support ticket #{id}',
+            'ticket_new_body' => '<strong>{user}</strong> ({email}) opened a new ticket:',
+            'ticket_subject_label' => 'Subject',
+            'test_subject' => 'Test email',
+            'test_body' => 'Outbound email is working.',
+            'test_time' => 'Time',
+            'test_from' => 'From',
+            'status_completed' => 'Completed',
+            'status_canceled' => 'Canceled',
+            'status_partial' => 'Partial',
+            'status_pending' => 'Pending',
+            'status_processing' => 'Processing',
+            'child_ready_subject' => 'Your child panel is ready — {domain}',
+            'child_ready_hi' => 'Hi {name},',
+            'child_ready_body' => 'Your child panel <strong>{domain}</strong> is now active and connected to our main panel.',
+            'child_panel_url' => 'Panel URL',
+            'child_admin_user' => 'Admin username',
+            'child_admin_pass' => 'Admin password',
+            'child_admin_pass_parent' => 'Same as your SMM Turk account password',
+            'child_admin_login' => 'Login URL',
+            'child_admin_dashboard' => 'Admin dashboard',
+            'child_brand_hint' => 'To customize your brand: log in as admin → Admin Panel → Settings — change site name, logo path, and favicon path (e.g. assets/img/logo-icon.svg).',
+            'child_parent_api' => 'Parent API URL',
+            'child_api_key' => 'API key',
+            'child_connect_hint' => 'In your child panel software, enter the parent API URL and API key below. Orders will be fulfilled automatically through SMM Turk.',
+            'btn_child_panel' => 'Child Panel Page',
+            'welcome_subject' => 'Welcome — your account is ready',
+            'welcome_hi' => 'Hi {name},',
+            'welcome_body' => 'Your SMM Turk account is ready. Add funds to start placing orders.',
+            'admin_signup_subject' => 'New signup — {user}',
+            'admin_signup_body' => '<strong>{user}</strong> ({email}) created a new account.',
+            'admin_signup_via' => 'Signup method: {method}',
+            'admin_order_subject' => 'New order #{id} — {user}',
+            'admin_order_body' => '<strong>{user}</strong> ({email}) placed a new order.',
+            'admin_deposit_pending_subject' => 'New deposit request #{id} — ${amount}',
+            'admin_deposit_pending_body' => '<strong>{user}</strong> ({email}) requested a <strong>${amount}</strong> deposit.',
+            'admin_deposit_tx' => 'TxHash:',
+            'admin_deposit_credited_subject' => 'Deposit credited #{id} — ${amount}',
+            'admin_deposit_credited_body' => '<strong>${amount}</strong> was credited to <strong>{user}</strong>. New balance: ${balance}',
+            'deposit_pending_subject' => 'Deposit request received — ${amount}',
+            'deposit_pending_hi' => 'Hi {name},',
+            'deposit_pending_body' => 'Your <strong>${amount}</strong> deposit request has been recorded{ref}. You will receive another email once it is confirmed.',
+            'deposit_pending_tx' => ' TxHash saved — verification in progress.',
+            'btn_funds' => 'Add Funds',
+            'btn_users' => 'Users',
+            'method_google' => 'Google sign-in',
+            'method_register' => 'Email registration',
+        ],
+    ];
+
+    public static function resolveLang(?string $lang = null): string
+    {
+        if ($lang !== null && in_array($lang, ['tr', 'en'], true)) {
+            return $lang;
+        }
+        if (!empty($_SESSION['lang']) && in_array($_SESSION['lang'], ['tr', 'en'], true)) {
+            return $_SESSION['lang'];
+        }
+        $db = Database::getInstance();
+        $setting = strtolower(trim((string) ($db->getSetting('mail_lang') ?? 'tr')));
+        return in_array($setting, ['tr', 'en'], true) ? $setting : 'tr';
+    }
+
+    public static function t(string $key, ?string $lang = null, array $vars = []): string
+    {
+        $lang = self::resolveLang($lang);
+        $text = self::$strings[$lang][$key] ?? self::$strings['en'][$key] ?? $key;
+        foreach ($vars as $k => $v) {
+            $text = str_replace('{' . $k . '}', (string) $v, $text);
+        }
+        return $text;
+    }
+
+    public static function orderStatusLabel(string $status, ?string $lang = null): string
+    {
+        $map = [
+            'Completed' => 'status_completed',
+            'Canceled' => 'status_canceled',
+            'Cancelled' => 'status_canceled',
+            'Partial' => 'status_partial',
+            'Pending' => 'status_pending',
+            'Processing' => 'status_processing',
+            'In progress' => 'status_processing',
+        ];
+        $key = $map[$status] ?? 'status_pending';
+        return self::t($key, $lang);
+    }
+}

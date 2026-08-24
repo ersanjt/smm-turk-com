@@ -1,0 +1,47 @@
+# Config (contains passwords & API keys - NEVER commit!)
+config.php
+config.php.*
+deploy-secret.txt
+*.LOCAL_ONLY*
+
+# Archives / accidental server dumps
+*.zip
+github.zip
+smm_panel*.zip
+SMM_Panel*.zip
+
+# Nested duplicate trees (do not ship)
+cloudflaremanagers.com/
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temp / Cache
+tmp/
+temp/
+cache/
+*.cache
+
+# Backup
+*.bak
+*.backup
+
+# Runtime child-panel data (keep structure if needed later)
+storage/child-panels/*/
+!storage/child-panels/.gitkeep
+
+# User uploads (keep uploads/.htaccess via negation)
+uploads/*
+!uploads/.htaccess

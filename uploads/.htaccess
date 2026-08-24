@@ -1,0 +1,14 @@
+# Prevent execution of PHP and other scripts in uploads (ticket attachments)
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule \.(php|php8|phtml|phar|htaccess)$ - [F,L]
+</IfModule>
+<FilesMatch "\.(php|php8|phtml|phar)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</FilesMatch>
+# Optional: force safe content-type for known extensions (Apache)
+<IfModule mod_headers.c>
+Header set X-Content-Type-Options "nosniff"
+</IfModule>

@@ -1,0 +1,256 @@
+/* SMM Turk — Accessibility & ease-of-use, site-wide.
+   Goal: comfortable for everyone, from a 5-year-old to a 70-year-old. */
+
+/* ---- Clear keyboard focus for everyone ---- */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+body.theme-dark a:focus-visible,
+body.theme-dark button:focus-visible,
+body.theme-dark input:focus-visible,
+body.theme-dark select:focus-visible,
+body.theme-dark textarea:focus-visible,
+body.theme-dark summary:focus-visible,
+body.theme-dark [tabindex]:focus-visible {
+  outline-color: #8ab0ff;
+}
+
+/* ---- Comfortable minimum tap targets on primary controls ---- */
+.nav-btn,
+.btn-cta,
+.blog-cta-btn,
+.help-cta-btn,
+.mob-footer-btn,
+.nav-toggle,
+.nav-theme-toggle,
+.nav-lang-btn,
+.blog-search button,
+.blog-newsletter-form button {
+  min-height: 46px;
+}
+
+/* ---- Respect the OS "reduce motion" preference ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- Manual "reduce motion" toggle ---- */
+html.a11y-reduce-motion *,
+html.a11y-reduce-motion *::before,
+html.a11y-reduce-motion *::after {
+  animation-duration: .001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: .001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* ---- High-contrast mode (boost muted text, borders, underline links) ---- */
+html.a11y-contrast {
+  --muted: #2b2b2b;
+  --muted-dark: #171717;
+  --text-muted: #2b2b2b;
+  --blog-muted: #2b1a1e;
+  --border: #7c5d62;
+  --border-light: #7c5d62;
+  --blog-border: #7c5d62;
+}
+html.a11y-contrast body.theme-dark {
+  --muted: #ece4e6;
+  --muted-dark: #ffffff;
+  --text-muted: #ece4e6;
+  --blog-muted: #f2e8ea;
+  --border: #c08a90;
+  --border-light: #c08a90;
+  --blog-border: #c08a90;
+}
+html.a11y-contrast a:not([class*="btn"]):not(.nav-btn):not(.nav-menu-link):not(.nav-logo):not(.blog-nav-logo) {
+  text-decoration: underline;
+}
+html.a11y-contrast :focus-visible { outline-width: 4px; }
+
+/* ---- Skip-to-content link (injected by a11y.js) ---- */
+.a11y-skip {
+  position: fixed;
+  top: -80px;
+  left: 12px;
+  z-index: 100001;
+  background: #1d4ed8;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-weight: 800;
+  font-size: 15px;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,.3);
+  transition: top .15s ease;
+}
+.a11y-skip:focus {
+  top: 12px;
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ---- Accessibility widget: floating button + panel ---- */
+.a11y-fab {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 99998;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  border: none;
+  background: #1d4ed8;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 26px rgba(29, 78, 216, .45);
+  transition: transform .18s ease, background .18s ease;
+}
+.a11y-fab:hover { transform: scale(1.06); background: #1741b6; }
+.a11y-fab svg { width: 30px; height: 30px; }
+
+.a11y-panel {
+  position: fixed;
+  left: 18px;
+  bottom: 86px;
+  z-index: 99999;
+  width: 290px;
+  max-width: calc(100vw - 36px);
+  background: #fff;
+  color: #14181f;
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.28);
+  border: 1px solid #e5e7eb;
+  padding: 18px;
+  display: none;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+.a11y-panel.open { display: block; animation: a11yPop .18s ease; }
+@keyframes a11yPop { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+body.theme-dark .a11y-panel { background: #1a1416; color: #f0e9eb; border-color: #33272b; }
+
+.a11y-panel-title {
+  font-family: 'Syne', 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.a11y-row { margin-bottom: 14px; }
+.a11y-row-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  opacity: .7;
+  margin-bottom: 8px;
+}
+.a11y-size-btns { display: flex; gap: 8px; }
+.a11y-size-btns button {
+  flex: 1;
+  min-height: 48px;
+  border: 2px solid #d7dbe2;
+  background: #f6f7f9;
+  color: #14181f;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+  transition: border-color .15s, background .15s;
+}
+body.theme-dark .a11y-size-btns button { background: #241b1e; color: #f0e9eb; border-color: #3a2c30; }
+.a11y-size-btns button:hover { border-color: #1d4ed8; }
+.a11y-size-btns button .big { font-size: 20px; }
+.a11y-size-btns button .small { font-size: 13px; }
+
+.a11y-toggle {
+  width: 100%;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 14px;
+  border: 2px solid #d7dbe2;
+  background: #f6f7f9;
+  color: #14181f;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: 10px;
+  transition: border-color .15s, background .15s;
+}
+body.theme-dark .a11y-toggle { background: #241b1e; color: #f0e9eb; border-color: #3a2c30; }
+.a11y-toggle:hover { border-color: #1d4ed8; }
+.a11y-toggle[aria-pressed="true"] { border-color: #1d4ed8; background: #e8efff; }
+body.theme-dark .a11y-toggle[aria-pressed="true"] { background: #23304f; }
+.a11y-toggle .a11y-switch {
+  width: 44px; height: 26px; border-radius: 999px; background: #c3c9d4;
+  position: relative; flex-shrink: 0; transition: background .15s;
+}
+.a11y-toggle .a11y-switch::after {
+  content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px;
+  border-radius: 50%; background: #fff; transition: transform .15s;
+}
+.a11y-toggle[aria-pressed="true"] .a11y-switch { background: #1d4ed8; }
+.a11y-toggle[aria-pressed="true"] .a11y-switch::after { transform: translateX(18px); }
+
+.a11y-reset {
+  width: 100%;
+  min-height: 44px;
+  border: none;
+  background: transparent;
+  color: #1d4ed8;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  margin-top: 4px;
+  text-decoration: underline;
+}
+body.theme-dark .a11y-reset { color: #8ab0ff; }
+
+.a11y-panel-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #eef0f3;
+  color: #14181f;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+body.theme-dark .a11y-panel-close { background: #2a2024; color: #f0e9eb; }
+
+/* Keep the widget clear of the fixed mobile bottom bars */
+@media (max-width: 768px) {
+  .a11y-fab { bottom: 80px; width: 52px; height: 52px; }
+  .a11y-panel { bottom: 142px; }
+}

@@ -1,0 +1,75 @@
+
+
+# Disable directory listing
+<IfModule mod_autoindex.c>
+  Options -Indexes
+</IfModule>
+
+# Prefer home.php for / (avoids index.php redirect loop)
+DirectoryIndex home.php index.php
+
+# Block direct web access to setup/migration/cron scripts (use CLI or cron token)
+<FilesMatch "^(install-db|migrate-db|migrate-.*|seed-blog|cron-sync|cron-verify-deposits|cron-child-panels|cron-master)\.php$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+ErrorDocument 404 /404.php
+
+# Cache static assets
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>
+
+# SMM Turk - Clean URLs (no .php in browser) + API rewrite
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteBase /
+# Block direct HTTP access to internal directories (each also has its own .htaccess)
+RewriteRule ^(?:app|migrations|lang|layouts|scripts|docs)/ - [F,L]
+# Real files and directories: do not rewrite
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+# API and referral
+RewriteRule ^api/v2$ api/v2.php [L,QSA]
+RewriteRule ^c/([a-zA-Z0-9_-]+)/?$ c.php?ref=$1 [L,QSA]
+# Sitemap & robots
+RewriteRule ^sitemap\.xml$ sitemap.php [L]
+RewriteRule ^robots\.txt$ robots.php [L]
+# Blog: /blog -> blog.php, /blog/slug -> blog-post.php?slug=slug
+RewriteRule ^blog/?$ blog.php [L,QSA]
+RewriteRule ^blog/([a-zA-Z0-9\-]+)/?$ blog-post.php?slug=$1 [L,QSA]
+# Clean URLs: / -> home (landing), /dashboard -> panel, /page -> page.php
+RewriteRule ^home/?$ / [R=301,L]
+RewriteRule ^$ home.php [L,QSA]
+RewriteRule ^dashboard/?$ dashboard.php [L,QSA]
+RewriteRule ^api-docs/?$ api-page.php [L,QSA]
+RewriteRule ^settings/?$ account-settings.php [L,QSA]
+RewriteRule ^funds/?$ add-funds.php [L,QSA]
+RewriteRule ^api-page/?$ /api-docs [R=301,L]
+RewriteRule ^account-settings/?$ /settings [R=301,L]
+RewriteRule ^add-funds/?$ /funds [R=301,L]
+RewriteRule ^admin/?$ admin/index.php [L,QSA]
+RewriteRule ^admin/([a-zA-Z0-9_.-]+)/?$ admin/$1.php [L,QSA]
+RewriteRule ^([a-zA-Z0-9_.-]+)/?$ $1.php [L,QSA]
+</IfModule>
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php82” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php82 .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit

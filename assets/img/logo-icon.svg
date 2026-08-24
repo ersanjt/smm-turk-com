@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-label="SMM Turk">
+  <defs>
+    <linearGradient id="st-bg" x1="96" y1="48" x2="432" y2="480" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF5566"/>
+      <stop offset="38%" stop-color="#E30A17"/>
+      <stop offset="100%" stop-color="#7A040E"/>
+    </linearGradient>
+    <radialGradient id="st-glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(168 128) rotate(42) scale(340 280)">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.42"/>
+      <stop offset="55%" stop-color="#FFFFFF" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="st-vignette" x1="256" y1="64" x2="256" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.22"/>
+    </linearGradient>
+    <linearGradient id="st-mark" x1="140" y1="120" x2="360" y2="380" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#ECECF0"/>
+    </linearGradient>
+    <linearGradient id="st-mark-shadow" x1="200" y1="160" x2="200" y2="400" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.18"/>
+    </linearGradient>
+    <filter id="st-soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+
+  <!-- App icon base -->
+  <rect width="512" height="512" rx="118" fill="url(#st-bg)"/>
+  <rect width="512" height="512" rx="118" fill="url(#st-glow)"/>
+  <rect width="512" height="512" rx="118" fill="url(#st-vignette)"/>
+  <rect x="14" y="14" width="484" height="484" rx="104" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="3"/>
+
+  <!-- Subtle Turkish star (identity, low opacity) -->
+  <path fill="#FFFFFF" fill-opacity="0.07" d="M256 78l14.2 43.7h45.9l-37.1 27 14.2 43.7L256 165.4l-33.2 27 14.2-43.7-37.1-27h45.9L256 78z"/>
+
+  <!-- Mark shadow -->
+  <g filter="url(#st-soft)" opacity="0.85">
+    <path d="M132 168h152" stroke="url(#st-mark-shadow)" stroke-width="52" stroke-linecap="round"/>
+    <path d="M208 168v112" stroke="url(#st-mark-shadow)" stroke-width="52" stroke-linecap="round"/>
+    <path d="M208 280l-52 68M208 280l88-78M208 280v92" stroke="url(#st-mark-shadow)" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- T monogram + growth arrow -->
+  <g stroke="url(#st-mark)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M132 168h152" stroke-width="52"/>
+    <path d="M208 168v112" stroke-width="52"/>
+    <path d="M208 280l-52 68M208 280l88-78M208 280v92" stroke-width="44"/>
+  </g>
+
+  <!-- Social network constellation -->
+  <g stroke="#FFFFFF" stroke-linecap="round">
+    <path d="M292 196c36-8 58 10 78 34" stroke-width="10" stroke-opacity="0.55"/>
+    <path d="M370 230c-8 34 6 62-18 92" stroke-width="10" stroke-opacity="0.5"/>
+    <path d="M292 196c28 42 8 88-26 118" stroke-width="10" stroke-opacity="0.45"/>
+  </g>
+  <circle cx="292" cy="196" r="26" fill="#FFFFFF" fill-opacity="0.88"/>
+  <circle cx="378" cy="248" r="32" fill="#FFFFFF"/>
+  <circle cx="318" cy="332" r="22" fill="#FFFFFF" fill-opacity="0.92"/>
+
+  <!-- Spark accent -->
+  <path fill="#FFFFFF" fill-opacity="0.95" d="M356 148l6 14 14 6-14 6-6 14-6-14-14-6 14-6 6-14z"/>
+</svg>

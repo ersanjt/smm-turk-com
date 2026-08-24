@@ -1,0 +1,35 @@
+# دیپلوی خودکار با FTP (پشتیبان — اگر Webhook کار نکرد)
+# Secrets لازم در GitHub → Settings → Secrets → Actions:
+#   FTP_SERVER   = ftp.smm-turk.com (یا IP سرور)
+#   FTP_USERNAME = smmturk
+#   FTP_PASSWORD = رمز FTP از cPanel
+#   FTP_SERVER_DIR = /public_html/  (مسیر روی سرور)
+
+name: Deploy to cPanel (FTP fallback)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    if: ${{ secrets.FTP_PASSWORD != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: FTP Deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ${{ secrets.FTP_SERVER_DIR || '/public_html/' }}
+          exclude: |
+            **/.git*
+            **/.git/**
+            **/config.php
+            **/deploy-secret.txt
+            **/uploads/**
+            **/tmp/**
