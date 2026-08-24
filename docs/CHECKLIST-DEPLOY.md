@@ -25,9 +25,10 @@
 | 1 | ورود به cPanel | آدرس: https://92.205.182.143:2087 — یوزر و پسورد را بزن |
 | 2 | SSH Access | Security → SSH Access — کلید بدون پسورد بساز (Key Password خالی) و Authorize کن |
 | 3 | Git Version Control | Tools → Git™ Version Control → Create → Clone a Repository |
-| 4 | Clone URL | `https://github.com/ersanjt/smm-turk-panel.git` |
-| 5 | Repository Path | `smm-turk-panel` (یا `/home/smmturk/smm-turk-panel`) |
-| 6 | Repository Name | `smm-turk-panel` — بعد Create بزن |
+| 4 | Clone URL | `https://github.com/ersanjt/smm-turk-com.git` (**private**) |
+| 5 | Repository Path | `/home/smmturk/repositories/smm-turk-com` (**نه** داخل public_html) |
+| 6 | Repository Name | `smm-turk-com` — بعد Create بزن |
+| 6b | Auth | یوزر GitHub + Personal Access Token با دسترسی `repo` (چون رپو خصوصی است) |
 
 بعد از ساخته شدن رپو:
 - اگر **Deploy** یا **Checkout to a directory** دیدی، مسیر را **public_html** بگذار تا فایل‌ها مستقیم همان‌جا بروند؛ بعد با **Pull** یا **Update** بروز می‌کنی.
@@ -44,15 +45,15 @@
 | # | دستور | توضیح |
 |---|--------|--------|
 | 7 | `cd ~` | برو home |
-| 8 | `cp ~/smm-turk-panel/scripts/deploy-server.sh ~/deploy-smm.sh` | کپی اسکریپت دیپلوی |
+| 8 | `cp ~/repositories/smm-turk-com/scripts/deploy-server.sh ~/deploy-smm.sh` | کپی اسکریپت دیپلوی |
 | 9 | `chmod +x ~/deploy-smm.sh` | قابل اجرا کردن |
 | 10 | `nano ~/deploy-smm.sh` | ویرایش — فقط این دو خط را درست کن: |
-| | `REPO_DIR="$HOME/smm-turk-panel"` | همان پوشهٔ کلون |
+| | `REPO_DIR="$HOME/repositories/smm-turk-com"` | همان پوشهٔ کلون |
 | | `WEB_DIR="$HOME/public_html"` | پوشهٔ وب سایت (اگر دامنه جدا داری: `$HOME/domains/دامنه/public_html`) |
 | 11 | `nano ~/deploy-secret.txt` | ساخت فایل سکرت وب‌هوک — داخلش فقط این دو خط: |
 | | `WEBHOOK_SECRET=یک_رمز_۳۲_حرفی_تصادفی` | همین را بعداً در GitHub هم می‌گذاری |
 | | `DEPLOY_SCRIPT=/home/smmturk/deploy-smm.sh` | مسیر اسکریپت (یوزر را درست کن) |
-| 12 | `cp ~/smm-turk-panel/deploy-webhook.php ~/public_html/` | کپی وب‌هوک به وب (اگر با Git Deploy از cPanel نریختی) |
+| 12 | `cp ~/repositories/smm-turk-com/deploy-webhook.php ~/public_html/` | کپی وب‌هوک به وب (اگر با Git Deploy از cPanel نریختی) |
 | 13 | `cp ~/deploy-secret.txt ~/public_html/` | کپی سکرت تا PHP بتواند بخواند (یا سکرت را در `~/public_html/deploy-secret.txt` بساز) |
 | 14 | `~/deploy-smm.sh` | یک بار دستی اجرا — اگر خطا داد مسیرها را در مرحله ۱۰ درست کن |
 
@@ -62,7 +63,7 @@
 
 | # | کار | مقدار |
 |---|-----|--------|
-| 15 | برو به رپو | https://github.com/ersanjt/smm-turk-panel |
+| 15 | برو به رپو | https://github.com/ersanjt/smm-turk-com |
 | 16 | Settings → Webhooks → Add webhook | |
 | 17 | Payload URL | `https://92.205.182.143/deploy-webhook.php` یا اگر دامنه داری: `https://دامنه-تو/deploy-webhook.php` |
 | 18 | Content type | `application/json` |
@@ -95,7 +96,7 @@
 
 | مورد | مقدار |
 |------|--------|
-| رپو روی سرور | `/home/smmturk/repositories/smm-turk-panel` |
+| رپو روی سرور | `/home/smmturk/repositories/smm-turk-com` |
 | پوشهٔ وب | `/home/smmturk/public_html` |
 | اسکریپت دیپلوی | `/home/smmturk/deploy-smm.sh` |
 | سکرت وب‌هوک | `~/deploy-secret.txt` یا `~/public_html/deploy-secret.txt` |

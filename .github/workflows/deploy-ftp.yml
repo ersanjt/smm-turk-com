@@ -7,10 +7,10 @@
 
 name: Deploy to cPanel (FTP fallback)
 
+# Manual only until FTP secrets are set and a dry-run is verified.
+# Auto-push deploy disabled to avoid accidental overwrite of production.
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
 
 jobs:
   deploy:

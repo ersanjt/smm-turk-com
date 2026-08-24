@@ -1,0 +1,32 @@
+# cPanel Git™ Version Control — deployment hook
+# Clones/pulls stay OUTSIDE public_html; this copies code into the web root.
+#
+# SAFETY:
+# - Never overwrites config.php / deploy-secret.txt
+# - Never uses --delete (would wipe uploads, storage, and other live files)
+# - Never touches MySQL — database stays as-is
+
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/smmturk/public_html/
+    - /usr/bin/rsync -av --chmod=D755,F644
+        --exclude=".git"
+        --exclude=".git/"
+        --exclude=".cpanel.yml"
+        --exclude=".github/"
+        --exclude="config.php"
+        --exclude="deploy-secret.txt"
+        --exclude="*.LOCAL_ONLY*"
+        --exclude="*.bak"
+        --exclude="*.zip"
+        --exclude="uploads/"
+        --exclude="storage/"
+        --exclude="tmp/"
+        --exclude="docs/"
+        --exclude="SAFE-DEPLOY.md"
+        --exclude="install.sql"
+        --exclude="install-cpanel.sql"
+        --exclude="install-db.php"
+        --exclude="migrate-*.php"
+        --exclude="seed-blog.php"
+        ./ $DEPLOYPATH
