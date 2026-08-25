@@ -39,7 +39,15 @@ for ($faqIndex = 1; $faqIndex <= 6; $faqIndex++) {
 $homeJsonLd = [
     Seo::organizationSchema($seoDescription, $lang),
     Seo::websiteSchema($seoDescription),
+    Seo::webPageSchema($seoTitle, $seoDescription, $canonicalUrl, $lang),
+    Seo::softwareApplicationSchema($seoDescription, $lang, [
+        'min_price' => preg_replace('/[^0-9.]/', '', $stats['min_price']) ?: '0.001',
+        'currency' => 'USD',
+    ]),
     Seo::faqSchema($faqItems, $lang),
+    Seo::breadcrumbSchema([
+        ['name' => __('blog_nav_home'), 'url' => $canonicalUrl],
+    ], $lang),
 ];
 ?>
 <!DOCTYPE html>
@@ -66,6 +74,7 @@ $homeJsonLd = [
     <meta property="og:locale" content="<?= h($ogLocale) ?>">
     <?= Seo::ogLocaleAlternates($lang) ?>
     <meta name="twitter:card" content="summary_large_image">
+    <?= Seo::twitterSiteMeta() ?>
     <meta name="twitter:title" content="<?= h($seoOgTitle) ?>">
     <meta name="twitter:description" content="<?= h($seoOgDescription) ?>">
     <meta name="twitter:image" content="<?= h($pageImg) ?>">

@@ -24,15 +24,24 @@ $minPrice = preg_replace('/[^0-9.]/', '', $stats['min_price']);
 $seoTitle = __('pricing_meta_title');
 $seoDescription = sprintf(__('pricing_meta_desc'), '$' . $minPrice);
 $metaKeywords = __('pricing_keywords');
+$pricingCanonical = Seo::pageCanonical($baseCanonical, $lang);
+$offerSource = !empty($highlights) ? $highlights : $table;
 $jsonLdGraph = [
     Seo::organizationSchema($seoDescription, $lang),
     Seo::websiteSchema($seoDescription),
-    Seo::webPageSchema(__('pricing_h1'), $seoDescription, Seo::pageCanonical($baseCanonical, $lang), $lang),
+    Seo::webPageSchema(__('pricing_h1'), $seoDescription, $pricingCanonical, $lang),
+    Seo::softwareApplicationSchema($seoDescription, $lang, [
+        'min_price' => $minPrice !== '' ? $minPrice : '0.001',
+        'currency' => 'USD',
+    ]),
     Seo::breadcrumbSchema([
         ['name' => __('blog_nav_home'), 'url' => Seo::absoluteUrl(home_path())],
         ['name' => __('nav_prices'), 'url' => $baseCanonical],
     ], $lang),
 ];
+if (!empty($offerSource)) {
+    $jsonLdGraph[] = Seo::pricingOfferListSchema($offerSource, $pricingCanonical, $lang);
+}
 $promo = $growth->promoBar();
 ?>
 <!DOCTYPE html>

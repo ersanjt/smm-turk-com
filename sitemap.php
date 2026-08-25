@@ -1,7 +1,7 @@
 <?php
 /**
- * XML Sitemap for search engines. Outputs all public pages + blog posts.
- * Multilingual: xhtml:link hreflang for tr, en, de on each URL.
+ * XML Sitemap for search engines. Outputs public pages + blog content.
+ * Hreflang alternates only on multilingual UI pages (not monolingual blog posts).
  * Access as: /sitemap.xml (via .htaccess rewrite)
  */
 require_once __DIR__ . '/app/init.php';
@@ -21,27 +21,39 @@ $base = $siteUrl . (function_exists('base_path') ? base_path() : '');
 $urls = [];
 $seen = [];
 
-$addUrl = static function (string $loc, string $lastmod, string $freq, string $priority) use (&$urls, &$seen): void {
+$addUrl = static function (string $loc, string $lastmod, string $freq, string $priority, bool $hreflang = true) use (&$urls, &$seen): void {
     if (isset($seen[$loc])) {
         return;
     }
     $seen[$loc] = true;
-    $urls[] = ['loc' => $loc, 'lastmod' => $lastmod, 'changefreq' => $freq, 'priority' => $priority];
+    $urls[] = [
+        'loc' => $loc,
+        'lastmod' => $lastmod,
+        'changefreq' => $freq,
+        'priority' => $priority,
+        'hreflang' => $hreflang,
+    ];
 };
 
-// Public marketing pages
+$fileLastmod = static function (string $relativePhp) use ($base): string {
+    $path = __DIR__ . '/' . ltrim($relativePhp, '/');
+    return is_file($path) ? date('Y-m-d', (int) filemtime($path)) : date('Y-m-d');
+};
+
+// Public marketing pages (UI is translated → hreflang OK)
 $static = [
-    '/' => ['freq' => 'daily', 'priority' => '1.0'],
-    '/earn' => ['freq' => 'weekly', 'priority' => '0.92'],
-    '/pricing' => ['freq' => 'daily', 'priority' => '0.95'],
-    '/help' => ['freq' => 'weekly', 'priority' => '0.85'],
-    '/blog' => ['freq' => 'daily', 'priority' => '0.9'],
-    '/terms' => ['freq' => 'yearly', 'priority' => '0.5'],
+    '/' => ['file' => 'home.php', 'freq' => 'daily', 'priority' => '1.0'],
+    '/earn' => ['file' => 'earn.php', 'freq' => 'weekly', 'priority' => '0.92'],
+    '/pricing' => ['file' => 'pricing.php', 'freq' => 'daily', 'priority' => '0.95'],
+    '/help' => ['file' => 'help.php', 'freq' => 'weekly', 'priority' => '0.85'],
+    '/blog' => ['file' => 'blog.php', 'freq' => 'daily', 'priority' => '0.9'],
+    '/terms' => ['file' => 'terms.php', 'freq' => 'yearly', 'priority' => '0.5'],
 ];
 foreach ($static as $path => $meta) {
-    $addUrl($base . $path, date('Y-m-d'), $meta['freq'], $meta['priority']);
+    $addUrl($base . $path, $fileLastmod($meta['file']), $meta['freq'], $meta['priority'], true);
 }
 
+// Blog posts — content is monolingual; no hreflang cluster
 try {
     $posts = $db->fetchAll(
         "SELECT slug, updated_at, published_at FROM blog_articles WHERE status = 'published' AND published_at IS NOT NULL AND published_at <= NOW() ORDER BY published_at DESC"
@@ -52,11 +64,13 @@ try {
             $base . '/blog/' . rawurlencode((string) $row['slug']),
             date('Y-m-d', strtotime((string) $lastmod)),
             'weekly',
-            '0.8'
+            '0.8',
+            false
         );
     }
 } catch (Throwable $e) {}
 
+// Category hubs — monolingual article lists
 try {
     $categories = $db->fetchAll(
         "SELECT c.slug, MAX(a.updated_at) AS lastmod FROM blog_categories c
@@ -69,11 +83,13 @@ try {
             $base . '/blog?category=' . rawurlencode((string) $cat['slug']),
             !empty($cat['lastmod']) ? date('Y-m-d', strtotime((string) $cat['lastmod'])) : date('Y-m-d'),
             'weekly',
-            '0.7'
+            '0.7',
+            false
         );
     }
 } catch (Throwable $e) {}
 
+// Tag hubs — monolingual
 try {
     $tags = $db->fetchAll(
         "SELECT t.slug, MAX(a.updated_at) AS lastmod FROM blog_tags t
@@ -87,21 +103,14 @@ try {
             $base . '/blog?tag=' . rawurlencode((string) $tag['slug']),
             !empty($tag['lastmod']) ? date('Y-m-d', strtotime((string) $tag['lastmod'])) : date('Y-m-d'),
             'weekly',
-            '0.65'
+            '0.65',
+            false
         );
     }
 } catch (Throwable $e) {}
 
-try {
-    $totalPosts = (int) $db->fetch(
-        "SELECT COUNT(*) c FROM blog_articles WHERE status = 'published' AND published_at IS NOT NULL AND published_at <= NOW()"
-    )['c'];
-    $perPage = 12;
-    $totalPages = max(1, (int) ceil($totalPosts / $perPage));
-    for ($p = 2; $p <= $totalPages; $p++) {
-        $addUrl($base . '/blog?p=' . $p, date('Y-m-d'), 'weekly', '0.6');
-    }
-} catch (Throwable $e) {}
+// Do NOT list ?p=2+ here: those pages self-canonicalize or use rel=prev/next.
+// Listing them with a page-1 canonical creates conflicting crawl signals.
 
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 ?>
@@ -109,7 +118,11 @@ echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 <?php foreach ($urls as $u): ?>
   <url>
-    <loc><?= htmlspecialchars($u['loc'], ENT_XML1 | ENT_QUOTES, 'UTF-8') ?></loc><?= Seo::sitemapHreflangLinks($u['loc']) ?>
+    <loc><?= htmlspecialchars($u['loc'], ENT_XML1 | ENT_QUOTES, 'UTF-8') ?></loc><?php
+    if (!empty($u['hreflang']) && Seo::sitemapUrlHasHreflang($u['loc'])) {
+        echo Seo::sitemapHreflangLinks($u['loc']);
+    }
+?>
 
     <lastmod><?= htmlspecialchars($u['lastmod'], ENT_XML1 | ENT_QUOTES, 'UTF-8') ?></lastmod>
     <changefreq><?= htmlspecialchars($u['changefreq'], ENT_XML1 | ENT_QUOTES, 'UTF-8') ?></changefreq>

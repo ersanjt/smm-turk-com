@@ -27,6 +27,10 @@ define('GEO_TIMEZONE', 'Europe/Istanbul');
 define('OG_IMAGE_URL', 'assets/img/og-default.png');
 // Google Search Console → HTML tag verification (optional)
 define('GOOGLE_SITE_VERIFICATION', '');
+// Optional social graph — comma-separated profile URLs for Organization sameAs
+// define('SOCIAL_SAME_AS', 'https://twitter.com/yourhandle,https://www.instagram.com/yourhandle');
+// Optional Twitter/X handle for twitter:site (without @)
+// define('TWITTER_SITE', 'yourhandle');
 define('MAIL_FROM', 'noreply@yourdomain.com'); // Optional; used for verification emails (cPanel: use an email from your domain)
 
 // SmmFollows API - Get key from https://smmfollows.com → Account → API

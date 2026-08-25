@@ -58,7 +58,7 @@ if ($tagSlug !== '') {
     $params[] = $tag['id'];
     if ($categorySlug === '') {
         $pageTitle = $tag['name'];
-        $pageDescription = 'Articles tagged with ' . $tag['name'] . ' — ' . $siteName . ' Blog.';
+        $pageDescription = sprintf(__('blog_tag_meta'), $tag['name']);
         $canonicalUrl = Seo::absoluteUrl(path('blog.php') . '?tag=' . rawurlencode($tagSlug));
     }
     $filterActive = true;
@@ -83,6 +83,19 @@ if ($pageNum > $totalPages) {
     $pageNum = 1;
 }
 $offset = ($pageNum - 1) * $perPage;
+
+// Self-canonical for paginated listings (avoid sitemap/canonical conflict with page 1)
+if ($pageNum > 1 && $searchQuery === '') {
+    $pageQs = ['p' => $pageNum];
+    if ($categorySlug !== '') {
+        $pageQs['category'] = $categorySlug;
+    }
+    if ($tagSlug !== '') {
+        $pageQs['tag'] = $tagSlug;
+    }
+    $canonicalUrl = Seo::absoluteUrl(path('blog.php') . '?' . http_build_query($pageQs));
+    $pageTitle .= ' — ' . sprintf(__('blog_page_n'), $pageNum);
+}
 
 $articles = $db->fetchAll(
     "SELECT a.id, a.slug, a.title, a.excerpt, a.published_at, a.reading_time_min, a.featured_image, c.name AS category_name, c.slug AS category_slug
@@ -148,7 +161,8 @@ if ($totalPages > 1) {
 }
 
 $blogNavActive = 'blog';
-$seoHreflang = true;
+// Blog article bodies are monolingual — do not advertise hreflang alternates
+$seoHreflang = false;
 $seoHreflangBase = $canonicalUrl;
 $jsonLdExtra = [
     Seo::breadcrumbSchema([

@@ -70,8 +70,22 @@ class Seo
         return defined('GEO_TIMEZONE') ? GEO_TIMEZONE : 'Europe/Istanbul';
     }
 
-    /** BCP 47 language tag with region (e.g. tr-TR, en). */
+    /** BCP 47 language tag with region (e.g. tr-TR, en-US). */
     public static function htmlLang(string $lang): string
+    {
+        return match ($lang) {
+            'tr' => 'tr-TR',
+            'en' => 'en-US',
+            'de' => 'de-DE',
+            default => 'tr-TR',
+        };
+    }
+
+    /**
+     * hreflang attribute — use language-only for EN (Google prefers en over en-US
+     * when the site is not US-specific), region for TR/DE primary markets.
+     */
+    public static function hreflangCode(string $lang): string
     {
         return match ($lang) {
             'tr' => 'tr-TR',
@@ -81,17 +95,11 @@ class Seo
         };
     }
 
-    /** hreflang attribute value (language + region for primary markets). */
-    public static function hreflangCode(string $lang): string
-    {
-        return self::htmlLang($lang);
-    }
-
     /** @return string[] BCP 47 tags for all supported languages. */
     public static function supportedHtmlLangs(): array
     {
         if (!class_exists('Lang')) {
-            return ['tr-TR', 'en', 'de-DE'];
+            return ['tr-TR', 'en-US', 'de-DE'];
         }
         return array_map(fn(string $l) => self::htmlLang($l), Lang::allowed());
     }
@@ -185,7 +193,7 @@ class Seo
         return $rebuilt !== '' ? $rebuilt : $url;
     }
 
-    /** xhtml:link alternates for XML sitemap (multilingual). */
+    /** xhtml:link alternates for XML sitemap (multilingual UI pages only). */
     public static function sitemapHreflangLinks(string $primaryLoc): string
     {
         if ($primaryLoc === '' || !class_exists('Lang')) {
@@ -200,6 +208,29 @@ class Seo
         }
         $lines .= "\n    <xhtml:link rel=\"alternate\" hreflang=\"x-default\" href=\"" . self::e($loc) . "\"/>";
         return $lines;
+    }
+
+    /**
+     * True when this sitemap URL has real translated UI (not monolingual blog content).
+     * Blog posts/categories/tags must NOT claim hreflang alternates.
+     */
+    public static function sitemapUrlHasHreflang(string $loc): bool
+    {
+        $path = (string) (parse_url($loc, PHP_URL_PATH) ?? '');
+        $path = rtrim($path, '/') ?: '/';
+        // /blog/... posts
+        if (preg_match('#/blog/.+#', $path)) {
+            return false;
+        }
+        $query = (string) (parse_url($loc, PHP_URL_QUERY) ?? '');
+        if ($query !== '') {
+            parse_str($query, $q);
+            // category/tag/pagination/search — content is monolingual
+            if (isset($q['category']) || isset($q['tag']) || isset($q['p']) || isset($q['q'])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static function pageLanguage(?string $lang = null): string
@@ -248,12 +279,20 @@ class Seo
     {
         $siteName = self::siteName();
         $siteUrl = self::siteUrl();
+        $logo = function_exists('logo_url') ? logo_url() : '';
+        if ($logo !== '' && !preg_match('#^https?://#i', $logo)) {
+            $logo = self::absoluteUrl($logo);
+        }
         $schema = [
             '@type' => 'Organization',
+            '@id' => ($siteUrl ?: self::absoluteUrl(home_path())) . '/#organization',
             'name' => $siteName,
-            'url' => $siteUrl ?: home_path(),
+            'url' => $siteUrl ?: self::absoluteUrl(home_path()),
             'description' => $description ?? '',
-            'logo' => og_image_url(),
+            'logo' => [
+                '@type' => 'ImageObject',
+                'url' => $logo !== '' ? $logo : og_image_url(),
+            ],
             'address' => [
                 '@type' => 'PostalAddress',
                 'addressLocality' => self::geoLocality(),
@@ -266,10 +305,43 @@ class Seo
             ],
             'areaServed' => self::areaServedSchema(),
         ];
+        $sameAs = self::sameAsProfiles();
+        if ($sameAs !== []) {
+            $schema['sameAs'] = $sameAs;
+        }
         if ($lang !== null) {
             $schema['inLanguage'] = self::pageLanguage($lang);
         }
         return $schema;
+    }
+
+    /** @return list<string> Social profile URLs from SOCIAL_SAME_AS (comma-separated). */
+    public static function sameAsProfiles(): array
+    {
+        if (!defined('SOCIAL_SAME_AS') || trim((string) SOCIAL_SAME_AS) === '') {
+            return [];
+        }
+        $parts = preg_split('/\s*,\s*/', trim((string) SOCIAL_SAME_AS)) ?: [];
+        $out = [];
+        foreach ($parts as $url) {
+            if ($url !== '' && preg_match('#^https?://#i', $url)) {
+                $out[] = $url;
+            }
+        }
+        return array_values(array_unique($out));
+    }
+
+    /** Twitter @handle for twitter:site (TWITTER_SITE without @). */
+    public static function twitterSiteMeta(): string
+    {
+        if (!defined('TWITTER_SITE') || trim((string) TWITTER_SITE) === '') {
+            return '';
+        }
+        $handle = ltrim(trim((string) TWITTER_SITE), '@');
+        if ($handle === '') {
+            return '';
+        }
+        return '<meta name="twitter:site" content="@' . self::e($handle) . '">';
     }
 
     /** @return array<int, array<string, mixed>> */
@@ -289,22 +361,114 @@ class Seo
 
     public static function websiteSchema(?string $description = null): array
     {
-        $siteUrl = self::siteUrl();
+        $siteUrl = self::siteUrl() ?: self::absoluteUrl(home_path());
+        $searchTarget = self::absoluteUrl(path('blog.php')) . '?q={search_term_string}';
         return [
             '@type' => 'WebSite',
+            '@id' => $siteUrl . '/#website',
             'name' => self::siteName(),
-            'url' => $siteUrl ?: home_path(),
+            'url' => $siteUrl,
             'description' => $description ?? '',
             'inLanguage' => self::supportedHtmlLangs(),
-            'publisher' => [
-                '@type' => 'Organization',
-                'name' => self::siteName(),
-                'address' => [
-                    '@type' => 'PostalAddress',
-                    'addressCountry' => self::geoRegion(),
+            'publisher' => ['@id' => $siteUrl . '/#organization'],
+            'potentialAction' => [
+                '@type' => 'SearchAction',
+                'target' => [
+                    '@type' => 'EntryPoint',
+                    'urlTemplate' => $searchTarget,
                 ],
+                'query-input' => 'required name=search_term_string',
             ],
         ];
+    }
+
+    /**
+     * SoftwareApplication for the SMM panel product (home / pricing).
+     *
+     * @param array{min_price?: string, currency?: string}|null $offers
+     */
+    public static function softwareApplicationSchema(
+        string $description,
+        ?string $lang = null,
+        ?array $offers = null
+    ): array {
+        $siteUrl = self::siteUrl() ?: self::absoluteUrl(home_path());
+        $schema = [
+            '@type' => 'SoftwareApplication',
+            'name' => self::siteName() . ' SMM Panel',
+            'applicationCategory' => 'BusinessApplication',
+            'operatingSystem' => 'Web',
+            'url' => $siteUrl,
+            'description' => $description,
+            'offers' => [
+                '@type' => 'Offer',
+                'price' => $offers['min_price'] ?? '0',
+                'priceCurrency' => $offers['currency'] ?? 'USD',
+                'availability' => 'https://schema.org/InStock',
+                'url' => self::absoluteUrl(path('pricing.php')),
+            ],
+            'provider' => ['@id' => $siteUrl . '/#organization'],
+        ];
+        if ($lang !== null) {
+            $schema['inLanguage'] = self::pageLanguage($lang);
+        }
+        return $schema;
+    }
+
+    /**
+     * ItemList of service Offers for the public pricing page.
+     *
+     * @param list<array{name?: string, platform?: string, retail_rate?: float|int|string}> $services
+     */
+    public static function pricingOfferListSchema(array $services, string $pageUrl, ?string $lang = null): array
+    {
+        $elements = [];
+        $position = 1;
+        foreach (array_slice($services, 0, 24) as $row) {
+            $name = trim((string) ($row['name'] ?? ''));
+            if ($name === '') {
+                continue;
+            }
+            $platform = trim((string) ($row['platform'] ?? ''));
+            $rate = round((float) ($row['retail_rate'] ?? 0), 4);
+            $elements[] = [
+                '@type' => 'ListItem',
+                'position' => $position++,
+                'item' => [
+                    '@type' => 'Product',
+                    'name' => $platform !== '' ? ($platform . ' — ' . $name) : $name,
+                    'category' => $platform !== '' ? $platform : 'SMM',
+                    'offers' => [
+                        '@type' => 'Offer',
+                        'price' => number_format(max(0, $rate), 4, '.', ''),
+                        'priceCurrency' => 'USD',
+                        'availability' => 'https://schema.org/InStock',
+                        'url' => $pageUrl,
+                        'priceSpecification' => [
+                            '@type' => 'UnitPriceSpecification',
+                            'price' => number_format(max(0, $rate), 4, '.', ''),
+                            'priceCurrency' => 'USD',
+                            'referenceQuantity' => [
+                                '@type' => 'QuantitativeValue',
+                                'value' => 1000,
+                                'unitText' => 'units',
+                            ],
+                        ],
+                    ],
+                ],
+            ];
+        }
+        $schema = [
+            '@type' => 'ItemList',
+            'name' => self::siteName() . ' SMM Prices',
+            'url' => $pageUrl,
+            'numberOfItems' => count($elements),
+            'itemListElement' => $elements,
+        ];
+        if ($lang !== null) {
+            $schema['inLanguage'] = self::pageLanguage($lang);
+        }
+        return $schema;
     }
 
     public static function webPageSchema(string $name, string $description, string $url, ?string $lang = null): array
@@ -315,9 +479,7 @@ class Seo
             'description' => $description,
             'url' => $url,
             'isPartOf' => [
-                '@type' => 'WebSite',
-                'name' => self::siteName(),
-                'url' => self::siteUrl() ?: home_path(),
+                '@id' => (self::siteUrl() ?: self::absoluteUrl(home_path())) . '/#website',
             ],
         ];
         if ($lang !== null) {

@@ -24,6 +24,10 @@ $jsonLdExtra = [
         ['name' => __('blog_nav_home'), 'url' => $siteUrl !== '' ? Seo::absoluteUrl(home_path()) : home_path()],
         ['name' => __('help_title'), 'url' => $canonicalUrl],
     ], $lang),
+    Seo::faqSchema(array_map(
+        static fn(int $i): array => ['name' => __('faq_' . $i), 'text' => __('faq_' . $i . '_a')],
+        range(1, 6)
+    ), $lang),
 ];
 
 $helpSections = [

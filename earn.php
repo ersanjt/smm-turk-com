@@ -110,6 +110,7 @@ if (!$loggedIn):
         Seo::organizationSchema($seoDescription, $lang),
         Seo::websiteSchema($seoDescription),
         Seo::webPageSchema(__('earn_hero_h1'), $seoDescription, Seo::pageCanonical($baseCanonical, $lang), $lang),
+        Seo::softwareApplicationSchema($seoDescription, $lang),
         Seo::breadcrumbSchema([
             ['name' => __('blog_nav_home'), 'url' => Seo::absoluteUrl(home_path())],
             ['name' => __('nav_earn'), 'url' => $baseCanonical],

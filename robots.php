@@ -1,10 +1,11 @@
 <?php
 /**
- * Dynamic robots.txt — Sitemap URL from SITE_URL.
+ * Dynamic robots.txt — Sitemap URL from SITE_URL (+ base_path for subdir installs).
  * Served as /robots.txt via .htaccess rewrite.
  */
 require_once __DIR__ . '/app/init.php';
 $siteUrl = Seo::siteUrl() !== '' ? Seo::siteUrl() : 'https://smm-turk.com';
+$base = $siteUrl . (function_exists('base_path') ? base_path() : '');
 header('Content-Type: text/plain; charset=UTF-8');
 echo "User-agent: *\n";
 echo "Allow: /\n";
@@ -35,5 +36,6 @@ echo "Disallow: /health\n";
 echo "Disallow: /payment-\n";
 echo "Disallow: /cron-\n";
 echo "Disallow: /logout\n";
-echo "Disallow: /404\n\n";
-echo "Sitemap: " . $siteUrl . "/sitemap.xml\n";
+echo "Disallow: /404\n";
+echo "Disallow: /*?*q=\n\n";
+echo "Sitemap: " . $base . "/sitemap.xml\n";

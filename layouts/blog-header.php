@@ -88,6 +88,7 @@ foreach ($jsonLdExtra as $block) {
     <meta property="article:tag" content="<?= h($tagName) ?>">
     <?php endforeach; ?>
     <meta name="twitter:card" content="summary_large_image">
+    <?= Seo::twitterSiteMeta() ?>
     <meta name="twitter:title" content="<?= h($pageTitle) ?> — <?= h($siteName) ?>">
     <meta name="twitter:description" content="<?= h($pageDescription) ?>">
     <meta name="twitter:image" content="<?= h($pageImg) ?>">

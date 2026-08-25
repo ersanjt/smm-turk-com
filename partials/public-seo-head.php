@@ -42,6 +42,7 @@ $hreflangBase = Seo::stripLangParam($baseCanonical);
     <meta property="og:locale" content="<?= h($ogLocale) ?>">
     <?= Seo::ogLocaleAlternates($lang) ?>
     <meta name="twitter:card" content="summary_large_image">
+    <?= Seo::twitterSiteMeta() ?>
     <meta name="twitter:title" content="<?= h($seoOgTitle) ?> — <?= h($siteName) ?>">
     <meta name="twitter:description" content="<?= h($seoOgDescription) ?>">
     <meta name="twitter:image" content="<?= h($pageImg) ?>">
