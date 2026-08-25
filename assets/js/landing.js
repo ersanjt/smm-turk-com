@@ -83,4 +83,14 @@
       }
     });
   });
+
+  /* Keep promo/nav offset accurate when the bar wraps on narrow screens */
+  function syncPromoHeight() {
+    var bar = document.querySelector('.growth-promo-bar');
+    if (!bar || !document.body.classList.contains('has-promo')) return;
+    var h = Math.ceil(bar.getBoundingClientRect().height);
+    if (h > 0) document.documentElement.style.setProperty('--promo-bar-h', h + 'px');
+  }
+  syncPromoHeight();
+  window.addEventListener('resize', syncPromoHeight);
 })();

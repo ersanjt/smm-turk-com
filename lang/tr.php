@@ -157,6 +157,7 @@ return [
     'a11y_motion' => 'Hareketi azalt',
     'a11y_reset' => 'Her şeyi sıfırla',
     'a11y_skip' => 'İçeriğe geç',
+    'a11y_theme' => 'Açık / koyu tema',
     'faq_6_a' => 'Giriş yaptıktan sonra Siparişlerim\'e gidin. Her sipariş Beklemede, İşleniyor, Tamamlandı vb. gösterir.',
     'help_nav' => 'Yardım',
     'help_title' => 'Yardım Merkezi',

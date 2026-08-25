@@ -158,6 +158,7 @@ return [
     'a11y_motion' => 'Reduce motion',
     'a11y_reset' => 'Reset everything',
     'a11y_skip' => 'Skip to content',
+    'a11y_theme' => 'Light / dark theme',
     'help_nav' => 'Help',
     'help_title' => 'Help Center',
     'help_meta_desc' => 'SMM Turk Help Center — How to register, add crypto funds, place orders, use the API, and get support.',

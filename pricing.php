@@ -33,15 +33,16 @@ $jsonLdGraph = [
         ['name' => __('nav_prices'), 'url' => $baseCanonical],
     ], $lang),
 ];
+$promo = $growth->promoBar();
 ?>
 <!DOCTYPE html>
 <html lang="<?= h(Seo::htmlLang($lang)) ?>">
 <head>
 <?php require __DIR__ . '/partials/public-seo-head.php'; ?>
 </head>
-<body>
+<body class="<?= !empty($promo['enabled']) ? 'has-promo' : '' ?>">
 <script>(function(){var k='smmturk_theme',d=localStorage.getItem(k)==='dark'||(!localStorage.getItem(k)&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.body.classList.add('theme-dark');})();</script>
-<?php $promo = $growth->promoBar(); if ($promo['enabled']): ?>
+<?php if ($promo['enabled']): ?>
 <div class="growth-promo-bar">
     <span><?= h($promo['text']) ?></span>
     <a href="<?= h($promo['cta_url']) ?>"><?= h($promo['cta_label']) ?></a>

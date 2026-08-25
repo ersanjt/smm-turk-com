@@ -80,10 +80,10 @@ $homeJsonLd = [
     <link rel="stylesheet" href="<?= h(asset_url('assets/css/pricing-public.css')) ?>">
     <link rel="stylesheet" href="<?= h(asset_url('assets/css/ui-pro.css')) ?>">
 </head>
-<body data-sw="<?= h(path('pwa-sw.php')) ?>" data-sw-scope="<?= h(base_path() !== '' ? base_path() . '/' : '/') ?>">
+<body class="<?= !empty($promoBar['enabled']) ? 'has-promo' : '' ?>" data-sw="<?= h(path('pwa-sw.php')) ?>" data-sw-scope="<?= h(base_path() !== '' ? base_path() . '/' : '/') ?>">
 <script>(function(){var k='smmturk_theme',d=localStorage.getItem(k)==='dark'||(!localStorage.getItem(k)&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.body.classList.add('theme-dark');})();</script>
 <?php if ($promoBar['enabled']): ?>
-<div class="growth-promo-bar">
+<div class="growth-promo-bar" role="region" aria-label="Promo">
     <span><?= h($promoBar['text']) ?></span>
     <a href="<?= h($promoBar['cta_url']) ?>"><?= h($promoBar['cta_label']) ?></a>
 </div>
@@ -146,150 +146,164 @@ $homeJsonLd = [
 </section>
 
 <section id="benefits" class="section section-benefits" aria-labelledby="benefits-heading">
-    <div class="section-label"><?= h(__('benefit_heading')) ?></div>
-    <h2 id="benefits-heading" class="section-title"><?= h(__('benefit_title')) ?></h2>
-    <p class="section-desc"><?= h(__('benefit_intro')) ?></p>
-    <div class="benefit-grid">
-        <div class="benefit-card">
-            <div class="benefit-icon"><?= iconBox('wallet', 'primary') ?></div>
-            <div><h3><?= h(__('cheapest')) ?></h3><p><?= h(__('cheapest_desc')) ?></p></div>
-        </div>
-        <div class="benefit-card">
-            <div class="benefit-icon"><?= iconBox('zap', 'orange') ?></div>
-            <div><h3><?= h(__('fastest')) ?></h3><p><?= h(__('fastest_desc')) ?></p></div>
-        </div>
-        <div class="benefit-card">
-            <div class="benefit-icon"><?= iconBox('target', 'green') ?></div>
-            <div><h3><?= h(__('easy')) ?></h3><p><?= h(__('easy_desc')) ?></p></div>
-        </div>
-        <div class="benefit-card">
-            <div class="benefit-icon"><?= iconBox('chart', 'blue') ?></div>
-            <div><h3><?= h(__('realtime')) ?></h3><p><?= h(__('realtime_desc')) ?></p></div>
-        </div>
-        <div class="benefit-card">
-            <div class="benefit-icon"><?= iconBox('refresh', 'purple') ?></div>
-            <div><h3><?= h(__('reseller')) ?></h3><p><?= h(__('reseller_desc')) ?></p></div>
-        </div>
-        <div class="benefit-card">
-            <div class="benefit-icon"><?= iconBox('star', 'primary') ?></div>
-            <div><h3><?= h(__('quality')) ?></h3><p><?= h(__('quality_desc')) ?></p></div>
+    <div class="section-inner">
+        <div class="section-label"><?= h(__('benefit_heading')) ?></div>
+        <h2 id="benefits-heading" class="section-title"><?= h(__('benefit_title')) ?></h2>
+        <p class="section-desc"><?= h(__('benefit_intro')) ?></p>
+        <div class="benefit-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon"><?= iconBox('wallet', 'primary') ?></div>
+                <div><h3><?= h(__('cheapest')) ?></h3><p><?= h(__('cheapest_desc')) ?></p></div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon"><?= iconBox('zap', 'orange') ?></div>
+                <div><h3><?= h(__('fastest')) ?></h3><p><?= h(__('fastest_desc')) ?></p></div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon"><?= iconBox('target', 'green') ?></div>
+                <div><h3><?= h(__('easy')) ?></h3><p><?= h(__('easy_desc')) ?></p></div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon"><?= iconBox('chart', 'blue') ?></div>
+                <div><h3><?= h(__('realtime')) ?></h3><p><?= h(__('realtime_desc')) ?></p></div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon"><?= iconBox('refresh', 'purple') ?></div>
+                <div><h3><?= h(__('reseller')) ?></h3><p><?= h(__('reseller_desc')) ?></p></div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon"><?= iconBox('star', 'primary') ?></div>
+                <div><h3><?= h(__('quality')) ?></h3><p><?= h(__('quality_desc')) ?></p></div>
+            </div>
         </div>
     </div>
 </section>
 
 <section id="services" class="section section-surface">
-    <div class="section-label"><?= h(__('benefit_heading')) ?></div>
-    <h2 class="section-title"><?= h(__('services_title')) ?></h2>
-    <div class="three-cols">
-        <div class="feature-block">
-            <div class="icon"><?= iconBox('credit-card', 'green') ?></div>
-            <h3><?= h(__('secure_payment')) ?></h3>
-            <p><?= h(__('secure_payment_desc')) ?></p>
+    <div class="section-inner">
+        <div class="section-label"><?= h(__('benefit_heading')) ?></div>
+        <h2 class="section-title"><?= h(__('services_title')) ?></h2>
+        <div class="three-cols">
+            <div class="feature-block">
+                <div class="icon"><?= iconBox('credit-card', 'green') ?></div>
+                <h3><?= h(__('secure_payment')) ?></h3>
+                <p><?= h(__('secure_payment_desc')) ?></p>
+            </div>
+            <div class="feature-block">
+                <div class="icon"><?= iconBox('globe', 'blue') ?></div>
+                <h3><?= h(__('services_title')) ?></h3>
+                <p><?= h(__('services_desc')) ?></p>
+            </div>
+            <div class="feature-block">
+                <div class="icon"><?= iconBox('message', 'primary') ?></div>
+                <h3><?= h(__('support_24_7')) ?></h3>
+                <p><?= h(__('support_24_7_desc')) ?></p>
+            </div>
         </div>
-        <div class="feature-block">
-            <div class="icon"><?= iconBox('globe', 'blue') ?></div>
-            <h3><?= h(__('services_title')) ?></h3>
-            <p><?= h(__('services_desc')) ?></p>
-        </div>
-        <div class="feature-block">
-            <div class="icon"><?= iconBox('message', 'primary') ?></div>
-            <h3><?= h(__('support_24_7')) ?></h3>
-            <p><?= h(__('support_24_7_desc')) ?></p>
-        </div>
+        <p class="section-more"><a href="<?= h(path('pricing.php')) ?>" class="section-link"><?= h(__('view_price_list')) ?> →</a></p>
     </div>
-    <p style="text-align:center;margin-top:20px;"><a href="<?= h(path('pricing.php')) ?>" style="color:var(--primary);font-weight:700;"><?= h(__('view_price_list')) ?> →</a></p>
 </section>
 
 <section id="earn" class="section section-surface-warm">
-    <div class="section-label"><?= h(__('home_earn_label')) ?></div>
-    <h2 class="section-title"><?= h(__('earn_hero_h1')) ?></h2>
-    <p class="section-desc"><?= h(__('home_earn_desc')) ?></p>
-    <div class="benefit-grid earn-preview-grid">
-        <div class="benefit-card">
-            <div class="benefit-icon"><?= iconBox('server', 'primary') ?></div>
-            <div><h3><?= h(__('home_earn_child_t')) ?></h3><p><?= h(__('home_earn_child_d')) ?></p></div>
+    <div class="section-inner">
+        <div class="section-label"><?= h(__('home_earn_label')) ?></div>
+        <h2 class="section-title"><?= h(__('earn_hero_h1')) ?></h2>
+        <p class="section-desc"><?= h(__('home_earn_desc')) ?></p>
+        <div class="benefit-grid earn-preview-grid">
+            <div class="benefit-card">
+                <div class="benefit-icon"><?= iconBox('server', 'primary') ?></div>
+                <div><h3><?= h(__('home_earn_child_t')) ?></h3><p><?= h(__('home_earn_child_d')) ?></p></div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon"><?= iconBox('users', 'green') ?></div>
+                <div><h3><?= h(__('home_earn_aff_t')) ?></h3><p><?= h(__('home_earn_aff_d')) ?></p></div>
+            </div>
+            <div class="benefit-card">
+                <div class="benefit-icon"><?= iconBox('plug', 'blue') ?></div>
+                <div><h3><?= h(__('home_earn_api_t')) ?></h3><p><?= h(__('home_earn_api_d')) ?></p></div>
+            </div>
         </div>
-        <div class="benefit-card">
-            <div class="benefit-icon"><?= iconBox('users', 'green') ?></div>
-            <div><h3><?= h(__('home_earn_aff_t')) ?></h3><p><?= h(__('home_earn_aff_d')) ?></p></div>
-        </div>
-        <div class="benefit-card">
-            <div class="benefit-icon"><?= iconBox('plug', 'blue') ?></div>
-            <div><h3><?= h(__('home_earn_api_t')) ?></h3><p><?= h(__('home_earn_api_d')) ?></p></div>
-        </div>
+        <p class="section-actions">
+            <a href="<?= h(path('earn.php')) ?>" class="btn-cta"><?= h(__('home_earn_learn')) ?> →</a>
+            <a href="<?= h(path('pricing.php')) ?>" class="btn-cta-outline"><?= h(__('earn_view_prices')) ?></a>
+        </p>
     </div>
-    <p class="section-actions">
-        <a href="<?= h(path('earn.php')) ?>" class="btn-cta"><?= h(__('home_earn_learn')) ?> →</a>
-        <a href="<?= h(path('pricing.php')) ?>" class="btn-cta-outline"><?= h(__('earn_view_prices')) ?></a>
-    </p>
 </section>
 
-<section class="section">
-    <div class="cta-block">
-        <div class="section-label"><?= h(__('quick_response_label')) ?></div>
-        <h2 class="section-title"><?= h(__('quick_response')) ?></h2>
-        <p class="section-desc"><?= h(__('quick_response_desc')) ?></p>
-        <a href="<?= h(register_path()) ?>" class="btn-cta"><?= h(__('sign_up_now')) ?> →</a>
-    </div>
-    <div class="stats-row">
-        <div class="stat-item">
-            <div class="icon"><?= iconBox('clock', 'orange') ?></div>
-            <div class="stat-value">0.3Sec</div>
-            <div class="stat-label"><?= h(__('stat_order_every')) ?></div>
+<section class="section section-cta-stats">
+    <div class="section-inner">
+        <div class="cta-block">
+            <div class="section-label"><?= h(__('quick_response_label')) ?></div>
+            <h2 class="section-title"><?= h(__('quick_response')) ?></h2>
+            <p class="section-desc"><?= h(__('quick_response_desc')) ?></p>
+            <a href="<?= h(register_path()) ?>" class="btn-cta"><?= h(__('sign_up_now')) ?> →</a>
         </div>
-        <div class="stat-item">
-            <div class="icon"><?= iconBox('check-circle', 'green') ?></div>
-            <div class="stat-value"><?= h($stats['orders']) ?></div>
-            <div class="stat-label"><?= h(__('stat_orders_completed')) ?></div>
-        </div>
-        <div class="stat-item">
-            <div class="icon"><?= iconBox('dollar', 'primary') ?></div>
-            <div class="stat-value"><?= h($stats['min_price']) ?></div>
-            <div class="stat-label"><?= h(__('stat_prices_from')) ?></div>
-        </div>
-        <div class="stat-item">
-            <div class="icon"><?= iconBox('users', 'blue') ?></div>
-            <div class="stat-value"><?= h($stats['users']) ?></div>
-            <div class="stat-label"><?= h(__('stat_active_users')) ?></div>
+        <div class="stats-row">
+            <div class="stat-item">
+                <div class="icon"><?= iconBox('clock', 'orange') ?></div>
+                <div class="stat-value">0.3Sec</div>
+                <div class="stat-label"><?= h(__('stat_order_every')) ?></div>
+            </div>
+            <div class="stat-item">
+                <div class="icon"><?= iconBox('check-circle', 'green') ?></div>
+                <div class="stat-value"><?= h($stats['orders']) ?></div>
+                <div class="stat-label"><?= h(__('stat_orders_completed')) ?></div>
+            </div>
+            <div class="stat-item">
+                <div class="icon"><?= iconBox('dollar', 'primary') ?></div>
+                <div class="stat-value"><?= h($stats['min_price']) ?></div>
+                <div class="stat-label"><?= h(__('stat_prices_from')) ?></div>
+            </div>
+            <div class="stat-item">
+                <div class="icon"><?= iconBox('users', 'blue') ?></div>
+                <div class="stat-value"><?= h($stats['users']) ?></div>
+                <div class="stat-label"><?= h(__('stat_active_users')) ?></div>
+            </div>
         </div>
     </div>
 </section>
 
 <section id="faq" class="section section-surface">
-    <div class="section-label"><?= h(__('faq_label')) ?></div>
-    <h2 class="section-title"><?= h(__('faq_title')) ?></h2>
-    <div class="faq-list">
-        <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_1')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_1_a')) ?></div></div>
-        <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_2')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_2_a')) ?></div></div>
-        <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_3')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_3_a')) ?></div></div>
-        <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_4')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_4_a')) ?></div></div>
-        <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_5')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_5_a')) ?></div></div>
-        <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_6')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_6_a')) ?></div></div>
+    <div class="section-inner">
+        <div class="section-label"><?= h(__('faq_label')) ?></div>
+        <h2 class="section-title"><?= h(__('faq_title')) ?></h2>
+        <div class="faq-list">
+            <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_1')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_1_a')) ?></div></div>
+            <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_2')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_2_a')) ?></div></div>
+            <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_3')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_3_a')) ?></div></div>
+            <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_4')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_4_a')) ?></div></div>
+            <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_5')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_5_a')) ?></div></div>
+            <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_6')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_6_a')) ?></div></div>
+        </div>
     </div>
 </section>
 
 <section id="why-us" class="section">
-    <div class="section-label"><?= h(__('why_us_label')) ?></div>
-    <h2 class="section-title"><?= h(__('why_us_title')) ?></h2>
-    <div class="why-us-grid">
-        <div class="why-us-icons">
-            <div class="why-us-icon"><div class="ico"><?= iconBox('message', 'primary') ?></div><span><?= h(__('live_chat')) ?></span></div>
-            <div class="why-us-icon"><div class="ico"><?= iconBox('package', 'green') ?></div><span><?= h(__('multi_services')) ?></span></div>
-            <div class="why-us-icon"><div class="ico"><?= iconBox('clipboard', 'orange') ?></div><span><?= h(__('mass_order')) ?></span></div>
-            <div class="why-us-icon"><div class="ico"><?= iconBox('plug', 'blue') ?></div><span><?= h(__('api_integration')) ?></span></div>
-        </div>
-        <div>
-            <p class="section-desc" style="margin-bottom:24px;"><?= h(__('why_us_desc')) ?></p>
-            <a href="<?= h(register_path()) ?>" class="nav-btn" style="display:inline-block;"><?= h(__('sign_up_now')) ?> →</a>
+    <div class="section-inner">
+        <div class="section-label"><?= h(__('why_us_label')) ?></div>
+        <h2 class="section-title"><?= h(__('why_us_title')) ?></h2>
+        <div class="why-us-grid">
+            <div class="why-us-icons">
+                <div class="why-us-icon"><div class="ico"><?= iconBox('message', 'primary') ?></div><span><?= h(__('live_chat')) ?></span></div>
+                <div class="why-us-icon"><div class="ico"><?= iconBox('package', 'green') ?></div><span><?= h(__('multi_services')) ?></span></div>
+                <div class="why-us-icon"><div class="ico"><?= iconBox('clipboard', 'orange') ?></div><span><?= h(__('mass_order')) ?></span></div>
+                <div class="why-us-icon"><div class="ico"><?= iconBox('plug', 'blue') ?></div><span><?= h(__('api_integration')) ?></span></div>
+            </div>
+            <div>
+                <p class="section-desc section-desc-tight"><?= h(__('why_us_desc')) ?></p>
+                <a href="<?= h(register_path()) ?>" class="nav-btn"><?= h(__('sign_up_now')) ?> →</a>
+            </div>
         </div>
     </div>
 </section>
 
-<section class="section" style="padding-top: 0;">
-    <div class="cta-block">
-        <h2 class="section-title"><?= h(__('cta_ready')) ?></h2>
-        <p class="section-desc"><?= h(__('cta_join')) ?></p>
-        <a href="<?= h(register_path()) ?>" class="btn-cta"><?= h(__('cta_btn')) ?></a>
+<section class="section section-final-cta">
+    <div class="section-inner">
+        <div class="cta-block">
+            <h2 class="section-title"><?= h(__('cta_ready')) ?></h2>
+            <p class="section-desc"><?= h(__('cta_join')) ?></p>
+            <a href="<?= h(register_path()) ?>" class="btn-cta"><?= h(__('cta_btn')) ?></a>
+        </div>
     </div>
 </section>
 

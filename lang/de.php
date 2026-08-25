@@ -158,6 +158,7 @@ return [
     'a11y_motion' => 'Animationen reduzieren',
     'a11y_reset' => 'Alles zurücksetzen',
     'a11y_skip' => 'Zum Inhalt springen',
+    'a11y_theme' => 'Hell- / Dunkelmodus',
     'help_nav' => 'Hilfe',
     'help_title' => 'Hilfecenter',
     'help_meta_desc' => 'SMM Turk Hilfecenter — Registrierung, Krypto-Einzahlung, Bestellungen, API und Support.',
