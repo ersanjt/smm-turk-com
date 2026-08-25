@@ -177,7 +177,7 @@ $homeJsonLd = [
     </div>
 </section>
 
-<section id="services" class="section" style="background: var(--white); padding: 60px 24px;">
+<section id="services" class="section section-surface">
     <div class="section-label"><?= h(__('benefit_heading')) ?></div>
     <h2 class="section-title"><?= h(__('services_title')) ?></h2>
     <div class="three-cols">
@@ -200,11 +200,11 @@ $homeJsonLd = [
     <p style="text-align:center;margin-top:20px;"><a href="<?= h(path('pricing.php')) ?>" style="color:var(--primary);font-weight:700;"><?= h(__('view_price_list')) ?> →</a></p>
 </section>
 
-<section id="earn" class="section" style="background: linear-gradient(180deg, var(--light-warm), var(--white)); padding: 60px 24px;">
+<section id="earn" class="section section-surface-warm">
     <div class="section-label"><?= h(__('home_earn_label')) ?></div>
     <h2 class="section-title"><?= h(__('earn_hero_h1')) ?></h2>
     <p class="section-desc"><?= h(__('home_earn_desc')) ?></p>
-    <div class="benefit-grid" style="margin-top:24px;">
+    <div class="benefit-grid earn-preview-grid">
         <div class="benefit-card">
             <div class="benefit-icon"><?= iconBox('server', 'primary') ?></div>
             <div><h3><?= h(__('home_earn_child_t')) ?></h3><p><?= h(__('home_earn_child_d')) ?></p></div>
@@ -218,10 +218,9 @@ $homeJsonLd = [
             <div><h3><?= h(__('home_earn_api_t')) ?></h3><p><?= h(__('home_earn_api_d')) ?></p></div>
         </div>
     </div>
-    <p style="text-align:center;margin-top:28px;">
+    <p class="section-actions">
         <a href="<?= h(path('earn.php')) ?>" class="btn-cta"><?= h(__('home_earn_learn')) ?> →</a>
-        &nbsp;
-        <a href="<?= h(path('pricing.php')) ?>" class="btn-cta-outline" style="display:inline-block;padding:14px 28px;border:2px solid var(--primary);color:var(--primary);border-radius:12px;font-weight:700;text-decoration:none;"><?= h(__('earn_view_prices')) ?></a>
+        <a href="<?= h(path('pricing.php')) ?>" class="btn-cta-outline"><?= h(__('earn_view_prices')) ?></a>
     </p>
 </section>
 
@@ -256,7 +255,7 @@ $homeJsonLd = [
     </div>
 </section>
 
-<section id="faq" class="section" style="background: var(--white);">
+<section id="faq" class="section section-surface">
     <div class="section-label"><?= h(__('faq_label')) ?></div>
     <h2 class="section-title"><?= h(__('faq_title')) ?></h2>
     <div class="faq-list">

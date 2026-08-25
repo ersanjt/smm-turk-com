@@ -7,10 +7,11 @@
   background:linear-gradient(135deg,rgba(227,10,23,.12),rgba(227,10,23,.04));
   color:var(--primary);border:1px solid rgba(227,10,23,.12);
   box-shadow:0 4px 16px rgba(227,10,23,.08);
+  line-height:0;padding:0;box-sizing:border-box;
   transition:transform var(--motion-duration,.35s) var(--ease-spring,cubic-bezier(.34,1.56,.64,1)),
              box-shadow var(--motion-duration,.35s) ease;
 }
-.icon-box svg{width:22px;height:22px}
+.icon-box svg{width:22px;height:22px;display:block;margin:0;flex-shrink:0}
 .icon-box-sm{width:40px;height:40px;border-radius:12px}
 .icon-box-sm svg{width:18px;height:18px}
 .icon-box-lg{width:56px;height:56px;border-radius:16px}
@@ -139,9 +140,11 @@
 /* Do not use display:none here — landing.css stacks icons with opacity + absolute centering */
 .benefit-icon,.feature-block .icon,.why-us-icon .ico,.stat-item .icon{
   font-size:0!important;line-height:0;
+  display:flex;align-items:center;justify-content:center;
 }
 .benefit-icon .icon-box,.feature-block .icon .icon-box,.why-us-icon .ico .icon-box,.stat-item .icon .icon-box{
   width:58px;height:58px;border-radius:18px;
+  display:inline-flex;align-items:center;justify-content:center;
 }
 .benefit-card{
   transition:transform .3s var(--ease-spring,cubic-bezier(.34,1.56,.64,1)),box-shadow .3s ease;
