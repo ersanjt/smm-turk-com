@@ -30,20 +30,35 @@ body.theme-dark [tabindex]:focus-visible {
 .help-cta-btn,
 .mob-footer-btn,
 .nav-toggle,
-.nav-theme-toggle,
 .nav-lang-btn,
 .blog-search button,
 .blog-newsletter-form button {
   min-height: 46px;
 }
+/* Theme toggle stays a square — do not stretch into a tall oval */
+.nav-theme-toggle {
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0 !important;
+}
 
 /* ---- Respect the OS "reduce motion" preference ---- */
+/* Use animation:none (not tiny duration). Tiny duration + fill-mode:both + delay
+   can leave hero text at opacity:0 for hundreds of ms (or longer). */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
-    animation-duration: .001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .001ms !important;
+    animation: none !important;
+    transition: none !important;
     scroll-behavior: auto !important;
+  }
+  .hero-copy .hero-badge,
+  .hero-copy h1,
+  .hero-copy .hero-desc,
+  .hero-form-box {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 
@@ -51,10 +66,16 @@ body.theme-dark [tabindex]:focus-visible {
 html.a11y-reduce-motion *,
 html.a11y-reduce-motion *::before,
 html.a11y-reduce-motion *::after {
-  animation-duration: .001ms !important;
-  animation-iteration-count: 1 !important;
-  transition-duration: .001ms !important;
+  animation: none !important;
+  transition: none !important;
   scroll-behavior: auto !important;
+}
+html.a11y-reduce-motion .hero-copy .hero-badge,
+html.a11y-reduce-motion .hero-copy h1,
+html.a11y-reduce-motion .hero-copy .hero-desc,
+html.a11y-reduce-motion .hero-form-box {
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 /* ---- High-contrast mode (boost muted text, borders, underline links) ---- */

@@ -65,7 +65,7 @@
         a { text-decoration: none; color: inherit; }
         [id] { scroll-margin-top: 80px; }
 
-        /* â€”â€”â€” Header (Landing) â€”â€”â€” */
+        /* ----- Header (Landing) ----- */
         .nav {
             position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
             background: linear-gradient(180deg, rgba(255,255,255,.99) 0%, rgba(255,252,253,.97) 100%);
@@ -180,10 +180,13 @@
         .nav-mobile-theme {
             display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 12px;
             border: 1px solid rgba(227,10,23,.14); background: var(--white); font-size: 13px; font-weight: 600; color: var(--dark); cursor: pointer;
+            position: relative;
         }
-        .nav-mobile-theme .theme-icon-dark { opacity: 0; }
-        body.theme-dark .nav-mobile-theme .theme-icon-light { opacity: 0; }
-        body.theme-dark .nav-mobile-theme .theme-icon-dark { opacity: .9; }
+        .nav-mobile-theme .theme-icon { display: inline-flex; align-items: center; justify-content: center; line-height: 0; }
+        .nav-mobile-theme .theme-icon svg { display: block; width: 18px; height: 18px; }
+        .nav-mobile-theme .theme-icon-dark { display: none; }
+        body.theme-dark .nav-mobile-theme .theme-icon-light { display: none; }
+        body.theme-dark .nav-mobile-theme .theme-icon-dark { display: inline-flex; }
         .nav-mobile-langs { display: flex; gap: 6px; flex-wrap: wrap; }
         .nav-mobile-lang {
             min-width: 44px; min-height: 40px; padding: 0 12px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center;
@@ -236,27 +239,31 @@
         .nav-btn:hover { background: linear-gradient(145deg, var(--primary-dark), #9a0610); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(227, 10, 23, .4), 0 1px 0 rgba(255,255,255,.1) inset; }
         .nav-btn:active { transform: translateY(0); }
 
-        /* Theme toggle — single centered icon in the box */
+        /* Theme toggle — square control, icon dead-center */
         .nav-theme-toggle {
-            width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid var(--border);
+            width: 44px; height: 44px; min-width: 44px; min-height: 44px;
+            border-radius: 12px; border: 1.5px solid var(--border);
             background: var(--light); cursor: pointer; position: relative;
             display: inline-flex; align-items: center; justify-content: center;
-            padding: 0; flex-shrink: 0; line-height: 0;
+            padding: 0 !important; flex-shrink: 0; line-height: 0;
             box-shadow: 0 1px 3px rgba(0,0,0,.06); transition: border-color .2s, background .2s;
+            box-sizing: border-box;
         }
         .nav-theme-toggle:hover { border-color: var(--primary); background: rgba(227,10,23,.08); }
         .nav-theme-toggle .theme-icon {
             position: absolute; inset: 0;
-            display: flex; align-items: center; justify-content: center;
+            display: flex !important; align-items: center; justify-content: center;
             margin: 0; padding: 0; line-height: 0;
             opacity: 0; pointer-events: none; transition: opacity .2s;
         }
-        .nav-theme-toggle .theme-icon svg { display: block; width: 18px; height: 18px; }
-        .nav-theme-toggle .theme-icon-light { opacity: .9; }
+        .nav-theme-toggle .theme-icon svg {
+            display: block; width: 18px; height: 18px; flex-shrink: 0;
+        }
+        .nav-theme-toggle .theme-icon-light { opacity: .95; }
         .nav-theme-toggle .theme-icon-dark { opacity: 0; }
         body.theme-dark .nav-theme-toggle { background: var(--dark2); border-color: rgba(255,255,255,.15); }
         body.theme-dark .nav-theme-toggle .theme-icon-light { opacity: 0; }
-        body.theme-dark .nav-theme-toggle .theme-icon-dark { opacity: .95; }
+        body.theme-dark .nav-theme-toggle .theme-icon-dark { opacity: 1; }
         .nav-lang-compact { margin-left: 4px; }
 
         /* Mobile footer bar - fixed bottom CTA (only on landing, mobile) */
@@ -671,7 +678,10 @@
             .nav-inner { gap: 6px; }
         }
         @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+            *, *::before, *::after { animation: none !important; transition: none !important; }
             .cta-block .btn-cta, .nav::after, .hero::before, .hero-orb { animation: none !important; }
             .stat-item:hover { animation: none !important; }
+            .hero-copy .hero-badge, .hero-copy h1, .hero-copy .hero-desc, .hero-form-box {
+                opacity: 1 !important; transform: none !important;
+            }
         }

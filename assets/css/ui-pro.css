@@ -136,7 +136,7 @@
 .nav-theme-toggle .theme-icon svg{width:18px;height:18px;display:block}
 .nav-theme-toggle .theme-icon-light svg{color:#f59e0b}
 .nav-theme-toggle .theme-icon-dark svg{color:#a78bfa}
-/* Visibility handled in landing.css via opacity + absolute stacking (keeps icon centered) */
+/* Do not use display:none here — landing.css stacks icons with opacity + absolute centering */
 .benefit-icon,.feature-block .icon,.why-us-icon .ico,.stat-item .icon{
   font-size:0!important;line-height:0;
 }

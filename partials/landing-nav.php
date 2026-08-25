@@ -43,7 +43,7 @@ $ctaLabel = $registrationEnabled ? __('nav_sign_up') : __('nav_sign_in');
         </nav>
 
         <div class="nav-actions">
-            <button type="button" class="nav-theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+            <button type="button" class="nav-theme-toggle" id="themeToggle" aria-label="<?= h(__('a11y_theme') ?: 'Toggle theme') ?>" title="<?= h(__('a11y_theme') ?: 'Toggle theme') ?>">
                 <span class="theme-icon theme-icon-light" aria-hidden="true"><?= icon('sun', 18) ?></span>
                 <span class="theme-icon theme-icon-dark" aria-hidden="true"><?= icon('moon', 18) ?></span>
             </button>
