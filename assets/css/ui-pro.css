@@ -133,12 +133,10 @@
 .price-box{box-shadow:0 8px 28px rgba(227,10,23,.25);border:1px solid rgba(255,255,255,.15)}
 .order-toolbar{box-shadow:0 2px 12px rgba(26,10,14,.03)}
 
-.nav-theme-toggle .theme-icon svg{width:18px;height:18px}
+.nav-theme-toggle .theme-icon svg{width:18px;height:18px;display:block}
 .nav-theme-toggle .theme-icon-light svg{color:#f59e0b}
 .nav-theme-toggle .theme-icon-dark svg{color:#a78bfa}
-body.theme-dark .nav-theme-toggle .theme-icon-light{display:none}
-body.theme-dark .nav-theme-toggle .theme-icon-dark{display:inline-flex}
-.nav-theme-toggle .theme-icon-dark{display:none}
+/* Visibility handled in landing.css via opacity + absolute stacking (keeps icon centered) */
 .benefit-icon,.feature-block .icon,.why-us-icon .ico,.stat-item .icon{
   font-size:0!important;line-height:0;
 }
