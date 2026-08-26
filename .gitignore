@@ -13,6 +13,15 @@ SMM_Panel*.zip
 # Nested duplicate trees (do not ship)
 cloudflaremanagers.com/
 
+# Android app build output
+android-app/branding-tmp/
+android-app/local.properties
+android-app/.gradle/
+android-app/build/
+android-app/app/build/
+android-app/.idea/
+android-app/*.iml
+
 # IDE / Editor
 .idea/
 .vscode/

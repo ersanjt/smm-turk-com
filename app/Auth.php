@@ -169,6 +169,142 @@ class Auth {
         return $this->finalizeLogin($user);
     }
 
+    /**
+     * Email/username + password for the mobile app. Does not create a web session.
+     *
+     * @return array{success:bool,needs_2fa?:bool,error?:string,user?:array,api_key?:string}
+     */
+    public function authenticateForMobile(string $email_or_username, string $password, string $totpCode = ''): array {
+        $email_or_username = trim($email_or_username);
+        $loginEmail = str_contains($email_or_username, '@') ? strtolower($email_or_username) : $email_or_username;
+        $user = $this->db->fetch(
+            "SELECT * FROM users WHERE (LOWER(email) = ? OR username = ?) AND status != 'banned'",
+            [$loginEmail, $email_or_username]
+        );
+
+        if (!$user || !password_verify($password, $user['password'])) {
+            return ['success' => false, 'error' => 'Invalid credentials'];
+        }
+        if (($user['status'] ?? 'active') === 'pending') {
+            return ['success' => false, 'error' => 'Please verify your email first. Check your inbox and click the activation link.'];
+        }
+
+        if ($this->userNeedsTwoFactor($user)) {
+            $code = preg_replace('/\s+/', '', trim($totpCode));
+            if ($code === '') {
+                return ['success' => false, 'needs_2fa' => true, 'error' => 'Two-factor code required'];
+            }
+            if (!Totp::verify($user['two_factor_secret'], $code)) {
+                return ['success' => false, 'needs_2fa' => true, 'error' => 'Invalid authentication code. Try again.'];
+            }
+        }
+
+        $apiKey = trim((string)($user['api_key'] ?? ''));
+        if ($apiKey === '') {
+            $apiKey = bin2hex(random_bytes(20));
+            $this->db->execute("UPDATE users SET api_key = ? WHERE id = ?", [$apiKey, $user['id']]);
+        }
+        $this->db->execute("UPDATE users SET last_login = NOW() WHERE id = ?", [$user['id']]);
+
+        return [
+            'success' => true,
+            'api_key' => $apiKey,
+            'user' => $this->mobileUserPayload($user, $apiKey),
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $user
+     * @return array<string, mixed>
+     */
+    public function mobileUserPayload(array $user, string $apiKey = ''): array {
+        $key = $apiKey !== '' ? $apiKey : (string)($user['api_key'] ?? '');
+        return [
+            'id' => (int)$user['id'],
+            'username' => (string)($user['username'] ?? ''),
+            'email' => (string)($user['email'] ?? ''),
+            'balance' => number_format((float)($user['balance'] ?? 0), 5, '.', ''),
+            'currency' => 'USD',
+            'role' => (string)($user['role'] ?? 'user'),
+            'api_key' => $key,
+        ];
+    }
+
+    /**
+     * @return array{success:bool,error?:string,api_key?:string,user?:array,needs_2fa?:bool}
+     */
+    public function payloadForMobileUserId(int $userId): array {
+        $user = $this->db->fetch("SELECT * FROM users WHERE id = ? AND status = 'active'", [$userId]);
+        if (!$user) {
+            return ['success' => false, 'error' => 'Account not found'];
+        }
+        $apiKey = trim((string)($user['api_key'] ?? ''));
+        if ($apiKey === '') {
+            $apiKey = bin2hex(random_bytes(20));
+            $this->db->execute("UPDATE users SET api_key = ? WHERE id = ?", [$apiKey, $userId]);
+        }
+        return [
+            'success' => true,
+            'api_key' => $apiKey,
+            'user' => $this->mobileUserPayload($user, $apiKey),
+        ];
+    }
+
+    /**
+     * Verify a Google ID token (Android native / Credential Manager) then login or register.
+     *
+     * @return array{success:bool,error?:string,needs_2fa?:bool,api_key?:string,user?:array}
+     */
+    public function authenticateGoogleIdToken(string $idToken, string $totpCode = ''): array {
+        $idToken = trim($idToken);
+        if ($idToken === '') {
+            return ['success' => false, 'error' => 'Missing Google token'];
+        }
+        $clientId = defined('GOOGLE_CLIENT_ID') ? trim((string)GOOGLE_CLIENT_ID) : '';
+        if ($clientId === '') {
+            return ['success' => false, 'error' => 'Google Sign-In is not configured.'];
+        }
+        $url = 'https://oauth2.googleapis.com/tokeninfo?id_token=' . rawurlencode($idToken);
+        $json = @file_get_contents($url);
+        if ($json === false) {
+            return ['success' => false, 'error' => 'Could not verify Google token.'];
+        }
+        $info = json_decode($json, true);
+        if (!is_array($info)) {
+            return ['success' => false, 'error' => 'Invalid response from Google.'];
+        }
+        $aud = (string)($info['aud'] ?? '');
+        if ($aud !== $clientId) {
+            return ['success' => false, 'error' => 'Google token audience mismatch.'];
+        }
+        if (isset($info['email_verified']) && !in_array($info['email_verified'], [true, 'true', '1', 1], true)) {
+            return ['success' => false, 'error' => 'Google email is not verified.'];
+        }
+        $googleId = trim((string)($info['sub'] ?? ''));
+        $email = trim((string)($info['email'] ?? ''));
+        $name = trim((string)($info['name'] ?? $info['given_name'] ?? 'User'));
+        $result = $this->loginOrCreateFromGoogle($googleId, $email, $name);
+        if (empty($result['success'])) {
+            return $result;
+        }
+        if (!empty($result['needs_2fa'])) {
+            $pendingId = (int)($_SESSION['pending_2fa_user_id'] ?? 0);
+            if ($totpCode !== '' && $pendingId > 0) {
+                $done = $this->completeTwoFactorLogin($totpCode);
+                if (empty($done['success'])) {
+                    return ['success' => false, 'needs_2fa' => true, 'error' => $done['error'] ?? 'Invalid authentication code.'];
+                }
+            } else {
+                return ['success' => false, 'needs_2fa' => true, 'error' => 'Two-factor code required'];
+            }
+        }
+        $userId = $this->getUserId();
+        if ($userId <= 0) {
+            return ['success' => false, 'error' => 'Login failed.'];
+        }
+        return $this->payloadForMobileUserId($userId);
+    }
+
     public function hasPendingTwoFactor(): bool {
         if (empty($_SESSION['pending_2fa_user_id'])) {
             return false;

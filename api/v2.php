@@ -241,6 +241,42 @@ switch ($action) {
         ]);
         break;
 
+    case 'orders':
+        $status = trim((string)($_POST['status'] ?? ''));
+        $allowed = ['', 'Pending', 'Processing', 'In progress', 'Completed', 'Partial', 'Cancelled', 'Refunded'];
+        if (!in_array($status, $allowed, true)) {
+            $status = '';
+        }
+        $page = max(1, (int)($_POST['page'] ?? 1));
+        $limit = min(50, max(1, (int)($_POST['limit'] ?? 20)));
+        $offset = ($page - 1) * $limit;
+        $rows = $om->getUserOrders((int)$user['id'], $status, $limit, $offset);
+        $total = $om->getUserOrderCount((int)$user['id'], $status);
+        $out = [];
+        foreach ($rows as $row) {
+            $out[] = [
+                'id' => (int)$row['id'],
+                'service_id' => (int)($row['service_id'] ?? 0),
+                'service' => (string)($row['service_name'] ?? ''),
+                'category' => (string)($row['category'] ?? ''),
+                'link' => (string)($row['link'] ?? ''),
+                'quantity' => (int)($row['quantity'] ?? 0),
+                'charge' => number_format((float)($row['charge'] ?? 0), 5, '.', ''),
+                'status' => (string)($row['status'] ?? ''),
+                'start_count' => (string)($row['start_count'] ?? '0'),
+                'remains' => (string)($row['remains'] ?? '0'),
+                'created_at' => (string)($row['created_at'] ?? ''),
+                'currency' => 'USD',
+            ];
+        }
+        echo json_encode([
+            'page' => $page,
+            'limit' => $limit,
+            'total' => $total,
+            'orders' => $out,
+        ]);
+        break;
+
     case 'cancel':
         $ids = array_map('intval', explode(',', $_POST['orders'] ?? ''));
         $out = [];

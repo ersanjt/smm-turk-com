@@ -5,6 +5,9 @@
 require_once __DIR__ . '/app/init.php';
 
 if ($auth->isLoggedIn()) {
+    if (MobileAuth::isRequested()) {
+        MobileAuth::redirectToApp($auth->getUserId());
+    }
     redirect(url('dashboard.php'));
 }
 
@@ -13,8 +16,15 @@ $siteUrl = defined('SITE_URL') ? rtrim(SITE_URL, '/') : '';
 $redirectUri = url('login-google-callback.php');
 
 if ($clientId === '' || $siteUrl === '') {
+    if (MobileAuth::isRequested()) {
+        MobileAuth::redirectError('Google Sign-In is not configured.');
+    }
     flash('error', 'Google Sign-In is not configured.');
     redirect(url('login.php'));
+}
+
+if (MobileAuth::isRequested()) {
+    MobileAuth::markFlow();
 }
 
 $state = bin2hex(random_bytes(16));

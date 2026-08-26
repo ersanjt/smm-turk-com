@@ -5,6 +5,9 @@
 require_once __DIR__ . '/app/init.php';
 
 if ($auth->isLoggedIn()) {
+    if (MobileAuth::inFlow()) {
+        MobileAuth::redirectToApp($auth->getUserId());
+    }
     redirect(url('dashboard.php'));
 }
 
@@ -70,6 +73,9 @@ if ($clientId === '' || $clientSecret === '' || $siteUrl === '') {
                     if (!empty($result['needs_2fa'])) {
                         redirect(url('login-2fa.php'));
                     }
+                    if (MobileAuth::inFlow()) {
+                        MobileAuth::redirectToApp($auth->getUserId());
+                    }
                     redirect($auth->postLoginRedirectUrl($result));
                 }
                 $error = $result['error'] ?? 'Login failed.';
@@ -79,4 +85,7 @@ if ($clientId === '' || $clientSecret === '' || $siteUrl === '') {
 }
 
 $_SESSION['flash'] = ['type' => 'error', 'message' => $error];
+if (MobileAuth::inFlow()) {
+    MobileAuth::redirectError($error);
+}
 redirect(url('login.php'));
