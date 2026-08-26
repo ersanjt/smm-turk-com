@@ -97,10 +97,13 @@ foreach ($jsonLdExtra as $block) {
     <link rel="manifest" href="<?= h(path('manifest.php')) ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="<?= h(asset_url('assets/css/landing.css')) ?>">
-    <link rel="stylesheet" href="<?= h(asset_url('assets/css/ui-pro.css')) ?>">
+    <link rel="preload" href="<?= h(asset_url('assets/css/ui-pro.css')) ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <link rel="stylesheet" href="<?= h(asset_url('assets/css/blog.css')) ?>">
+    <noscript><link rel="stylesheet" href="<?= h(asset_url('assets/css/ui-pro.css')) ?>"></noscript>
     <script type="application/ld+json"><?= Seo::jsonLd($schemaGraph) ?></script>
     <?php if (!empty($extraStyles)): ?><style><?= $extraStyles ?></style><?php endif; ?>
     <?php if (!empty($extraCssHref)): ?><link rel="stylesheet" href="<?= h($extraCssHref) ?>"><?php endif; ?>

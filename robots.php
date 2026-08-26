@@ -37,5 +37,6 @@ echo "Disallow: /payment-\n";
 echo "Disallow: /cron-\n";
 echo "Disallow: /logout\n";
 echo "Disallow: /404\n";
-echo "Disallow: /*?*q=\n\n";
+echo "Disallow: /*?*q=\n";
+echo "Allow: /llms.txt\n\n";
 echo "Sitemap: " . $base . "/sitemap.xml\n";

@@ -29,7 +29,7 @@ $ctaLabel = $registrationEnabled ? __('nav_sign_up') : __('nav_sign_in');
 <header class="nav" role="banner">
     <div class="nav-inner">
         <a href="<?= h(home_path()) ?>" class="nav-logo" aria-label="<?= h($siteName) ?> Home">
-            <span class="nav-logo-icon"><img src="<?= h(logo_url()) ?>" alt="<?= h($siteName) ?>" width="44" height="44" fetchpriority="high"></span>
+            <span class="nav-logo-icon"><img src="<?= h(logo_url()) ?>" alt="" width="44" height="44" decoding="async" fetchpriority="high"></span>
             <span class="nav-logo-copy">
                 <span class="nav-logo-text"><?= site_name_logo_html() ?></span>
                 <span class="nav-logo-tag">SMM Panel</span>
@@ -70,12 +70,12 @@ $ctaLabel = $registrationEnabled ? __('nav_sign_up') : __('nav_sign_in');
         </button>
     </div>
 
-    <div class="nav-mobile" id="navMobilePanel" aria-hidden="true">
+    <div class="nav-mobile" id="navMobilePanel" aria-hidden="true" inert>
         <button type="button" class="nav-mobile-backdrop" id="navBackdrop" aria-label="Close menu" tabindex="-1"></button>
         <div class="nav-mobile-sheet" role="dialog" aria-modal="true" aria-label="<?= h(__('footer_quick_links') ?: 'Menu') ?>">
             <div class="nav-mobile-head">
                 <a href="<?= h(home_path()) ?>" class="nav-mobile-brand">
-                    <img src="<?= h(logo_url()) ?>" alt="<?= h($siteName) ?>" width="36" height="36">
+                    <img src="<?= h(logo_url()) ?>" alt="" width="36" height="36" decoding="async">
                     <span>SMM <strong>TURK</strong></span>
                 </a>
                 <button type="button" class="nav-mobile-close" id="navClose" aria-label="Close menu">

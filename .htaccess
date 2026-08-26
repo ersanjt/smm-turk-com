@@ -30,6 +30,12 @@ ErrorDocument 404 /404.php
   ExpiresByType image/jpeg "access plus 1 year"
   ExpiresByType image/webp "access plus 1 year"
   ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+<IfModule mod_headers.c>
+  <FilesMatch "\.(?i:css|js|png|jpe?g|webp|svg|woff2|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
 </IfModule>
 
 # SMM Turk - Clean URLs (no .php in browser) + API rewrite
@@ -46,9 +52,10 @@ RewriteRule ^ - [L]
 # API and referral
 RewriteRule ^api/v2$ api/v2.php [L,QSA]
 RewriteRule ^c/([a-zA-Z0-9_-]+)/?$ c.php?ref=$1 [L,QSA]
-# Sitemap & robots
+# Sitemap, robots, llms.txt
 RewriteRule ^sitemap\.xml$ sitemap.php [L]
 RewriteRule ^robots\.txt$ robots.php [L]
+RewriteRule ^llms\.txt$ llms.php [L]
 # Blog: /blog -> blog.php, /blog/slug -> blog-post.php?slug=slug
 RewriteRule ^blog/?$ blog.php [L,QSA]
 RewriteRule ^blog/([a-zA-Z0-9\-]+)/?$ blog-post.php?slug=$1 [L,QSA]

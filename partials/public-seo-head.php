@@ -54,10 +54,16 @@ $hreflangBase = Seo::stripLangParam($baseCanonical);
     <?php endif; ?>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="<?= h(asset_url('assets/css/landing.css')) ?>">
+    <link rel="preload" href="<?= h(asset_url('assets/css/pricing-public.css')) ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="<?= h(asset_url('assets/css/ui-pro.css')) ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
     <link rel="stylesheet" href="<?= h(asset_url('assets/css/pricing-public.css')) ?>">
     <link rel="stylesheet" href="<?= h(asset_url('assets/css/ui-pro.css')) ?>">
+    </noscript>
     <?php foreach ($extraCssHrefs as $cssHref): ?>
     <link rel="stylesheet" href="<?= h($cssHref) ?>">
     <?php endforeach; ?>

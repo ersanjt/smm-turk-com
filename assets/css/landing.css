@@ -83,9 +83,8 @@
         .nav::after {
             content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
             background: linear-gradient(90deg, transparent 0%, var(--primary) 20%, var(--primary-dark) 50%, var(--primary) 80%, transparent 100%);
-            background-size: 200% 100%;
             opacity: 0.85;
-            animation: navLineShine 8s ease-in-out infinite;
+            /* Avoid non-composited background-position animation (hurts mobile Lighthouse) */
         }
         .nav-inner {
             max-width: 1280px; margin: 0 auto;
@@ -289,7 +288,6 @@
                         radial-gradient(ellipse 70% 60% at 85% 70%, rgba(230,57,80,.08), transparent 50%),
                         radial-gradient(circle at 50% 100%, rgba(255,245,246,.9), transparent 40%);
             pointer-events: none;
-            animation: gradientShift 12s ease-in-out infinite;
         }
         .hero::after {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -715,6 +713,10 @@
                 padding-right: max(20px, env(safe-area-inset-right));
             }
             .footer-mobile .footer-copy { font-size: 12px; color: rgba(255,255,255,.45); padding: 0 8px; }
+        }
+        @media (max-width: 768px) {
+            .hero-orb { display: none; }
+            .cta-block .btn-cta { animation: none; }
         }
         @media (max-width: 640px) {
             body.has-promo { --promo-bar-h: 72px; }
