@@ -78,6 +78,13 @@ class Mail
         $footer = htmlspecialchars(MailLocale::t('footer_auto', $lang), ENT_QUOTES, 'UTF-8');
         $enNote = MailLocale::t('footer_en_note', $lang);
         $enLine = $enNote !== '' ? '<br><span style="color:#aaa;">' . htmlspecialchars($enNote, ENT_QUOTES, 'UTF-8') . '</span>' : '';
+        $logoSrc = function_exists('logo_png_url') ? logo_png_url() : '';
+        if ($logoSrc !== '' && !preg_match('#^https?://#i', $logoSrc) && class_exists('Seo')) {
+            $logoSrc = Seo::absoluteUrl($logoSrc);
+        }
+        $logoHtml = $logoSrc !== ''
+            ? '<img src="' . htmlspecialchars($logoSrc, ENT_QUOTES, 'UTF-8') . '" width="36" height="36" alt="" style="width:36px;height:36px;border-radius:10px;vertical-align:middle;margin-right:10px;">'
+            : '';
 
         return '<!DOCTYPE html><html lang="' . $lang . '"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
             . '<title>' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '</title></head>'
@@ -85,7 +92,8 @@ class Mail
             . '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f2f5;padding:28px 12px;"><tr><td align="center">'
             . '<table width="100%" style="max-width:560px;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;box-shadow:0 2px 8px rgba(0,0,0,.06);">'
             . '<tr><td style="background:#E30A17;padding:20px 24px;">'
-            . '<a href="' . $home . '" style="color:#fff;font-size:20px;font-weight:bold;text-decoration:none;">' . $siteName . '</a></td></tr>'
+            . '<a href="' . $home . '" style="color:#fff;font-size:20px;font-weight:bold;text-decoration:none;display:inline-flex;align-items:center;">'
+            . $logoHtml . $siteName . '</a></td></tr>'
             . '<tr><td style="padding:28px 24px;color:#1f2937;font-size:15px;line-height:1.65;">' . $innerHtml . '</td></tr>'
             . '<tr><td style="padding:16px 24px;background:#f9fafb;color:#9ca3af;font-size:11px;border-top:1px solid #e5e7eb;line-height:1.5;">'
             . '© ' . $year . ' ' . $siteName . '. ' . $footer . $enLine

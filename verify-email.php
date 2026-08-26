@@ -100,7 +100,7 @@ $siteName = function_exists('site_name') ? site_name() : (defined('SITE_NAME') ?
 body{font-family:'Plus Jakarta Sans',sans-serif;background:linear-gradient(135deg,#1a0a0e 0%,#2d1519 50%,#1a0a0e 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
 .box{background:#fff;border-radius:24px;padding:40px;width:100%;max-width:420px;box-shadow:0 24px 80px rgba(0,0,0,.25);text-align:center}
 .box-logo{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;margin-bottom:20px}
-.box-logo img{width:48px;height:48px;border-radius:12px;flex-shrink:0;object-fit:contain}
+.box-logo img{width:48px;height:48px;border-radius:12px;flex-shrink:0;object-fit:cover}
 .box-logo .logo{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#1a0a0e;letter-spacing:-.04em;line-height:1.1;text-transform:uppercase}
 .box-logo .logo span{color:#E30A17;letter-spacing:-.02em}
 .msg{padding:14px;border-radius:12px;font-size:14px;margin-bottom:20px;text-align:left;line-height:1.5}

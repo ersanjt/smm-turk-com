@@ -146,7 +146,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 .auth-back{display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;transition:color .2s}
 .auth-back:hover{color:var(--primary)}
 .auth-logo{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;margin-bottom:6px}
-.auth-logo img{width:52px;height:52px;border-radius:12px;flex-shrink:0;object-fit:contain}
+.auth-logo img{width:52px;height:52px;border-radius:12px;flex-shrink:0;object-fit:cover}
 .auth-logo .logo{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--dark);letter-spacing:-.04em;line-height:1.1;text-transform:uppercase}
 .auth-logo .logo span{color:var(--primary);letter-spacing:-.02em}
 .tagline{text-align:center;color:var(--muted);font-size:14px;margin-bottom:28px;font-weight:500}

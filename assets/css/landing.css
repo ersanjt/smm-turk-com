@@ -111,7 +111,7 @@
         }
         .nav-logo:hover .nav-logo-icon { transform: scale(1.06); box-shadow: 0 6px 20px rgba(227, 10, 23, .35); }
         .nav-logo:hover .nav-logo-icon::after { transform: translateX(100%); }
-        .nav-logo img { width: 44px; height: 44px; object-fit: contain; display: block; }
+        .nav-logo img { width: 44px; height: 44px; object-fit: cover; display: block; border-radius: 12px; }
         .nav-logo-text { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; text-transform: uppercase; white-space: nowrap; }
         .nav-logo-text span { color: var(--primary); }
         .nav-logo-tag { font-size: 9px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase; color: var(--muted); font-family: 'Plus Jakarta Sans', sans-serif; white-space: nowrap; }
@@ -487,7 +487,7 @@
             display: inline-flex; align-items: center; gap: 12px; margin: 0 auto 20px;
             text-decoration: none; color: #fff;
         }
-        .footer-mobile-brand img { width: 40px; height: 40px; border-radius: 12px; box-shadow: 0 4px 14px rgba(227,10,23,.25); }
+        .footer-mobile-brand img { width: 40px; height: 40px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 14px rgba(227,10,23,.25); }
         .footer-mobile-name { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; letter-spacing: -.03em; text-transform: uppercase; }
         .footer-mobile-name span { color: var(--primary); }
         .footer-mobile-title {

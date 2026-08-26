@@ -63,6 +63,7 @@
   height: 36px;
   border-radius: 11px;
   flex-shrink: 0;
+  object-fit: cover;
   box-shadow: 0 4px 12px rgba(227, 10, 23, 0.2);
 }
 .mob-header-brand-text {

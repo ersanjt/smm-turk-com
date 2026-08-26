@@ -317,17 +317,8 @@ function asset_url(string $path): string {
     return $url . (str_contains($url, '?') ? '&' : '?') . 'v=' . $ver;
 }
 
-/** Logo / favicon URL with cache busting. Prefer the original glossy PNG mark. */
-function logo_url(): string {
-    if (class_exists('Database')) {
-        $custom = trim((string) (Database::getInstance()->getSetting('site_logo') ?? ''));
-        if ($custom !== '') {
-            if (preg_match('#^https?://#i', $custom)) {
-                return $custom;
-            }
-            return asset_url(ltrim($custom, '/'));
-        }
-    }
+/** Bundled SMM Turk mark (crescent, star, growth bars). */
+function default_brand_mark_url(): string {
     $png = __DIR__ . '/../assets/img/logo-icon.png';
     if (is_file($png)) {
         return asset_url('assets/img/logo-icon.png');
@@ -335,15 +326,43 @@ function logo_url(): string {
     return asset_url('assets/img/logo-icon.svg');
 }
 
-/** Favicon URL — custom path in settings or default logo. */
+/** True when a settings path still points at the built-in brand files. */
+function is_bundled_brand_path(string $path): bool {
+    $clean = strtolower(trim($path));
+    $clean = preg_replace('#^https?://[^/]+/#', '', $clean) ?? $clean;
+    $clean = ltrim(str_replace('\\', '/', $clean), '/');
+    $clean = preg_replace('#\?.*$#', '', $clean) ?? $clean;
+    return (bool) preg_match('#^(assets/img/)?(logo-icon|logo-192|logo-512|og-cover|favicon)(\.(svg|png|ico))?$#', $clean);
+}
+
+function resolve_brand_asset_url(string $custom): string {
+    $custom = trim($custom);
+    if ($custom === '' || is_bundled_brand_path($custom)) {
+        return default_brand_mark_url();
+    }
+    if (preg_match('#^https?://#i', $custom)) {
+        return $custom;
+    }
+    return asset_url(ltrim($custom, '/'));
+}
+
+/** Logo URL. Main site always uses the original mark; child panels may override. */
+function logo_url(): string {
+    if (is_child_panel() && class_exists('Database')) {
+        $custom = trim((string) (Database::getInstance()->getSetting('site_logo') ?? ''));
+        if ($custom !== '') {
+            return resolve_brand_asset_url($custom);
+        }
+    }
+    return default_brand_mark_url();
+}
+
+/** Favicon URL — original mark on the main site. */
 function favicon_url(): string {
-    if (class_exists('Database')) {
+    if (is_child_panel() && class_exists('Database')) {
         $custom = trim((string) (Database::getInstance()->getSetting('site_favicon') ?? ''));
         if ($custom !== '') {
-            if (preg_match('#^https?://#i', $custom)) {
-                return $custom;
-            }
-            return asset_url(ltrim($custom, '/'));
+            return resolve_brand_asset_url($custom);
         }
     }
     return logo_url();

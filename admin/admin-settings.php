@@ -76,12 +76,12 @@ require_once __DIR__ . '/../layouts/header.php';
       <div class="grid2">
         <div class="form-group">
           <label class="form-label">Logo path</label>
-          <input type="text" name="site_logo" class="form-control" value="<?= s($settings,'site_logo') ?>" placeholder="assets/img/logo-icon.svg">
-          <p style="font-size:11px;color:var(--text-muted);margin-top:6px;">Relative path or full URL. Upload via File Manager, then paste path here.</p>
+          <input type="text" name="site_logo" class="form-control" value="<?= s($settings,'site_logo') ?>" placeholder="assets/img/logo-icon.png">
+          <p style="font-size:11px;color:var(--text-muted);margin-top:6px;">Leave empty on the main site to use the original SMM Turk mark.</p>
         </div>
         <div class="form-group">
           <label class="form-label">Favicon path</label>
-          <input type="text" name="site_favicon" class="form-control" value="<?= s($settings,'site_favicon') ?>" placeholder="assets/img/logo-icon.svg">
+          <input type="text" name="site_favicon" class="form-control" value="<?= s($settings,'site_favicon') ?>" placeholder="assets/img/logo-icon.png">
         </div>
       </div>
       <div class="form-group">

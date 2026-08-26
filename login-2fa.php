@@ -59,11 +59,18 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:linear-gradient(135de
 .alert{padding:12px 14px;border-radius:10px;font-size:13px;margin-bottom:14px;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca}
 .back-link{display:inline-block;margin-top:16px;font-size:13px;color:var(--muted);text-decoration:none}
 .back-link:hover{color:var(--primary)}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.auth-logo img{width:44px;height:44px;border-radius:12px}
+.auth-logo span{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--dark)}
 </style>
 </head>
 <body>
 <div class="auth-wrap">
   <div class="auth-box">
+    <div class="auth-logo">
+      <img src="<?= h(logo_url()) ?>" alt="" width="44" height="44">
+      <span><?= site_name_logo_html() ?></span>
+    </div>
     <h1>Two-factor authentication</h1>
     <p>Enter the 6-digit code from your authenticator app to continue.</p>
     <?php if ($error): ?><div class="alert"><?= h($error) ?></div><?php endif; ?>
