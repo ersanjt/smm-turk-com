@@ -91,7 +91,7 @@ $siteName = function_exists('site_name') ? site_name() : (defined('SITE_NAME') ?
 <meta name="robots" content="<?= h(Seo::robotsContent(false)) ?>">
 <meta name="robots" content="<?= h(Seo::robotsContent(false)) ?>">
 <title><?= htmlspecialchars($siteName) ?> — Email Verification</title>
-<link rel="icon" type="image/png" href="<?= h(logo_url()) ?>">
+<?php echo_favicon_links(); ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">

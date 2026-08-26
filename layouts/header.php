@@ -60,8 +60,7 @@ $ogLocale = Seo::ogLocale($dashLang);
 <meta name="twitter:title" content="<?= h($pageOgTitle) ?> — <?= h($siteName) ?>">
 <meta name="twitter:description" content="<?= h($pageDesc) ?>">
 <meta name="twitter:image" content="<?= h($pageImg) ?>">
-<link rel="icon" type="image/png" href="<?= h(favicon_url()) ?>">
-<link rel="apple-touch-icon" href="<?= h(logo_url()) ?>">
+<?php echo_favicon_links(); ?>
 <link rel="manifest" href="<?= h(path('manifest.php')) ?>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

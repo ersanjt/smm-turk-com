@@ -2,6 +2,9 @@
 require_once __DIR__ . '/app/init.php';
 
 if ($auth->isLoggedIn()) {
+    if (class_exists('MobileAuth') && MobileAuth::inFlow()) {
+        MobileAuth::redirectToApp($auth->getUserId());
+    }
     redirect(url('dashboard.php'));
 }
 if (!$auth->hasPendingTwoFactor()) {
@@ -18,6 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $code = trim($_POST['code'] ?? '');
         $result = $auth->completeTwoFactorLogin($code);
         if ($result['success']) {
+            if (class_exists('MobileAuth') && MobileAuth::inFlow()) {
+                MobileAuth::redirectToApp($auth->getUserId());
+            }
             redirect($auth->postLoginRedirectUrl($result));
         }
         $error = $result['error'] ?? 'Verification failed.';
@@ -32,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta name="robots" content="<?= h(Seo::robotsContent(false)) ?>">
 <meta name="robots" content="<?= h(Seo::robotsContent(false)) ?>">
 <title><?= h($siteName) ?> — Two-factor authentication</title>
-<link rel="icon" type="image/png" href="<?= h(logo_url()) ?>">
+<?php echo_favicon_links(); ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">

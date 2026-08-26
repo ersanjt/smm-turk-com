@@ -15,6 +15,7 @@ require_once __DIR__ . '/Mail.php';
 require_once __DIR__ . '/MailLocale.php';
 require_once __DIR__ . '/Notify.php';
 require_once __DIR__ . '/Auth.php';
+require_once __DIR__ . '/MobileAuth.php';
 require_once __DIR__ . '/Totp.php';
 require_once __DIR__ . '/SmmApi.php';
 require_once __DIR__ . '/ProviderRegistry.php';
@@ -346,6 +347,25 @@ function favicon_url(): string {
         }
     }
     return logo_url();
+}
+
+/** Raster logo for apple-touch / PWA when the main mark is SVG. */
+function logo_png_url(): string {
+    $png = (defined('ROOT_PATH') ? ROOT_PATH : dirname(__DIR__)) . '/assets/img/logo-icon.png';
+    if (is_file($png)) {
+        return asset_url('assets/img/logo-icon.png');
+    }
+    return logo_url();
+}
+
+function logo_favicon_type(): string {
+    $href = favicon_url();
+    return preg_match('/\.svg(\?|$)/i', $href) ? 'image/svg+xml' : 'image/png';
+}
+
+function echo_favicon_links(): void {
+    echo '<link rel="icon" type="' . h(logo_favicon_type()) . '" href="' . h(favicon_url()) . '">' . "\n";
+    echo '<link rel="apple-touch-icon" href="' . h(logo_png_url()) . '">' . "\n";
 }
 
 /** Display site name — custom value from settings (branding) or SITE_NAME constant. */

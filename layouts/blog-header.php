@@ -92,8 +92,7 @@ foreach ($jsonLdExtra as $block) {
     <meta name="twitter:title" content="<?= h($pageTitle) ?> — <?= h($siteName) ?>">
     <meta name="twitter:description" content="<?= h($pageDescription) ?>">
     <meta name="twitter:image" content="<?= h($pageImg) ?>">
-    <link rel="icon" type="image/png" href="<?= h(logo_url()) ?>">
-    <link rel="apple-touch-icon" href="<?= h(logo_url()) ?>">
+    <?php echo_favicon_links(); ?>
     <link rel="manifest" href="<?= h(path('manifest.php')) ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
