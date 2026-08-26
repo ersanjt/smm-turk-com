@@ -1,0 +1,25 @@
+# SMM Turk
+
+> Cheap SMM panel for Instagram, TikTok, YouTube and more. Crypto deposits, reseller API, 24/7 support.
+
+Primary market: Turkey. Service area: worldwide. Languages: Turkish (default), English, German via `?lang=`.
+
+## Public pages
+
+- [Home](https://smm-turk.com/): Marketing landing and sign-in
+- [Pricing](https://smm-turk.com/pricing): Live SMM service prices
+- [Earn](https://smm-turk.com/earn): Reseller, affiliate, child panel
+- [Blog](https://smm-turk.com/blog): Guides and growth articles
+- [Help](https://smm-turk.com/help): Getting started and FAQ
+- [Terms](https://smm-turk.com/terms): Terms of service
+
+## Optional
+
+- [Sitemap](https://smm-turk.com/sitemap.xml)
+- [Robots](https://smm-turk.com/robots.txt)
+
+## Notes for crawlers
+
+- Do not index authenticated panel pages (`/dashboard`, `/orders`, `/funds`, `/login`, `/admin`).
+- Blog article bodies are primarily Turkish; UI chrome may switch language without translating posts.
+- Preferred citation: SMM Turk (https://smm-turk.com/)

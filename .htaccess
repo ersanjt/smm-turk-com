@@ -34,8 +34,12 @@ ErrorDocument 404 /404.php
 </IfModule>
 <IfModule mod_headers.c>
   <FilesMatch "\.(?i:css|js|png|jpe?g|webp|svg|woff2|ico)$">
-    Header set Cache-Control "public, max-age=31536000, immutable"
+    Header always set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
+  <Files "llms.txt">
+    Header always set Cache-Control "public, max-age=3600"
+    Header always set Content-Type "text/plain; charset=UTF-8"
+  </Files>
 </IfModule>
 
 # SMM Turk - Clean URLs (no .php in browser) + API rewrite

@@ -316,7 +316,7 @@ function asset_url(string $path): string {
     return $url . (str_contains($url, '?') ? '&' : '?') . 'v=' . $ver;
 }
 
-/** Logo / favicon URL with cache busting. */
+/** Logo / favicon URL with cache busting. Prefer SVG (tiny) over heavy PNG. */
 function logo_url(): string {
     if (class_exists('Database')) {
         $custom = trim((string) (Database::getInstance()->getSetting('site_logo') ?? ''));
@@ -326,6 +326,10 @@ function logo_url(): string {
             }
             return asset_url(ltrim($custom, '/'));
         }
+    }
+    $svg = __DIR__ . '/../assets/img/logo-icon.svg';
+    if (is_file($svg)) {
+        return asset_url('assets/img/logo-icon.svg');
     }
     return asset_url('assets/img/logo-icon.png');
 }

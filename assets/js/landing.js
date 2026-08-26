@@ -95,13 +95,21 @@
     });
   });
 
-  /* Keep promo/nav offset accurate when the bar wraps on narrow screens */
+  /* Promo height — defer geometry read to avoid forced reflow during parse */
   function syncPromoHeight() {
     var bar = document.querySelector('.growth-promo-bar');
     if (!bar || !document.body.classList.contains('has-promo')) return;
-    var h = Math.ceil(bar.getBoundingClientRect().height);
-    if (h > 0) document.documentElement.style.setProperty('--promo-bar-h', h + 'px');
+    requestAnimationFrame(function () {
+      var h = Math.ceil(bar.getBoundingClientRect().height);
+      if (h > 0) document.documentElement.style.setProperty('--promo-bar-h', h + 'px');
+    });
   }
-  syncPromoHeight();
+  if (document.body.classList.contains('has-promo')) {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(function () { syncPromoHeight(); }, { timeout: 400 });
+    } else {
+      setTimeout(syncPromoHeight, 0);
+    }
+  }
   window.addEventListener('resize', syncPromoHeight);
 })();
