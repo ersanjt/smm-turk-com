@@ -237,7 +237,7 @@ require_once __DIR__ . '/../layouts/header.php';
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" crossorigin="anonymous"></script>
+<script src="<?= h(asset_url('assets/js/vendor/chart.umd.min.js')) ?>"></script>
 <script>
 (function () {
   if (typeof Chart === 'undefined') return;
