@@ -1,65 +1,44 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-label="SMM Turk — Istanbul">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-label="SMM Turk">
   <defs>
-    <linearGradient id="st-bg" x1="84" y1="36" x2="440" y2="492" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#FF5566"/>
+    <linearGradient id="st-bg" x1="70" y1="0" x2="440" y2="520" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FF4A58"/>
       <stop offset="40%" stop-color="#E30A17"/>
-      <stop offset="100%" stop-color="#6E030C"/>
+      <stop offset="100%" stop-color="#8A0610"/>
     </linearGradient>
-    <radialGradient id="st-glow" cx="34%" cy="26%" r="62%">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.34"/>
+    <linearGradient id="st-gloss" x1="256" y1="0" x2="256" y2="270" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.52"/>
+      <stop offset="70%" stop-color="#FFFFFF" stop-opacity="0.10"/>
       <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="st-mark" x1="120" y1="80" x2="400" y2="420" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#FFFFFF"/>
-      <stop offset="100%" stop-color="#F2F2F5"/>
     </linearGradient>
-    <filter id="st-soft" x="-10%" y="-10%" width="120%" height="120%">
-      <feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#000000" flood-opacity="0.2"/>
-    </filter>
   </defs>
 
-  <rect width="512" height="512" rx="118" fill="url(#st-bg)"/>
-  <rect width="512" height="512" rx="118" fill="url(#st-glow)"/>
-  <rect x="14" y="14" width="484" height="484" rx="104" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="3"/>
+  <rect width="512" height="512" rx="114" fill="url(#st-bg)"/>
+  <path fill="url(#st-gloss)" d="M0 114C0 51 51 0 114 0h284c63 0 114 51 114 114v70c0 86-92 162-256 162S0 270 0 184V114z"/>
+  <ellipse cx="256" cy="80" rx="190" ry="58" fill="#FFFFFF" fill-opacity="0.16"/>
+  <rect x="15" y="15" width="482" height="482" rx="102" stroke="#FFFFFF" stroke-opacity="0.22" stroke-width="3"/>
 
-  <g fill="url(#st-mark)" filter="url(#st-soft)">
-    <!-- Galata Tower -->
-    <circle cx="166" cy="66" r="8"/>
-    <rect x="162.5" y="66" width="7" height="32" rx="3.5"/>
-    <path d="M112 164L166 70L220 164Z"/>
-    <rect x="144" y="152" width="44" height="24" rx="7"/>
-    <rect x="116" y="170" width="100" height="26" rx="9"/>
-    <rect x="140" y="192" width="52" height="188" rx="11"/>
-    <rect x="150" y="220" width="12" height="20" rx="4" fill="#C10814"/>
-    <rect x="170" y="220" width="12" height="20" rx="4" fill="#C10814"/>
-    <rect x="150" y="256" width="12" height="20" rx="4" fill="#C10814"/>
-    <rect x="170" y="256" width="12" height="20" rx="4" fill="#C10814"/>
-    <rect x="150" y="292" width="12" height="20" rx="4" fill="#C10814"/>
-    <rect x="170" y="292" width="12" height="20" rx="4" fill="#C10814"/>
-    <rect x="128" y="372" width="76" height="24" rx="8"/>
-
-    <!-- Bosphorus Bridge pylons -->
-    <rect x="258" y="158" width="14" height="186" rx="5"/>
-    <rect x="286" y="158" width="14" height="186" rx="5"/>
-    <rect x="254" y="146" width="50" height="18" rx="6"/>
-    <rect x="378" y="158" width="14" height="186" rx="5"/>
-    <rect x="406" y="158" width="14" height="186" rx="5"/>
-    <rect x="374" y="146" width="50" height="18" rx="6"/>
-
-    <!-- Deck + abutments -->
-    <rect x="222" y="326" width="228" height="18" rx="6"/>
-    <rect x="216" y="338" width="14" height="40" rx="4"/>
-    <rect x="442" y="338" width="14" height="40" rx="4"/>
+  <g fill="#FFFFFF">
+    <circle cx="76" cy="172" r="3"/>
+    <circle cx="112" cy="248" r="2.1"/>
+    <circle cx="246" cy="62" r="1.8"/>
+    <circle cx="404" cy="88" r="2.4"/>
+    <circle cx="456" cy="208" r="2"/>
+    <circle cx="70" cy="352" r="2.2"/>
+    <circle cx="438" cy="368" r="2.6"/>
+    <circle cx="188" cy="430" r="1.7"/>
   </g>
 
-  <g fill="none" stroke="url(#st-mark)" stroke-linecap="round" filter="url(#st-soft)">
-    <path d="M265 154Q226 250 223 344" stroke-width="8"/>
-    <path d="M300 154Q346 226 390 154" stroke-width="9"/>
-    <path d="M420 154Q459 250 462 344" stroke-width="8"/>
-    <path d="M318 192v134" stroke-width="6"/>
-    <path d="M345 210v116" stroke-width="6"/>
-    <path d="M372 192v134" stroke-width="6"/>
-  </g>
+  <g fill="#FFFFFF">
+    <!-- Thick crescent: outer circle minus inner circle shifted right -->
+    <path fill-rule="evenodd" d="M186 86a92 92 0 1 0 0 184 92 92 0 1 0 0-184zm38 24a70 70 0 1 0 0 140 70 70 0 1 0 0-140z"/>
+    <!-- Star in the crescent opening -->
+    <path d="M292 124l12.2 24.8 27.4 4-19.8 19.3 4.7 27.3L292 186.8l-24.5 12.6 4.7-27.3-19.8-19.3 27.4-4z"/>
 
-  <path fill="#FFFFFF" fill-opacity="0.38" d="M88 428c36-16 68-16 104 0s76 16 112 0 76-16 112 0 68 16 104 0v22H88v-22z"/>
+    <rect x="154" y="376" width="48" height="60" rx="10"/>
+    <rect x="216" y="336" width="48" height="100" rx="10"/>
+    <rect x="278" y="288" width="48" height="148" rx="10"/>
+    <rect x="340" y="230" width="48" height="206" rx="10"/>
+
+    <path d="M88 404c6 12 22 16 34 8 52-32 104-86 168-136 46-36 98-64 160-80l-10 34c-4 14 8 24 22 16l72-48c14-10 12-34-4-38L430 140c-16-4-26 12-16 24l18 28C374 210 310 248 254 292 182 348 128 400 90 422c-10 6-10 18-2-18z"/>
+  </g>
 </svg>

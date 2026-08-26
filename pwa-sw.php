@@ -6,10 +6,10 @@ $base = base_path();
 $precache = [
     $base . '/assets/css/app.css',
     $base . '/assets/js/app.js',
-    $base . '/assets/img/logo-icon.svg',
+    $base . '/assets/img/logo-icon.png',
 ];
 ?>
-const CACHE = 'smmturk-static-v3';
+const CACHE = 'smmturk-static-v4';
 const PRECACHE = <?= json_encode($precache) ?>;
 
 self.addEventListener('install', function (event) {
