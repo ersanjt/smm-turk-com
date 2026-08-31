@@ -43,11 +43,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $metaDesc = trim((string)($_POST['meta_description'] ?? ''));
     $metaKeywords = trim((string)($_POST['meta_keywords'] ?? ''));
     $excerpt = trim((string)($_POST['excerpt'] ?? ''));
-    $body = (string)($_POST['body'] ?? '');
+    $body = HtmlSanitizer::sanitize((string)($_POST['body'] ?? ''));
     $status = in_array($_POST['status'] ?? '', ['draft', 'published']) ? $_POST['status'] : 'draft';
     $publishedAt = trim((string)($_POST['published_at'] ?? ''));
     $readingTime = isset($_POST['reading_time_min']) && $_POST['reading_time_min'] !== '' ? (int)$_POST['reading_time_min'] : null;
     $featuredImage = trim((string)($_POST['featured_image'] ?? ''));
+    if ($featuredImage !== '' && !preg_match('#^(https?://|/|assets/|uploads/)#i', $featuredImage)) {
+        $featuredImage = '';
+    }
+    if (preg_match('#^\s*(javascript|data|vbscript):#i', $featuredImage)) {
+        $featuredImage = '';
+    }
     $tagIds = isset($_POST['tag_ids']) && is_array($_POST['tag_ids']) ? array_map('intval', array_filter($_POST['tag_ids'])) : [];
 
     if ($title === '' || $slug === '') {

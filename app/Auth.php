@@ -2,6 +2,7 @@
 class Auth {
 
     private Database $db;
+    public const MIN_PASSWORD_LENGTH = 8;
     private const DEFAULT_PASSWORD_HASH = '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi';
 
     public function __construct() {
@@ -10,6 +11,8 @@ class Auth {
             $lifetime = defined('SESSION_LIFETIME') ? (int) SESSION_LIFETIME : 0;
             $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
                 || (defined('SITE_URL') && str_starts_with((string) SITE_URL, 'https://'));
+            ini_set('session.use_strict_mode', '1');
+            ini_set('session.use_only_cookies', '1');
             session_set_cookie_params([
                 'lifetime' => $lifetime,
                 'path'     => '/',
@@ -29,8 +32,8 @@ class Auth {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return ['success' => false, 'error' => 'Invalid email address'];
         }
-        if (strlen($password) < 6) {
-            return ['success' => false, 'error' => 'Password must be at least 6 characters'];
+        if (strlen($password) < self::MIN_PASSWORD_LENGTH) {
+            return ['success' => false, 'error' => 'Password must be at least ' . self::MIN_PASSWORD_LENGTH . ' characters'];
         }
 
         $email = strtolower(trim($email));
@@ -540,8 +543,8 @@ class Auth {
     }
 
     public function updatePassword(int $userId, string $currentPassword, string $newPassword): array {
-        if (strlen($newPassword) < 6) {
-            return ['success' => false, 'error' => 'New password must be at least 6 characters'];
+        if (strlen($newPassword) < self::MIN_PASSWORD_LENGTH) {
+            return ['success' => false, 'error' => 'New password must be at least ' . self::MIN_PASSWORD_LENGTH . ' characters'];
         }
         $user = $this->db->fetch("SELECT password FROM users WHERE id = ?", [$userId]);
         if (!$user || !password_verify($currentPassword, $user['password'])) {
@@ -592,8 +595,8 @@ class Auth {
      * Reset password using token from email. Returns ['success' => bool, 'error' => string|null].
      */
     public function resetPasswordByToken(string $token, string $newPassword): array {
-        if (strlen($newPassword) < 6) {
-            return ['success' => false, 'error' => 'Password must be at least 6 characters'];
+        if (strlen($newPassword) < self::MIN_PASSWORD_LENGTH) {
+            return ['success' => false, 'error' => 'Password must be at least ' . self::MIN_PASSWORD_LENGTH . ' characters'];
         }
         $token = trim($token);
         if ($token === '') {

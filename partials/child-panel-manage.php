@@ -442,8 +442,8 @@ function cp_s(array $settings, string $key): string {
       <input type="hidden" name="change_panel_password" value="1">
       <div class="form-group"><label class="form-label">Current password</label><input type="password" name="current_password" class="form-control" required></div>
       <div class="grid2">
-        <div class="form-group"><label class="form-label">New password</label><input type="password" name="new_password" class="form-control" minlength="6" required></div>
-        <div class="form-group"><label class="form-label">Confirm</label><input type="password" name="new_password_confirm" class="form-control" minlength="6" required></div>
+        <div class="form-group"><label class="form-label">New password</label><input type="password" name="new_password" class="form-control" minlength="8" required autocomplete="new-password"></div>
+        <div class="form-group"><label class="form-label">Confirm</label><input type="password" name="new_password_confirm" class="form-control" minlength="8" required autocomplete="new-password"></div>
       </div>
       <button type="submit" class="btn btn-primary" style="font-size:12px;padding:8px 14px;">Change login password</button>
     </form>

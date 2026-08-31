@@ -342,7 +342,7 @@ class OrderManager {
                 }
                 try {
                     $row = $this->db->fetch(
-                        "SELECT o.status, o.user_id, o.service_name, u.username, u.email
+                        "SELECT o.status, o.start_count, o.remains, o.user_id, o.service_name, u.username, u.email
                          FROM orders o JOIN users u ON u.id = o.user_id WHERE o.id = ?",
                         [$order['id']]
                     );
@@ -351,11 +351,18 @@ class OrderManager {
                     if ($newStatus === '') {
                         $newStatus = $oldStatus !== '' ? $oldStatus : 'Pending';
                     }
-                    $this->db->execute(
-                        'UPDATE orders SET status = ?, start_count = ?, remains = ? WHERE id = ?',
-                        [$newStatus, (int) ($status->start_count ?? 0), (int) ($status->remains ?? 0), $order['id']]
-                    );
-                    $updated++;
+                    $startCount = (int) ($status->start_count ?? 0);
+                    $remains = (int) ($status->remains ?? 0);
+                    $changed = $oldStatus !== $newStatus
+                        || (int) ($row['start_count'] ?? 0) !== $startCount
+                        || (int) ($row['remains'] ?? 0) !== $remains;
+                    if ($changed) {
+                        $this->db->execute(
+                            'UPDATE orders SET status = ?, start_count = ?, remains = ? WHERE id = ?',
+                            [$newStatus, $startCount, $remains, $order['id']]
+                        );
+                        $updated++;
+                    }
                     if ($row && $oldStatus !== $newStatus && in_array($newStatus, ['Completed', 'Cancelled', 'Partial', 'Refunded'], true)) {
                         if (!empty($row['email'])) {
                             try {

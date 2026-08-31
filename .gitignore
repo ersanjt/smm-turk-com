@@ -54,3 +54,23 @@ storage/child-panels/*/
 # User uploads (keep uploads/.htaccess via negation)
 uploads/*
 !uploads/.htaccess
+
+# Security/local files (Codex senior audit)
+.env
+.env.*
+!.env.example
+!.env.sample
+*.env.bak
+*.env.backup
+*secret*.json
+*service-account*.json
+firebase-service-account.json
+google-services.json
+*.pem
+*.key
+*.p8
+*.p12
+*.jks
+*.keystore
+secrets/
+.secrets/

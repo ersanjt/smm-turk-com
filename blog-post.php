@@ -108,7 +108,7 @@ $jsonLdExtra = [
 ];
 require __DIR__ . '/layouts/blog-header.php';
 ?>
-<main class="blog-article-wrap" role="main">
+<main class="blog-article-wrap" id="main-content" role="main">
 <article>
     <nav class="blog-breadcrumb" aria-label="Breadcrumb">
         <a href="<?= h(path('blog.php')) ?>"><?= function_exists('__') ? h(__('blog_title')) : 'Blog' ?></a>
@@ -141,7 +141,7 @@ require __DIR__ . '/layouts/blog-header.php';
     <?php endif; ?>
 
     <div class="article-body">
-        <?= $post['body'] ?>
+        <?= HtmlSanitizer::sanitize((string) $post['body']) ?>
     </div>
 </article>
 

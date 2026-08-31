@@ -507,6 +507,41 @@ class Seo
     }
 
     /**
+     * @param array<int, array{name: string, text?: string}> $steps
+     */
+    public static function howToSchema(string $name, string $description, array $steps, ?string $lang = null): array
+    {
+        $list = [];
+        $position = 1;
+        foreach ($steps as $step) {
+            $label = trim((string) ($step['name'] ?? ''));
+            if ($label === '') {
+                continue;
+            }
+            $item = [
+                '@type' => 'HowToStep',
+                'position' => $position++,
+                'name' => $label,
+            ];
+            $text = trim((string) ($step['text'] ?? ''));
+            if ($text !== '') {
+                $item['text'] = $text;
+            }
+            $list[] = $item;
+        }
+        $schema = [
+            '@type' => 'HowTo',
+            'name' => $name,
+            'description' => $description,
+            'step' => $list,
+        ];
+        if ($lang !== null) {
+            $schema['inLanguage'] = self::pageLanguage($lang);
+        }
+        return $schema;
+    }
+
+    /**
      * @param array<int, array{name: string, url: string}> $items
      */
     public static function breadcrumbSchema(array $items, ?string $lang = null): array

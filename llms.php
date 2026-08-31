@@ -13,15 +13,15 @@ $siteName = Seo::siteName();
 $base = $siteUrl . (function_exists('base_path') ? base_path() : '');
 
 echo "# {$siteName}\n\n";
-echo "> Cheap SMM panel for Instagram, TikTok, YouTube and more. Crypto deposits, reseller API, 24/7 support.\n\n";
+echo "> Cheap SMM panel for Instagram followers, TikTok likes, and YouTube views. Crypto deposits (BTC, USDT), reseller API, child panels, 24/7 support.\n\n";
 echo "Primary market: Turkey. Service area: worldwide. Languages: Turkish (default), English, German via `?lang=`.\n\n";
 
 echo "## Public pages\n\n";
-echo "- [Home]({$base}/): Marketing landing and sign-in\n";
-echo "- [Pricing]({$base}/pricing): Live SMM service prices\n";
-echo "- [Earn]({$base}/earn): Reseller, affiliate, child panel\n";
-echo "- [Blog]({$base}/blog): Guides and growth articles\n";
-echo "- [Help]({$base}/help): Getting started and FAQ\n";
+echo "- [Home]({$base}/): Marketing landing — cheapest SMM panel, crypto checkout, reseller API\n";
+echo "- [Pricing]({$base}/pricing): Live Instagram, TikTok, YouTube SMM prices\n";
+echo "- [Earn]({$base}/earn): Child panel, affiliate program, reseller API\n";
+echo "- [Blog]({$base}/blog): Growth guides (Instagram, TikTok, YouTube, API)\n";
+echo "- [Help]({$base}/help): Getting started, deposits, orders, FAQ\n";
 echo "- [Terms]({$base}/terms): Terms of service\n\n";
 
 echo "## Optional\n\n";

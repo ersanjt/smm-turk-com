@@ -45,10 +45,10 @@
   function build() {
     if (document.querySelector('.a11y-fab')) return;
 
-    // Skip-to-content link.
-    var main = document.querySelector('main');
+    // Skip-to-content link (only if the page did not already render one).
+    var main = document.querySelector('#main-content, main');
     if (main && !main.id) main.id = 'main-content';
-    if (main) {
+    if (main && !document.querySelector('.a11y-skip')) {
       var skip = document.createElement('a');
       skip.className = 'a11y-skip';
       skip.href = '#' + main.id;

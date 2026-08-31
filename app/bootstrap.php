@@ -46,6 +46,7 @@ Newsletter::ensureSchema(Database::getInstance());
 require_once __DIR__ . '/UserOnboarding.php';
 require_once __DIR__ . '/WhmProvisioner.php';
 require_once __DIR__ . '/Seo.php';
+require_once __DIR__ . '/HtmlSanitizer.php';
 
 // In production, log PHP errors to file (tmp/logs/php_errors.log)
 if (php_sapi_name() !== 'cli' && defined('SMM_PRODUCTION') && SMM_PRODUCTION) {
@@ -73,10 +74,15 @@ if (php_sapi_name() !== 'cli' && !$auth->isLoggedIn()) {
 
 // Security headers (web only)
 if (php_sapi_name() !== 'cli') {
+    $httpsOn = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+        || (defined('SITE_URL') && str_starts_with((string) SITE_URL, 'https://'));
     header('X-Frame-Options: SAMEORIGIN');
     header('X-Content-Type-Options: nosniff');
-    header('X-XSS-Protection: 1; mode=block');
     header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()');
+    if ($httpsOn) {
+        header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
+    }
     // CSP: enforce in production unless SMM_CSP_REPORT_ONLY is explicitly enabled
     $csp = "default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://accounts.google.com https://apis.google.com https://cloudflareinsights.com; frame-src https://accounts.google.com; manifest-src 'self'; worker-src 'self';";
     $cspReportOnly = defined('SMM_CSP_REPORT_ONLY') && SMM_CSP_REPORT_ONLY;
@@ -107,6 +113,12 @@ if (php_sapi_name() !== 'cli') {
 
 function h(string $str): string {
     return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+}
+
+/** Keyboard skip link (works without JavaScript). */
+function skip_to_content_link(string $targetId = 'main-content'): string {
+    $label = function_exists('__') ? __('a11y_skip') : 'Skip to content';
+    return '<a class="a11y-skip" href="#' . h($targetId) . '">' . h($label) . '</a>';
 }
 
 /** Base path for internal links (e.g. '' or '/panel'). Use in href. */

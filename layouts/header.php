@@ -53,6 +53,7 @@ $ogLocale = Seo::ogLocale($dashLang);
 <meta property="og:description" content="<?= h($pageDesc) ?>">
 <meta property="og:url" content="<?= h($canonicalUrl) ?>">
 <meta property="og:image" content="<?= h($pageImg) ?>">
+<meta property="og:image:alt" content="<?= h($pageOgTitle) ?> — <?= h($siteName) ?>">
 <meta property="og:locale" content="<?= h($ogLocale) ?>">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -60,6 +61,7 @@ $ogLocale = Seo::ogLocale($dashLang);
 <meta name="twitter:title" content="<?= h($pageOgTitle) ?> — <?= h($siteName) ?>">
 <meta name="twitter:description" content="<?= h($pageDesc) ?>">
 <meta name="twitter:image" content="<?= h($pageImg) ?>">
+<meta name="twitter:image:alt" content="<?= h($pageOgTitle) ?> — <?= h($siteName) ?>">
 <?php echo_favicon_links(); ?>
 <link rel="manifest" href="<?= h(path('manifest.php')) ?>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -75,6 +77,7 @@ $ogLocale = Seo::ogLocale($dashLang);
 </head>
 <body class="panel-follows<?= $isAdminArea ? ' admin-area' : '' ?>" data-sw="<?= h(path('pwa-sw.php')) ?>" data-sw-scope="<?= h(base_path() !== '' ? base_path() . '/' : '/') ?>">
 <script>(function(){var k='smmturk_theme',d=localStorage.getItem(k)==='dark'||(!localStorage.getItem(k)&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.body.classList.add('theme-dark');})();</script>
+<?= skip_to_content_link('main-content') ?>
 
 <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
 <aside class="sidebar" id="sidebar" role="navigation">
@@ -191,7 +194,7 @@ $ogLocale = Seo::ogLocale($dashLang);
   </nav>
 </aside>
 
-<main class="main" id="main-dashboard">
+<main class="main" id="main-content">
 
   <header class="mob-header" id="mobHeader" aria-label="Mobile navigation">
     <div class="mob-header-bar">

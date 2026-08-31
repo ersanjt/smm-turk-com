@@ -9,19 +9,6 @@ $status  = $_GET['status'] ?? '';
 $page    = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 20;
 $offset  = ($page - 1) * $perPage;
-$justPlaced = isset($_GET['placed']);
-
-if (isset($_GET['ajax_sync'])) {
-    header('Content-Type: application/json; charset=utf-8');
-    $updated = 0;
-    try {
-        $updated = $om->syncOrders((int) $uid, 50);
-    } catch (Throwable $e) {
-        Logger::log('orders ajax sync: ' . $e->getMessage(), 'orders');
-    }
-    echo json_encode(['ok' => true, 'updated' => $updated]);
-    exit;
-}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['refresh_status']) && csrf_verify()) {
     try {
@@ -237,23 +224,5 @@ require_once __DIR__ . '/layouts/header.php';
     <?php endif; ?>
   </div>
 </div>
-
-<?php if (empty($justPlaced)): ?>
-<script>
-(function () {
-  var url = <?= json_encode(path('orders.php') . '?ajax_sync=1') ?>;
-  setTimeout(function () {
-    fetch(url, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
-      .then(function (r) { return r.json(); })
-      .then(function (d) {
-        if (d && d.updated > 0) {
-          window.location.reload();
-        }
-      })
-      .catch(function () {});
-  }, 1200);
-})();
-</script>
-<?php endif; ?>
 
 <?php require_once __DIR__ . '/layouts/footer.php'; ?>

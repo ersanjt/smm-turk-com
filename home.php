@@ -69,6 +69,7 @@ $homeJsonLd = [
     <meta property="og:description" content="<?= h($seoOgDescription) ?>">
     <meta property="og:url" content="<?= h($canonicalUrl) ?>">
     <meta property="og:image" content="<?= h($pageImg) ?>">
+    <meta property="og:image:alt" content="<?= h($seoOgTitle) ?>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:locale" content="<?= h($ogLocale) ?>">
@@ -78,6 +79,7 @@ $homeJsonLd = [
     <meta name="twitter:title" content="<?= h($seoOgTitle) ?>">
     <meta name="twitter:description" content="<?= h($seoOgDescription) ?>">
     <meta name="twitter:image" content="<?= h($pageImg) ?>">
+    <meta name="twitter:image:alt" content="<?= h($seoOgTitle) ?>">
     <?php echo_favicon_links(); ?>
     <link rel="manifest" href="<?= h(path('manifest.php')) ?>">
     <script type="application/ld+json"><?= Seo::jsonLd($homeJsonLd) ?></script>

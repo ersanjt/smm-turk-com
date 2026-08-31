@@ -24,10 +24,18 @@ class RateLimit {
             return 'api_' . md5($this->customKey);
         }
         $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
-        if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
-            $ip = trim($_SERVER['HTTP_CF_CONNECTING_IP']);
+        // Only trust Cloudflare / forwarded IPs when the edge actually sent CF-Ray
+        // or the immediate peer is a private proxy. Spoofed CF-Connecting-IP is ignored.
+        if (!empty($_SERVER['HTTP_CF_RAY']) && !empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+            $cfIp = trim((string) $_SERVER['HTTP_CF_CONNECTING_IP']);
+            if (filter_var($cfIp, FILTER_VALIDATE_IP)) {
+                $ip = $cfIp;
+            }
         } elseif ($this->isTrustedProxy($ip) && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = trim(explode(',', (string)$_SERVER['HTTP_X_FORWARDED_FOR'])[0]);
+            $fwd = trim(explode(',', (string)$_SERVER['HTTP_X_FORWARDED_FOR'])[0]);
+            if (filter_var($fwd, FILTER_VALIDATE_IP)) {
+                $ip = $fwd;
+            }
         }
         return md5($ip);
     }

@@ -236,8 +236,8 @@ class ChildPanelManager
      */
     public function changeChildPanelLoginPassword(int $panelId, int $userId, string $currentPassword, string $newPassword, string $confirmPassword): array
     {
-        if (strlen($newPassword) < 6) {
-            return ['success' => false, 'error' => 'New password must be at least 6 characters.'];
+        if (strlen($newPassword) < Auth::MIN_PASSWORD_LENGTH) {
+            return ['success' => false, 'error' => 'New password must be at least ' . Auth::MIN_PASSWORD_LENGTH . ' characters.'];
         }
         if ($newPassword !== $confirmPassword) {
             return ['success' => false, 'error' => 'New passwords do not match.'];

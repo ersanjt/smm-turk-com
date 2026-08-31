@@ -26,6 +26,7 @@ $navItems = [
 $ctaHref = $registrationEnabled ? register_path() : route_path('login.php');
 $ctaLabel = $registrationEnabled ? __('nav_sign_up') : __('nav_sign_in');
 ?>
+<?= skip_to_content_link() ?>
 <header class="nav" role="banner">
     <div class="nav-inner">
         <a href="<?= h(home_path()) ?>" class="nav-logo" aria-label="<?= h($siteName) ?> Home">
@@ -38,7 +39,7 @@ $ctaLabel = $registrationEnabled ? __('nav_sign_up') : __('nav_sign_in');
 
         <nav class="nav-menu" aria-label="<?= h(__('footer_quick_links') ?: 'Main navigation') ?>">
             <?php foreach ($navItems as $item): ?>
-            <a href="<?= h($item['href']) ?>" class="nav-menu-link<?= $navActive === $item['id'] ? ' is-active' : '' ?>"><?= h($item['label']) ?></a>
+            <a href="<?= h($item['href']) ?>" class="nav-menu-link<?= $navActive === $item['id'] ? ' is-active' : '' ?>"<?= $navActive === $item['id'] ? ' aria-current="page"' : '' ?>><?= h($item['label']) ?></a>
             <?php endforeach; ?>
         </nav>
 
@@ -63,7 +64,7 @@ $ctaLabel = $registrationEnabled ? __('nav_sign_up') : __('nav_sign_in');
 
         <a href="<?= h($ctaHref) ?>" class="nav-cta-mobile"><?= h($ctaLabel) ?></a>
 
-        <button type="button" class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" aria-controls="navMobilePanel">
+        <button type="button" class="nav-toggle" id="navToggle" aria-label="<?= h(__('nav_open_menu')) ?>" aria-expanded="false" aria-controls="navMobilePanel">
             <span class="nav-toggle-bar" aria-hidden="true"></span>
             <span class="nav-toggle-bar" aria-hidden="true"></span>
             <span class="nav-toggle-bar" aria-hidden="true"></span>

@@ -477,11 +477,11 @@ body.theme-dark .settings-hub .card .form-label { color: #c9b4b9; }
       </div>
       <div class="form-group">
         <label class="form-label">New password</label>
-        <input type="password" name="new_password" class="form-control" minlength="6" required>
+        <input type="password" name="new_password" class="form-control" minlength="8" required autocomplete="new-password">
       </div>
       <div class="form-group">
         <label class="form-label">Confirm new password</label>
-        <input type="password" name="confirm_password" class="form-control" minlength="6" required>
+        <input type="password" name="confirm_password" class="form-control" minlength="8" required autocomplete="new-password">
       </div>
       <?php if (!empty($errors['password'])): ?>
       <div class="alert alert-error"><?= h($errors['password']) ?></div>
