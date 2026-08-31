@@ -131,7 +131,7 @@ if (!$loggedIn):
 <?php $navActive = 'earn'; $registrationEnabled = ($db->getSetting('registration_enabled') ?? '1') === '1'; require __DIR__ . '/partials/landing-nav.php'; ?>
 <?php endif; ?>
 
-<div class="earn-page">
+<div class="earn-page" id="main-content" role="main">
   <header class="earn-hero">
     <span class="hero-badge"><?= h(__('earn_hero_badge')) ?></span>
     <h1><?= h(__('earn_hero_h1')) ?></h1>

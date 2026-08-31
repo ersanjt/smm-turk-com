@@ -86,11 +86,11 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:linear-gradient(135de
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
     <div class="form-group">
       <label class="form-label">New password (min 6 characters)</label>
-      <input type="password" name="password" class="form-control" required minlength="6" autofocus>
+      <input type="password" name="password" class="form-control" required minlength="8" autofocus autocomplete="new-password">
     </div>
     <div class="form-group">
       <label class="form-label">Confirm password</label>
-      <input type="password" name="password_confirm" class="form-control" required minlength="6">
+      <input type="password" name="password_confirm" class="form-control" required minlength="8" autocomplete="new-password">
     </div>
     <button type="submit" class="btn">Set new password</button>
   </form>

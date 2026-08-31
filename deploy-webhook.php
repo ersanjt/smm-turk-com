@@ -156,7 +156,33 @@ function deploy_repair_files(): array
     ];
 }
 
+function deploy_web_rate_limited(int $max = 20, int $window = 60): bool
+{
+    $dir = __DIR__ . '/tmp/rate_limit';
+    if (!is_dir($dir) && !@mkdir($dir, 0755, true) && !is_dir($dir)) {
+        return false;
+    }
+    $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '0');
+    $file = $dir . '/deploy_' . hash('sha256', $ip) . '.json';
+    $now = time();
+    $data = ['start' => $now, 'count' => 0];
+    if (is_file($file)) {
+        $existing = json_decode((string) file_get_contents($file), true);
+        if (is_array($existing) && ($now - (int) ($existing['start'] ?? 0)) <= $window) {
+            $data = $existing;
+        }
+    }
+    $data['count'] = (int) ($data['count'] ?? 0) + 1;
+    @file_put_contents($file, json_encode($data), LOCK_EX);
+    return $data['count'] > $max;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    if (deploy_web_rate_limited()) {
+        http_response_code(429);
+        echo json_encode(['ok' => false, 'error' => 'Too many requests']);
+        exit;
+    }
     $diagKey = trim((string)($_GET['key'] ?? ''));
 
     if (isset($_GET['repair'])) {
@@ -186,9 +212,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             'deploy_ran' => $deployRan,
             'deploy' => $deployOut,
             'deploy_version' => is_readable(__DIR__ . '/DEPLOY_VERSION') ? trim((string) file_get_contents(__DIR__ . '/DEPLOY_VERSION')) : null,
-            'remote_settings_line52' => is_readable(__DIR__ . '/app/ChildPanelRemoteSettings.php')
-                ? trim((string) (file(__DIR__ . '/app/ChildPanelRemoteSettings.php')[51] ?? ''))
-                : null,
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         exit;
     }
@@ -214,9 +237,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 'git_repo' => is_dir($repoDir . '/.git') ? 'found' : 'missing — clone repo in cPanel Git Version Control',
                 'exec_disabled' => $execOff,
                 'deploy_version' => is_readable(__DIR__ . '/DEPLOY_VERSION') ? trim((string) file_get_contents(__DIR__ . '/DEPLOY_VERSION')) : null,
-                'init_requires_remote_settings' => is_readable(__DIR__ . '/app/init.php')
-                    ? (strpos((string) file_get_contents(__DIR__ . '/app/init.php'), 'ChildPanelRemoteSettings') !== false)
-                    : null,
                 'hint' => $execOff ? 'Set Cron: * * * * * /home/smmturk/deploy-cron.sh' : 'exec OK — webhook can run deploy directly',
             ],
         ], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);

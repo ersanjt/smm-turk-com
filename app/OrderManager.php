@@ -197,33 +197,47 @@ class OrderManager {
                 if (!$status || isset($status->error)) {
                     continue;
                 }
-                $row = $this->db->fetch(
-                    "SELECT o.status, o.user_id, o.service_name, u.username, u.email
-                     FROM orders o JOIN users u ON u.id = o.user_id WHERE o.id = ?",
-                    [$order['id']]
-                );
-                $newStatus = (string) ($status->status ?? '');
-                $oldStatus = (string) ($row['status'] ?? '');
-                $this->db->execute(
-                    "UPDATE orders SET status = ?, start_count = ?, remains = ? WHERE id = ?",
-                    [$newStatus, $status->start_count ?? 0, $status->remains ?? 0, $order['id']]
-                );
-                $updated++;
-                if ($row && $oldStatus !== $newStatus && in_array($newStatus, ['Completed', 'Canceled', 'Cancelled', 'Partial'], true)) {
-                    if (!empty($row['email'])) {
-                        try {
-                            $mail = new Mail();
-                            $mail->sendOrderStatusUpdate(
-                                $row['email'],
-                                $row['username'],
-                                (int) $order['id'],
-                                $row['service_name'] ?? '',
-                                $newStatus
-                            );
-                        } catch (Throwable $e) {
-                            Logger::log('Order status email failed #' . $order['id'], 'mail');
+                try {
+                    $row = $this->db->fetch(
+                        "SELECT o.status, o.start_count, o.remains, o.user_id, o.service_name, u.username, u.email
+                         FROM orders o JOIN users u ON u.id = o.user_id WHERE o.id = ?",
+                        [$order['id']]
+                    );
+                    $newStatus = (string) ($status->status ?? '');
+                    $oldStatus = (string) ($row['status'] ?? '');
+                    if ($newStatus === '') {
+                        $newStatus = $oldStatus !== '' ? $oldStatus : 'Pending';
+                    }
+                    $startCount = (int) ($status->start_count ?? 0);
+                    $remains = (int) ($status->remains ?? 0);
+                    $changed = $oldStatus !== $newStatus
+                        || (int) ($row['start_count'] ?? 0) !== $startCount
+                        || (int) ($row['remains'] ?? 0) !== $remains;
+                    if ($changed) {
+                        $this->db->execute(
+                            'UPDATE orders SET status = ?, start_count = ?, remains = ? WHERE id = ?',
+                            [$newStatus, $startCount, $remains, $order['id']]
+                        );
+                        $updated++;
+                    }
+                    if ($row && $oldStatus !== $newStatus && in_array($newStatus, ['Completed', 'Canceled', 'Cancelled', 'Partial', 'Refunded'], true)) {
+                        if (!empty($row['email'])) {
+                            try {
+                                $mail = new Mail();
+                                $mail->sendOrderStatusUpdate(
+                                    $row['email'],
+                                    $row['username'],
+                                    (int) $order['id'],
+                                    $row['service_name'] ?? '',
+                                    $newStatus
+                                );
+                            } catch (Throwable $e) {
+                                Logger::log('Order status email failed #' . $order['id'], 'mail');
+                            }
                         }
                     }
+                } catch (Throwable $e) {
+                    Logger::log('Order sync row #' . $order['id'] . ': ' . $e->getMessage(), 'orders');
                 }
             }
         }

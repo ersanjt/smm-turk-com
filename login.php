@@ -14,6 +14,8 @@ $success = '';
 $db = Database::getInstance();
 $googleLoginEnabled = defined('GOOGLE_CLIENT_ID') && trim(GOOGLE_CLIENT_ID) !== '';
 $rateLimit = new RateLimit(5, 900);
+$loginLang = in_array($_COOKIE['lang'] ?? '', ['tr', 'en', 'de'], true) ? $_COOKIE['lang'] : 'en';
+$minPassword = Auth::MIN_PASSWORD_LENGTH;
 
 // Flash from redirect (e.g. Google callback error)
 $flash = $_SESSION['flash'] ?? null;
@@ -122,7 +124,7 @@ if (empty($_SESSION['csrf_token'])) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<?= h(Seo::htmlLang($loginLang)) ?>">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -187,11 +189,13 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 .auth-box{animation:fadeInUp .45s ease both}
 @media(max-width:480px){.auth-box{padding:28px 22px;border-radius:20px}.auth-logo .logo{font-size:26px}.auth-logo img{width:44px;height:44px}}
 @media(prefers-reduced-motion:reduce){.auth-box{animation:none}.btn:hover{transform:none}}
+.a11y-skip{position:fixed;top:-80px;left:12px;z-index:100001;background:#1d4ed8;color:#fff;padding:12px 20px;border-radius:10px;font-weight:800;font-size:15px;text-decoration:none}
+.a11y-skip:focus{top:12px;outline:3px solid #fff;outline-offset:2px}
 </style>
 </head>
 <body>
-
-<div class="auth-wrap">
+<?= skip_to_content_link() ?>
+<main class="auth-wrap" id="main-content">
 <div class="auth-box">
   <a href="<?= h(home_path()) ?>" class="auth-back">← Back to Home</a>
   <div class="auth-logo">
@@ -208,10 +212,10 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
   </div>
 
   <?php if ($error): ?>
-  <div class="alert alert-error">❌ <?= htmlspecialchars($error) ?></div>
+  <div class="alert alert-error" role="alert"><?= htmlspecialchars($error) ?></div>
   <?php endif; ?>
   <?php if ($success): ?>
-  <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
+  <div class="alert alert-success" role="status"><?= htmlspecialchars($success) ?></div>
   <?php endif; ?>
 
   <?php if ($mode === 'login'): ?>
@@ -225,17 +229,17 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
   <form method="POST">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
     <div class="form-group">
-      <label class="form-label">Email or Username</label>
+      <label class="form-label" for="login-email">Email or Username</label>
       <div class="input-wrap">
         <span class="input-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-        <input type="text" name="email" class="form-control" placeholder="your@email.com" required autofocus>
+        <input id="login-email" type="text" name="email" class="form-control" placeholder="your@email.com" required autofocus autocomplete="username"<?= $error ? ' aria-invalid="true"' : '' ?>>
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Password</label>
+      <label class="form-label" for="login-password">Password</label>
       <div class="input-wrap">
         <span class="input-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-        <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+        <input id="login-password" type="password" name="password" class="form-control" placeholder="••••••••" required autocomplete="current-password" minlength="<?= (int) $minPassword ?>">
       </div>
     </div>
     <div style="margin-bottom:12px;"><a href="<?= h(path('forgot-password.php')) ?>" style="font-size:14px;color:var(--primary);font-weight:600;text-decoration:none;">Forgot password?</a></div>
@@ -270,24 +274,24 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
   <form method="POST">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
     <div class="form-group">
-      <label class="form-label">Username</label>
+      <label class="form-label" for="register-username">Username</label>
       <div class="input-wrap">
         <span class="input-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-        <input type="text" name="username" class="form-control" placeholder="johndoe" required minlength="3">
+        <input type="text" name="username" class="form-control" placeholder="johndoe" required minlength="3" autocomplete="username" id="register-username">
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Email</label>
+      <label class="form-label" for="register-email">Email</label>
       <div class="input-wrap">
         <span class="input-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
-        <input type="email" name="email" class="form-control" placeholder="your@email.com" required>
+        <input type="email" name="email" class="form-control" placeholder="your@email.com" required autocomplete="email" id="register-email">
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Password</label>
+      <label class="form-label" for="register-password">Password</label>
       <div class="input-wrap">
         <span class="input-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-        <input type="password" name="password" class="form-control" placeholder="Min 6 characters" required minlength="6">
+        <input type="password" name="password" class="form-control" placeholder="Min <?= (int) $minPassword ?> characters" required minlength="<?= (int) $minPassword ?>" autocomplete="new-password" id="register-password">
       </div>
     </div>
     <?php if (isset($_GET['ref'])): ?>
@@ -306,7 +310,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
     <?php endif; ?>
   </div>
 </div>
-</div>
+</main>
 
 <?php require __DIR__ . '/partials/a11y.php'; ?>
 </body>

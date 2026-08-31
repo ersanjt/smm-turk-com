@@ -23,6 +23,17 @@ DirectoryIndex home.php index.php
   </IfModule>
 </FilesMatch>
 
+# Never serve secrets, SQL dumps, or env files over HTTP (PHP include still works)
+<FilesMatch "^(config\.php|deploy-secret\.txt|\.env)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order deny,allow
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
 ErrorDocument 404 /404.php
 
 # Cache static assets
@@ -40,6 +51,8 @@ ErrorDocument 404 /404.php
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteBase /
+# Block dumps, backups, and env files even if they are not matched by FilesMatch
+RewriteRule \.(?:sql|sh|bak|env|log)$ - [F,L]
 # Block direct HTTP access to internal directories (each also has its own .htaccess)
 RewriteRule ^(?:app|migrations|lang|layouts|scripts|docs)/ - [F,L]
 # Real files and directories: do not rewrite
@@ -53,6 +66,7 @@ RewriteRule ^c/([a-zA-Z0-9_-]+)/?$ c.php?ref=$1 [L,QSA]
 # Sitemap & robots
 RewriteRule ^sitemap\.xml$ sitemap.php [L]
 RewriteRule ^robots\.txt$ robots.php [L]
+RewriteRule ^llms\.txt$ llms.php [L]
 # Blog: /blog -> blog.php, /blog/slug -> blog-post.php?slug=slug
 RewriteRule ^blog/?$ blog.php [L,QSA]
 RewriteRule ^blog/([a-zA-Z0-9\-]+)/?$ blog-post.php?slug=$1 [L,QSA]

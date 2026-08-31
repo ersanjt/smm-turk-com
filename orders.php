@@ -10,6 +10,22 @@ $page    = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 20;
 $offset  = ($page - 1) * $perPage;
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['refresh_status']) && csrf_verify()) {
+    try {
+        $updated = $om->syncOrders((int) $uid, 50);
+        if ($updated > 0) {
+            flash('success', "Updated {$updated} order status(es) from the provider.");
+        } else {
+            flash('success', 'Statuses checked. Pending means the provider has not started delivery yet — this can take a few minutes to a few hours.');
+        }
+    } catch (Throwable $e) {
+        Logger::log('orders refresh: ' . $e->getMessage(), 'orders');
+        flash('error', 'Could not refresh statuses. Try again in a moment.');
+    }
+    $qs = $status !== '' ? '?status=' . urlencode($status) : '';
+    redirect(url('orders.php') . $qs);
+}
+
 $orders = $om->getUserOrders($uid, $status, $perPage, $offset);
 $total  = $om->getUserOrderCount($uid, $status);
 $pages  = (int) ceil($total / $perPage);
@@ -73,6 +89,10 @@ require_once __DIR__ . '/layouts/header.php';
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
         My Orders
       </h1>
+      <form method="post" action="" style="margin:0 0 16px;">
+        <input type="hidden" name="csrf_token" value="<?= h(csrf_token()) ?>">
+        <button type="submit" name="refresh_status" value="1" class="btn">Refresh statuses</button>
+      </form>
       <nav class="order-filters" aria-label="Filter by status">
         <?php foreach ($statuses as $s): ?>
         <a href="?status=<?= urlencode($s) ?><?= $page > 1 ? '&page=1' : '' ?>"

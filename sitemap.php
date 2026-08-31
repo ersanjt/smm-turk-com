@@ -21,12 +21,19 @@ $base = $siteUrl . (function_exists('base_path') ? base_path() : '');
 $urls = [];
 $seen = [];
 
-$addUrl = static function (string $loc, string $lastmod, string $freq, string $priority) use (&$urls, &$seen): void {
+$addUrl = static function (string $loc, string $lastmod, string $freq, string $priority, bool $hreflang = true, string $image = '') use (&$urls, &$seen): void {
     if (isset($seen[$loc])) {
         return;
     }
     $seen[$loc] = true;
-    $urls[] = ['loc' => $loc, 'lastmod' => $lastmod, 'changefreq' => $freq, 'priority' => $priority];
+    $urls[] = [
+        'loc' => $loc,
+        'lastmod' => $lastmod,
+        'changefreq' => $freq,
+        'priority' => $priority,
+        'hreflang' => $hreflang,
+        'image' => $image,
+    ];
 };
 
 // Public marketing pages
@@ -44,15 +51,21 @@ foreach ($static as $path => $meta) {
 
 try {
     $posts = $db->fetchAll(
-        "SELECT slug, updated_at, published_at FROM blog_articles WHERE status = 'published' AND published_at IS NOT NULL AND published_at <= NOW() ORDER BY published_at DESC"
+        "SELECT slug, updated_at, published_at, featured_image FROM blog_articles WHERE status = 'published' AND published_at IS NOT NULL AND published_at <= NOW() ORDER BY published_at DESC"
     );
     foreach ($posts as $row) {
         $lastmod = !empty($row['updated_at']) ? $row['updated_at'] : $row['published_at'];
+        $image = trim((string) ($row['featured_image'] ?? ''));
+        if ($image !== '' && !preg_match('#^https?://#i', $image)) {
+            $image = Seo::absoluteUrl($image);
+        }
         $addUrl(
             $base . '/blog/' . rawurlencode((string) $row['slug']),
             date('Y-m-d', strtotime((string) $lastmod)),
             'weekly',
-            '0.8'
+            '0.8',
+            false,
+            $image
         );
     }
 } catch (Throwable $e) {}
@@ -106,14 +119,20 @@ try {
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 ?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 <?php foreach ($urls as $u): ?>
   <url>
-    <loc><?= htmlspecialchars($u['loc'], ENT_XML1 | ENT_QUOTES, 'UTF-8') ?></loc><?= Seo::sitemapHreflangLinks($u['loc']) ?>
+    <loc><?= htmlspecialchars($u['loc'], ENT_XML1 | ENT_QUOTES, 'UTF-8') ?></loc><?php if (!isset($u['hreflang']) || $u['hreflang']): ?><?= Seo::sitemapHreflangLinks($u['loc']) ?><?php endif; ?>
 
     <lastmod><?= htmlspecialchars($u['lastmod'], ENT_XML1 | ENT_QUOTES, 'UTF-8') ?></lastmod>
     <changefreq><?= htmlspecialchars($u['changefreq'], ENT_XML1 | ENT_QUOTES, 'UTF-8') ?></changefreq>
     <priority><?= htmlspecialchars($u['priority'], ENT_XML1 | ENT_QUOTES, 'UTF-8') ?></priority>
+    <?php if (!empty($u['image'])): ?>
+    <image:image>
+      <image:loc><?= htmlspecialchars($u['image'], ENT_XML1 | ENT_QUOTES, 'UTF-8') ?></image:loc>
+    </image:image>
+    <?php endif; ?>
   </url>
 <?php endforeach; ?>
 </urlset>

@@ -47,7 +47,7 @@ require_once __DIR__ . '/layouts/blog-header.php';
   </div>
 </header>
 
-<main class="terms-wrap" role="main">
+<main class="terms-wrap" id="main-content" role="main">
   <ol class="terms-list">
     <?php foreach ($termsSections as $i => $sec): ?>
     <li class="terms-card">

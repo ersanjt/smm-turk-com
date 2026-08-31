@@ -192,7 +192,7 @@ function blog_category_initial(?string $name): string {
   </div>
 </header>
 
-<main class="blog-wrap" role="main">
+<main class="blog-wrap" id="main-content" role="main">
 
 <?php if (!empty($categories) || !empty($tags)): ?>
 <div class="blog-filters">

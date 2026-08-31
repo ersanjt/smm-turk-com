@@ -71,6 +71,7 @@ foreach ($jsonLdExtra as $block) {
     <meta property="og:description" content="<?= h($pageDescription) ?>">
     <meta property="og:url" content="<?= h($canonicalUrl) ?>">
     <meta property="og:image" content="<?= h($pageImg) ?>">
+    <meta property="og:image:alt" content="<?= h($pageTitle) ?> — <?= h($siteName) ?>">
     <meta property="og:locale" content="<?= h($ogLocale) ?>">
     <?= Seo::ogLocaleAlternates($lang) ?>
     <meta property="og:image:width" content="1200">
@@ -91,8 +92,8 @@ foreach ($jsonLdExtra as $block) {
     <meta name="twitter:title" content="<?= h($pageTitle) ?> — <?= h($siteName) ?>">
     <meta name="twitter:description" content="<?= h($pageDescription) ?>">
     <meta name="twitter:image" content="<?= h($pageImg) ?>">
-    <link rel="icon" type="image/png" href="<?= h(logo_url()) ?>">
-    <link rel="apple-touch-icon" href="<?= h(logo_url()) ?>">
+    <meta name="twitter:image:alt" content="<?= h($pageTitle) ?> — <?= h($siteName) ?>">
+    <?php echo_favicon_links(); ?>
     <link rel="manifest" href="<?= h(path('manifest.php')) ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

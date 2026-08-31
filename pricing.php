@@ -50,7 +50,7 @@ $jsonLdGraph = [
 
 <?php $navActive = 'pricing'; $registrationEnabled = ($db->getSetting('registration_enabled') ?? '1') === '1'; require __DIR__ . '/partials/landing-nav.php'; ?>
 
-<main class="pricing-public">
+<main class="pricing-public" id="main-content">
     <section class="pricing-hero">
         <h1><?= h(__('pricing_h1')) ?></h1>
         <p><?= h(sprintf(__('pricing_intro'), count($offers))) ?></p>

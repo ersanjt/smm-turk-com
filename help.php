@@ -24,6 +24,20 @@ $jsonLdExtra = [
         ['name' => __('blog_nav_home'), 'url' => $siteUrl !== '' ? Seo::absoluteUrl(home_path()) : home_path()],
         ['name' => __('help_title'), 'url' => $canonicalUrl],
     ], $lang),
+    Seo::faqSchema(array_map(
+        static fn(int $i): array => ['name' => __('faq_' . $i), 'text' => __('faq_' . $i . '_a')],
+        range(1, 6)
+    ), $lang),
+    Seo::howToSchema(
+        __('help_section_start'),
+        __('help_start_body'),
+        [
+            ['name' => __('help_start_1')],
+            ['name' => __('help_start_2')],
+            ['name' => __('help_start_3')],
+        ],
+        $lang
+    ),
 ];
 
 $helpSections = [
@@ -122,7 +136,7 @@ function help_icon(string $name): string
   </div>
 </header>
 
-<main class="help-wrap" role="main">
+<main id="main-content" class="help-wrap" role="main">
 
   <p class="help-quick-label"><?= h(__('help_quick_title')) ?></p>
   <div class="help-quick">
