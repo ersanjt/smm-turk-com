@@ -4,6 +4,7 @@
  */
 require_once __DIR__ . '/app/init.php';
 require_once __DIR__ . '/app/Lang.php';
+require_once __DIR__ . '/app/PlatformIcons.php';
 
 $lang = Lang::initPublic();
 $siteName = function_exists('site_name') ? site_name() : (defined('SITE_NAME') ? SITE_NAME : 'SMM Turk');
@@ -98,10 +99,10 @@ $helpSections = [
 ];
 
 $platformGuides = [
-    ['id' => 'instagram', 'title' => __('help_cluster_instagram'), 'body' => __('help_cluster_instagram_body')],
-    ['id' => 'youtube', 'title' => __('help_cluster_youtube'), 'body' => __('help_cluster_youtube_body')],
-    ['id' => 'tiktok', 'title' => __('help_cluster_tiktok'), 'body' => __('help_cluster_tiktok_body')],
-    ['id' => 'reseller', 'title' => __('help_cluster_reseller'), 'body' => __('help_cluster_reseller_body'), 'link' => login_next_path('api-page.php')],
+    ['id' => 'instagram', 'title' => __('help_cluster_instagram'), 'body' => __('help_cluster_instagram_body'), 'brand' => 'Instagram'],
+    ['id' => 'youtube', 'title' => __('help_cluster_youtube'), 'body' => __('help_cluster_youtube_body'), 'brand' => 'YouTube'],
+    ['id' => 'tiktok', 'title' => __('help_cluster_tiktok'), 'body' => __('help_cluster_tiktok_body'), 'brand' => 'TikTok'],
+    ['id' => 'reseller', 'title' => __('help_cluster_reseller'), 'body' => __('help_cluster_reseller_body'), 'link' => login_next_path('api-page.php'), 'brand' => ''],
 ];
 
 require_once __DIR__ . '/layouts/blog-header.php';
@@ -137,6 +138,14 @@ function help_icon(string $name): string
 </header>
 
 <main id="main-content" class="help-wrap" role="main">
+
+  <div class="help-search" role="search">
+    <label class="help-search-label" for="helpSearch"><?= h(__('help_search_label')) ?></label>
+    <div class="help-search-field">
+      <svg class="help-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3-3"/></svg>
+      <input type="search" id="helpSearch" class="help-search-input" placeholder="<?= h(__('help_search_placeholder')) ?>" autocomplete="off" enterkeyhint="search" aria-controls="helpMain">
+    </div>
+  </div>
 
   <p class="help-quick-label"><?= h(__('help_quick_title')) ?></p>
   <div class="help-quick">
@@ -174,7 +183,7 @@ function help_icon(string $name): string
       </nav>
     </aside>
 
-    <div class="help-main">
+    <div class="help-main" id="helpMain">
       <?php foreach ($helpSections as $sec): ?>
       <section id="<?= h($sec['id']) ?>" class="help-section">
         <div class="help-section-head">
@@ -183,11 +192,11 @@ function help_icon(string $name): string
         </div>
         <p><?= h($sec['body']) ?></p>
         <?php if (!empty($sec['items'])): ?>
-        <ul>
+        <ol class="help-steps">
           <?php foreach ($sec['items'] as $item): ?>
           <li><?= h($item) ?></li>
           <?php endforeach; ?>
-        </ul>
+        </ol>
         <?php endif; ?>
         <?php if (!empty($sec['link'])): ?>
         <a href="<?= h($sec['link']) ?>" class="help-section-link"><?= h($sec['link_label']) ?> →</a>
@@ -199,14 +208,25 @@ function help_icon(string $name): string
       <div class="help-platforms">
         <?php foreach ($platformGuides as $pg): ?>
         <article id="<?= h($pg['id']) ?>" class="help-platform">
-          <h3><?= h($pg['title']) ?></h3>
+          <h3>
+            <?php
+            $brandKey = (string) ($pg['brand'] ?? '');
+            $darkBrand = in_array($brandKey, ['TikTok', 'Twitter', 'Medium'], true);
+            ?>
+            <span class="help-platform-icon<?= $darkBrand ? ' is-dark-brand' : '' ?>" aria-hidden="true">
+              <?= $brandKey !== '' ? platformSvgBrand($brandKey, 22) : help_icon('code') ?>
+            </span>
+            <?= h($pg['title']) ?>
+          </h3>
           <p><?= h($pg['body']) ?></p>
           <?php if (!empty($pg['link'])): ?>
-          <a href="<?= h($pg['link']) ?>" class="help-section-link" style="margin-top:10px;"><?= h(__('footer_api')) ?> →</a>
+          <a href="<?= h($pg['link']) ?>" class="help-section-link help-section-link-inline"><?= h(__('footer_api')) ?> →</a>
           <?php endif; ?>
         </article>
         <?php endforeach; ?>
       </div>
+
+      <p class="help-search-empty" id="helpSearchEmpty" hidden role="status"><?= h(__('help_search_empty')) ?></p>
 
       <section id="faq" class="help-faq-section">
         <h2><?= h(__('faq_title')) ?></h2>
@@ -233,6 +253,41 @@ function help_icon(string $name): string
 <script>
 (function () {
   var links = document.querySelectorAll('.help-sidebar nav a[href^="#"]');
+  var search = document.getElementById('helpSearch');
+  var empty = document.getElementById('helpSearchEmpty');
+  var sections = document.querySelectorAll('.help-section, .help-platform, .help-faq-item');
+  var platformTitle = document.querySelector('.help-platforms-title');
+  var platformGrid = document.querySelector('.help-platforms');
+  var faqSec = document.querySelector('.help-faq-section');
+
+  function filterHelp(q) {
+    q = (q || '').trim().toLowerCase();
+    var shown = 0;
+    sections.forEach(function (el) {
+      var text = (el.textContent || '').toLowerCase();
+      var match = q === '' || text.indexOf(q) !== -1;
+      el.hidden = !match;
+      if (match) shown++;
+    });
+    var anyPlatform = !!document.querySelector('.help-platform:not([hidden])');
+    var anyFaq = !!document.querySelector('.help-faq-item:not([hidden])');
+    if (platformTitle) platformTitle.hidden = q !== '' && !anyPlatform;
+    if (platformGrid) platformGrid.hidden = q !== '' && !anyPlatform;
+    if (faqSec) faqSec.hidden = q !== '' && !anyFaq;
+    if (empty) empty.hidden = shown > 0;
+  }
+
+  if (search) {
+    search.addEventListener('input', function () { filterHelp(search.value); });
+    search.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        search.value = '';
+        filterHelp('');
+        search.blur();
+      }
+    });
+  }
+
   if (!links.length || !('IntersectionObserver' in window)) return;
   var map = {};
   links.forEach(function (a) {
@@ -243,10 +298,14 @@ function help_icon(string $name): string
   var obs = new IntersectionObserver(function (entries) {
     entries.forEach(function (e) {
       if (!e.isIntersecting) return;
-      links.forEach(function (a) { a.classList.remove('is-active'); });
+      links.forEach(function (a) {
+        a.classList.remove('is-active');
+        a.removeAttribute('aria-current');
+      });
       var link = map[e.target.id];
       if (link) {
         link.classList.add('is-active');
+        link.setAttribute('aria-current', 'true');
         link.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
       }
     });

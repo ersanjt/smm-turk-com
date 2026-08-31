@@ -217,6 +217,9 @@ return [
     'help_cta_btn' => 'Kostenlos registrieren',
     'help_sidebar_hint' => 'Zu einem Thema springen',
     'help_learn_more' => 'Mehr erfahren',
+    'help_search_label' => 'Hilfe durchsuchen',
+    'help_search_placeholder' => 'Themen, FAQ, Plattformen suchen…',
+    'help_search_empty' => 'Keine Treffer. Anderes Wort versuchen oder ein Ticket öffnen.',
 
     'nav_prices' => 'Preise',
     'nav_earn' => 'Geld verdienen',

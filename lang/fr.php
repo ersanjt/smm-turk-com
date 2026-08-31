@@ -148,4 +148,7 @@ return [
     'help_cta_btn' => 'Inscription gratuite',
     'help_sidebar_hint' => 'Aller à un sujet',
     'help_learn_more' => 'En savoir plus',
+    'help_search_label' => 'Rechercher dans l’aide',
+    'help_search_placeholder' => 'Sujets, FAQ, plateformes…',
+    'help_search_empty' => 'Aucun résultat. Essayez un autre mot ou ouvrez un ticket.',
 ];

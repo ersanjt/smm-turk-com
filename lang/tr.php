@@ -217,6 +217,9 @@ return [
     'help_cta_btn' => 'Ücretsiz kayıt ol',
     'help_sidebar_hint' => 'Konuya git',
     'help_learn_more' => 'Daha fazla',
+    'help_search_label' => 'Yardımda ara',
+    'help_search_placeholder' => 'Konu, SSS veya platform ara…',
+    'help_search_empty' => 'Eşleşen konu yok. Başka bir kelime deneyin veya destek talebi açın.',
 
     'nav_prices' => 'Fiyatlar',
     'nav_earn' => 'Para Kazan',

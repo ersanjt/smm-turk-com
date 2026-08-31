@@ -217,6 +217,9 @@ return [
     'help_cta_btn' => 'Sign up free',
     'help_sidebar_hint' => 'Jump to a topic',
     'help_learn_more' => 'Learn more',
+    'help_search_label' => 'Search help',
+    'help_search_placeholder' => 'Search topics, FAQ, platforms…',
+    'help_search_empty' => 'No matching topics. Try another word or open a ticket.',
 
     'nav_prices' => 'Prices',
     'nav_earn' => 'Earn Money',
