@@ -96,7 +96,7 @@ $jsonLdGraph = [
     </section>
     <?php endif; ?>
 
-    <section class="section" style="background:var(--white);">
+    <section class="section pricing-table-section">
         <h2 class="section-title"><?= h(__('pricing_table_title')) ?></h2>
         <p class="section-desc"><?= h(__('pricing_table_desc')) ?></p>
         <div class="pricing-table-wrap">

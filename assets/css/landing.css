@@ -490,6 +490,7 @@
         body.theme-dark .nav-theme-toggle { background: #1a1416; border-color: rgba(255,255,255,.1); }
         body.theme-dark .nav-theme-toggle:hover { border-color: #FF5566; background: rgba(255, 85, 102, 0.15); }
         body.theme-dark .nav-theme-toggle .theme-icon-dark { color: #f0e9eb; }
+        body.theme-dark .nav-theme-toggle .theme-icon-dark svg { transform: translate(1px, 0); }
         body.theme-dark .nav-btn { background: linear-gradient(145deg, #C41E3A, #A01830); color: #fff; box-shadow: 0 4px 16px rgba(196, 30, 58, .4); }
         body.theme-dark .nav-btn:hover { background: linear-gradient(145deg, #E30A17, #B90812); }
         body.theme-dark .nav-cta-mobile { background: linear-gradient(145deg, #C41E3A, #A01830); box-shadow: 0 4px 16px rgba(196, 30, 58, .4); }

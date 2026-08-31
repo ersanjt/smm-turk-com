@@ -76,3 +76,56 @@
     background: var(--primary-soft-strong);
     color: var(--primary-dark);
 }
+
+body.theme-dark .pricing-hero h1 { color: #f5eef0; }
+body.theme-dark .pricing-hero p { color: #c4b5b9; }
+body.theme-dark .pricing-offers li { color: #c4b5b9; }
+body.theme-dark .btn-cta-outline {
+    border-color: #FF5566;
+    color: #FF5566;
+}
+body.theme-dark .btn-cta-outline:hover {
+    background: rgba(255, 85, 102, 0.12);
+}
+body.theme-dark .hero-offer-pill {
+    background: rgba(255, 85, 102, 0.16);
+    color: #ff8a96;
+}
+body.theme-dark .pricing-platform-card {
+    background: #1a1416;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+    color: #e8dce0;
+}
+body.theme-dark .pricing-platform-card h3 {
+    color: #f5eef0;
+}
+body.theme-dark .pricing-platform-card li {
+    color: #c4b5b9;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+body.theme-dark .pricing-platform-card li strong {
+    color: #ff8a96;
+}
+body.theme-dark .pricing-table-section {
+    background: transparent;
+}
+body.theme-dark .pricing-table-wrap {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: #1a1416;
+}
+body.theme-dark .pricing-table th,
+body.theme-dark .pricing-table td {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+    color: #e8dce0;
+}
+body.theme-dark .pricing-table th {
+    background: #141013;
+    color: #b8a8ac;
+}
+body.theme-dark .pricing-table tr:hover td {
+    background: rgba(255, 85, 102, 0.1);
+}
+body.theme-dark .pricing-public .footer a {
+    color: #e8dce0;
+}
