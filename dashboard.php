@@ -42,7 +42,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrf_verify()) {
         $result = $om->placeOrder($userId, $serviceId, $link, $quantity, $extra);
         if ($result['success']) {
             flash('success', "✅ Order #{$result['order_id']} placed! Charged: \${$result['charge']}");
-            header('Location: ' . url('orders.php'));
+            header('Location: ' . url('orders.php') . '?placed=1', true, 303);
+            session_write_close();
+            if (function_exists('fastcgi_finish_request')) {
+                fastcgi_finish_request();
+                try {
+                    $om->flushOrderMailQueue(3);
+                } catch (Throwable $e) {
+                    Logger::log('post-order mail flush: ' . $e->getMessage(), 'mail');
+                }
+            }
             exit;
         } else {
             $error = $result['error'];
@@ -110,8 +119,8 @@ if ($selectedCat !== '' && !isset($countByCategory[$selectedCat])) {
 }
 
 $showAllLimitHint = false;
-$tierLoadLimit = 1500;
-$allLoadLimit = 1500;
+$tierLoadLimit = 400;
+$allLoadLimit = 400;
 
 $svcProviderClause = $providerSql;
 $svcProviderParam = $providerParams;
@@ -138,11 +147,11 @@ if ($searchQ !== '') {
         array_merge([$selectedCat], $svcProviderParam)
     );
 } elseif ($platform !== '') {
-    $services = $db->fetchAll(
-        "SELECT * FROM services WHERE status='active'" . $platformSql . $svcProviderClause . " ORDER BY service_id LIMIT 500",
-        array_merge($platformParams, $svcProviderParam)
-    );
-    $showAllLimitHint = count($services) >= 500;
+        $services = $db->fetchAll(
+            "SELECT * FROM services WHERE status='active'" . $platformSql . $svcProviderClause . " ORDER BY service_id LIMIT 200",
+            array_merge($platformParams, $svcProviderParam)
+        );
+        $showAllLimitHint = count($services) >= 200;
 } else {
     $limit = $tier !== '' ? $tierLoadLimit : $allLoadLimit;
     $services = $db->fetchAll(

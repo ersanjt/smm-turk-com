@@ -298,7 +298,7 @@ class Mail
                 'peer_name' => $host,
             ],
         ]);
-        $fp = @stream_socket_client($target, $errno, $errstr, 20, STREAM_CLIENT_CONNECT, $ctx);
+        $fp = @stream_socket_client($target, $errno, $errstr, 8, STREAM_CLIENT_CONNECT, $ctx);
         if (!$fp) {
             $ctxRelaxed = stream_context_create([
                 'ssl' => [
@@ -309,13 +309,13 @@ class Mail
                     'peer_name' => $host,
                 ],
             ]);
-            $fp = @stream_socket_client($target, $errno, $errstr, 20, STREAM_CLIENT_CONNECT, $ctxRelaxed);
+            $fp = @stream_socket_client($target, $errno, $errstr, 8, STREAM_CLIENT_CONNECT, $ctxRelaxed);
         }
         if (!$fp) {
             $this->lastError = "Cannot connect to {$target}: {$errstr} ({$errno})";
             return null;
         }
-        stream_set_timeout($fp, 20);
+        stream_set_timeout($fp, 12);
         return $fp;
     }
 

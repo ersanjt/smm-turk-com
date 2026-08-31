@@ -9,6 +9,35 @@ $status  = $_GET['status'] ?? '';
 $page    = max(1, (int)($_GET['page'] ?? 1));
 $perPage = 20;
 $offset  = ($page - 1) * $perPage;
+$justPlaced = isset($_GET['placed']);
+
+if (isset($_GET['ajax_sync'])) {
+    header('Content-Type: application/json; charset=utf-8');
+    $updated = 0;
+    try {
+        $updated = $om->syncOrders((int) $uid, 50);
+    } catch (Throwable $e) {
+        Logger::log('orders ajax sync: ' . $e->getMessage(), 'orders');
+    }
+    echo json_encode(['ok' => true, 'updated' => $updated]);
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['refresh_status']) && csrf_verify()) {
+    try {
+        $updated = $om->syncOrders((int) $uid, 50);
+        if ($updated > 0) {
+            flash('success', "Updated {$updated} order status(es) from the provider.");
+        } else {
+            flash('success', 'Statuses checked. Pending means the provider has not started delivery yet — this can take a few minutes to a few hours.');
+        }
+    } catch (Throwable $e) {
+        Logger::log('orders refresh: ' . $e->getMessage(), 'orders');
+        flash('error', 'Could not refresh statuses. Try again in a moment.');
+    }
+    $qs = $status !== '' ? '?status=' . urlencode($status) : '';
+    redirect(url('orders.php') . $qs);
+}
 
 $orders = $om->getUserOrders($uid, $status, $perPage, $offset);
 $total  = $om->getUserOrderCount($uid, $status);
@@ -23,6 +52,9 @@ require_once __DIR__ . '/layouts/header.php';
 .orders-page .card { padding: 0; overflow: hidden; }
 .orders-page .orders-head { padding: 20px 20px 0; }
 .orders-page .orders-title { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; font-size: 1.15rem; font-weight: 700; color: var(--text); }
+.orders-page .orders-title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.orders-page .orders-title-row .orders-title { margin-bottom: 0; }
+.orders-page .orders-refresh { display: inline-flex; align-items: center; gap: 6px; }
 .orders-page .orders-title svg { width: 22px; height: 22px; color: var(--primary); flex-shrink: 0; }
 .orders-page .order-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
 .orders-page .order-filters a { padding: 8px 14px; font-size: 12px; font-weight: 600; text-decoration: none; border-radius: 999px; white-space: nowrap; transition: background .2s, color .2s; }
@@ -69,10 +101,17 @@ require_once __DIR__ . '/layouts/header.php';
 <div class="orders-page">
   <div class="card">
     <div class="orders-head">
+      <div class="orders-title-row">
       <h1 class="orders-title">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
         My Orders
       </h1>
+      <form method="POST" class="orders-refresh">
+        <input type="hidden" name="csrf_token" value="<?= csrf_token() ?>">
+        <input type="hidden" name="refresh_status" value="1">
+        <button type="submit" class="btn btn-sm">Refresh status</button>
+      </form>
+      </div>
       <nav class="order-filters" aria-label="Filter by status">
         <?php foreach ($statuses as $s): ?>
         <a href="?status=<?= urlencode($s) ?><?= $page > 1 ? '&page=1' : '' ?>"
@@ -198,5 +237,23 @@ require_once __DIR__ . '/layouts/header.php';
     <?php endif; ?>
   </div>
 </div>
+
+<?php if (empty($justPlaced)): ?>
+<script>
+(function () {
+  var url = <?= json_encode(path('orders.php') . '?ajax_sync=1') ?>;
+  setTimeout(function () {
+    fetch(url, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } })
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d && d.updated > 0) {
+          window.location.reload();
+        }
+      })
+      .catch(function () {});
+  }, 1200);
+})();
+</script>
+<?php endif; ?>
 
 <?php require_once __DIR__ . '/layouts/footer.php'; ?>

@@ -35,10 +35,15 @@ class SmmApi {
         ]));
     }
 
-    public function multiStatus(array $order_ids): ?object {
-        return json_decode($this->connect([
+    public function multiStatus(array $order_ids): object|array|null {
+        $raw = $this->connect([
             'key' => $this->api_key, 'action' => 'status', 'orders' => implode(',', $order_ids),
-        ]));
+        ]);
+        $decoded = json_decode((string) $raw);
+        if ($decoded === null && json_last_error() !== JSON_ERROR_NONE) {
+            return null;
+        }
+        return is_object($decoded) || is_array($decoded) ? $decoded : null;
     }
 
     public function services(): ?array {
@@ -113,7 +118,8 @@ class SmmApi {
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_POSTFIELDS => implode('&', $_post),
             CURLOPT_USERAGENT => 'SMMTurk/1.0',
-            CURLOPT_TIMEOUT => 30,
+            CURLOPT_CONNECTTIMEOUT => 8,
+            CURLOPT_TIMEOUT => 18,
         ]);
         $result = curl_exec($ch);
         if (curl_errno($ch) != 0 && empty($result)) {

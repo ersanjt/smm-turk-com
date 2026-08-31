@@ -19,7 +19,9 @@ class ChildPanelAutomation
     public function run(): array
     {
         $stats = $this->cpm->processCron();
-        $stats['parent_orders'] = (new OrderManager())->syncOrders();
+        $om = new OrderManager();
+        $stats['parent_orders'] = $om->syncOrders();
+        $stats['order_emails'] = $om->flushOrderMailQueue(30);
         $stats['parent_deposits'] = (new DepositAutoConfirm())->processAllPending(50);
 
         $childOrderStats = $this->runOnAllChildPanels('cron-sync.php', 'Updated');

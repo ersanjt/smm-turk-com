@@ -8,6 +8,7 @@ require_cli_or_cron_token('cron-sync');
 
 $om = new OrderManager();
 $updated = $om->syncOrders();
+$om->flushOrderMailQueue(20);
 
 if (php_sapi_name() === 'cli') {
     echo date('Y-m-d H:i:s') . " - Updated $updated orders\n";

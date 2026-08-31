@@ -108,5 +108,26 @@
     var input = document.getElementById('service-filter');
     if (input) input.addEventListener('input', applyServiceFilters);
     applyServiceFilters();
+
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        if (form.dataset.submitting === '1') {
+          e.preventDefault();
+          return;
+        }
+        var sel = document.getElementById('service-select');
+        var link = document.getElementById('order-link');
+        var qty = document.getElementById('order-qty');
+        if (!sel || !sel.value || (link && !link.value.trim()) || (qty && !qty.value)) {
+          return;
+        }
+        form.dataset.submitting = '1';
+        var btn = form.querySelector('button[type="submit"]');
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = 'Placing order…';
+        }
+      });
+    }
   });
 })();
