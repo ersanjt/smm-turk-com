@@ -10,7 +10,7 @@ $footerIsChild = $footerIsChild ?? (function_exists('is_child_panel') && is_chil
 $footerTiles = [
     ['href' => route_path('login.php'), 'label' => __('footer_login'), 'icon' => 'logout'],
     ['href' => register_path(), 'label' => __('footer_signup'), 'icon' => 'plus'],
-    ['href' => path('app.php'), 'label' => __('nav_app'), 'icon' => 'package'],
+    ['href' => path('get-app.php'), 'label' => __('nav_app'), 'icon' => 'package'],
     ['href' => path('blog.php'), 'label' => __('blog_nav_blog'), 'icon' => 'message'],
     ['href' => path('help.php'), 'label' => __('help_nav'), 'icon' => 'info'],
     ['href' => path('terms.php'), 'label' => __('nav_terms'), 'icon' => 'clipboard'],

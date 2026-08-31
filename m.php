@@ -18,7 +18,7 @@ $boot = [
     'logo' => logo_url(),
     'lang' => $lang,
     'home' => home_path(),
-    'download' => path('app.php'),
+    'download' => path('get-app.php'),
 ];
 ?>
 <!DOCTYPE html>

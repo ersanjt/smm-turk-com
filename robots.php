@@ -13,7 +13,7 @@ echo "Allow: /earn\n";
 echo "Allow: /blog\n";
 echo "Allow: /help\n";
 echo "Allow: /terms\n";
-echo "Allow: /app\n";
+echo "Allow: /get-app\n";
 echo "Allow: /m\n";
 echo "Disallow: /admin/\n";
 echo "Disallow: /dashboard\n";

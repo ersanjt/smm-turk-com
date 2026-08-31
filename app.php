@@ -17,8 +17,8 @@ $hasIpa = is_file($ipaPath);
 $apkUrl = path('download-app.php') . '?platform=android';
 $iosInstallUrl = path('m.php');
 $iosInstallUrl = preg_replace('#m\.php$#', 'm', $iosInstallUrl) ?: $iosInstallUrl;
-$canonical = $siteUrl ? Seo::absoluteUrl(path('app.php')) : path('app.php');
-$canonical = preg_replace('#app\.php$#', 'app', $canonical) ?: $canonical;
+$canonical = $siteUrl ? Seo::absoluteUrl(path('get-app.php')) : path('get-app.php');
+$canonical = preg_replace('#get-app\.php$#', 'get-app', $canonical) ?: $canonical;
 $pageImg = og_image_url();
 $seoTitle = $siteName . ' — ' . __('app_seo_title');
 $seoDescription = __('app_seo_desc');
@@ -31,7 +31,7 @@ $seoDescription = __('app_seo_desc');
     <title><?= h($seoTitle) ?></title>
     <meta name="description" content="<?= h($seoDescription) ?>">
     <link rel="canonical" href="<?= h($canonical) ?>">
-    <?= Seo::hreflangTags(preg_replace('#app\.php$#', 'app', Seo::absoluteUrl(path('app.php'))) ?: path('app')) ?>
+    <?= Seo::hreflangTags(preg_replace('#get-app\.php$#', 'get-app', Seo::absoluteUrl(path('get-app.php'))) ?: path('get-app')) ?>
     <meta name="theme-color" content="#E30A17">
     <meta property="og:type" content="website">
     <meta property="og:title" content="<?= h($seoTitle) ?>">

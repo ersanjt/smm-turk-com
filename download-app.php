@@ -27,7 +27,7 @@ if (!is_file($file) || !is_readable($file)) {
     $siteName = function_exists('site_name') ? site_name() : 'SMM Turk';
     echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' . h($siteName) . '</title></head><body style="font-family:sans-serif;padding:32px;text-align:center">';
     echo '<h1>Download not ready yet</h1><p>The Android package will appear here after the next build. You can use the mobile web app meanwhile.</p>';
-    echo '<p><a href="' . h(path('m.php')) . '">Open mobile app</a> · <a href="' . h(path('app.php')) . '">Back</a></p></body></html>';
+    echo '<p><a href="' . h(path('m.php')) . '">Open mobile app</a> · <a href="' . h(path('get-app.php')) . '">Back</a></p></body></html>';
     exit;
 }
 

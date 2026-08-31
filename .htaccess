@@ -51,8 +51,9 @@ ErrorDocument 404 /404.php
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteBase /
-# Public download page. Must win over the real /app/ directory used by PHP core.
-RewriteRule ^app$ app.php [L,QSA]
+# Original request /app — do not let Apache DirectorySlash send it to the forbidden app/ directory
+RewriteCond %{THE_REQUEST} \s/+app(?:[\s?]|$)
+RewriteRule ^app/?$ app.php [L,QSA]
 # Block dumps, backups, and env files even if they are not matched by FilesMatch
 RewriteRule \.(?:sql|sh|bak|env|log)$ - [F,L]
 # Block direct HTTP access to internal directories (each also has its own .htaccess)

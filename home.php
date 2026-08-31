@@ -294,7 +294,7 @@ $homeJsonLd = [
     <div class="why-us-grid" style="margin-top:28px;">
         <div>
             <a href="<?= h(path('download-app.php')) ?>?platform=android" class="nav-btn" style="display:inline-block;margin:0 10px 12px 0;"><?= h(__('app_android_btn')) ?></a>
-            <a href="<?= h(path('app.php')) ?>" class="nav-btn" style="display:inline-block;background:transparent;color:var(--primary);border:2px solid rgba(227,10,23,.25);box-shadow:none;"><?= h(__('app_ios_btn')) ?></a>
+            <a href="<?= h(path('get-app.php')) ?>" class="nav-btn" style="display:inline-block;background:transparent;color:var(--primary);border:2px solid rgba(227,10,23,.25);box-shadow:none;"><?= h(__('app_ios_btn')) ?></a>
         </div>
         <p class="section-desc" style="margin:0;"><?= h(__('app_home_note')) ?></p>
     </div>
