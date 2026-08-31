@@ -148,6 +148,137 @@ class OrderManager {
         }
     }
 
+    /** Statuses that have not finished delivery and may be cancelled. */
+    public static function cancellableStatuses(): array
+    {
+        return ['Pending', 'Processing', 'In progress'];
+    }
+
+    /**
+     * Cancel an unfinished order and refund the charge to the buyer.
+     * Tries the provider first when a provider order id exists.
+     *
+     * @return array{success: bool, error?: string, refunded?: float}
+     */
+    public function cancelOrder(int $orderId, bool $asAdmin = false): array
+    {
+        if ($orderId <= 0) {
+            return ['success' => false, 'error' => 'Invalid order.'];
+        }
+
+        $order = $this->db->fetch(
+            "SELECT id, user_id, charge, status, provider_order_id, service_name FROM orders WHERE id = ?",
+            [$orderId]
+        );
+        if (!$order) {
+            return ['success' => false, 'error' => 'Order not found.'];
+        }
+        $status = (string) ($order['status'] ?? '');
+        if (!in_array($status, self::cancellableStatuses(), true)) {
+            return ['success' => false, 'error' => 'Only unfinished orders can be cancelled.'];
+        }
+
+        $already = $this->db->fetch(
+            "SELECT id FROM transactions WHERE type = 'refund' AND reference = ? LIMIT 1",
+            [(string) $orderId]
+        );
+        if ($already) {
+            return ['success' => false, 'error' => 'This order was already refunded.'];
+        }
+
+        if (!empty($order['provider_order_id'])) {
+            $api = ProviderRegistry::apiForOrder($this->db, $orderId);
+            if ($api) {
+                $providerResp = $api->cancel([(int) $order['provider_order_id']]);
+                $providerItem = is_array($providerResp) ? ($providerResp[0] ?? null) : null;
+                if (is_array($providerItem) && isset($providerItem['cancel']['error'])) {
+                    $msg = trim((string) $providerItem['cancel']['error']);
+                    return ['success' => false, 'error' => $msg !== '' ? $msg : 'Provider rejected the cancel request.'];
+                }
+            }
+        }
+
+        $charge = round((float) $order['charge'], 4);
+        $userId = (int) $order['user_id'];
+
+        try {
+            $this->db->beginTransaction();
+            $locked = $this->db->fetch(
+                "SELECT id, user_id, charge, status FROM orders WHERE id = ? FOR UPDATE",
+                [$orderId]
+            );
+            if (!$locked || !in_array((string) $locked['status'], self::cancellableStatuses(), true)) {
+                $this->db->rollBack();
+                return ['success' => false, 'error' => 'Order status changed. Refresh and try again.'];
+            }
+            $dup = $this->db->fetch(
+                "SELECT id FROM transactions WHERE type = 'refund' AND reference = ? LIMIT 1",
+                [(string) $orderId]
+            );
+            if ($dup) {
+                $this->db->rollBack();
+                return ['success' => false, 'error' => 'This order was already refunded.'];
+            }
+
+            $updated = $this->db->execute(
+                "UPDATE orders SET status = 'Cancelled' WHERE id = ? AND status IN ('Pending','Processing','In progress')",
+                [$orderId]
+            );
+            if ($updated === 0) {
+                $this->db->rollBack();
+                return ['success' => false, 'error' => 'Could not cancel this order.'];
+            }
+
+            $userRow = $this->db->fetch("SELECT balance, username, email FROM users WHERE id = ? FOR UPDATE", [$userId]);
+            if (!$userRow) {
+                $this->db->rollBack();
+                return ['success' => false, 'error' => 'User not found.'];
+            }
+            $balanceBefore = (float) ($userRow['balance'] ?? 0);
+            $this->db->execute(
+                "UPDATE users SET balance = balance + ?, spent = GREATEST(spent - ?, 0) WHERE id = ?",
+                [$charge, $charge, $userId]
+            );
+            $balanceAfter = round($balanceBefore + $charge, 4);
+            $who = $asAdmin ? 'admin' : 'user';
+            $this->db->insert(
+                "INSERT INTO transactions (user_id, type, amount, balance_before, balance_after, description, reference, status)
+                 VALUES (?, 'refund', ?, ?, ?, ?, ?, 'completed')",
+                [$userId, $charge, $balanceBefore, $balanceAfter, "Refund order #{$orderId} ({$who} cancel)", (string) $orderId]
+            );
+            $this->db->commit();
+        } catch (Throwable $e) {
+            $this->db->rollBack();
+            if (class_exists('Logger')) {
+                Logger::log("cancelOrder #{$orderId}: " . $e->getMessage(), 'orders');
+            }
+            return ['success' => false, 'error' => 'Could not cancel order. Try again.'];
+        }
+
+        if (class_exists('Logger')) {
+            Logger::log("Order #{$orderId} cancelled by {$who}, refunded {$charge} to user #{$userId}", 'orders');
+        }
+
+        if (!empty($userRow['email'])) {
+            try {
+                $mail = new Mail();
+                $mail->sendOrderStatusUpdate(
+                    (string) $userRow['email'],
+                    (string) ($userRow['username'] ?? ''),
+                    $orderId,
+                    (string) ($order['service_name'] ?? ''),
+                    'Cancelled'
+                );
+            } catch (Throwable $e) {
+                if (class_exists('Logger')) {
+                    Logger::log('Order cancel email failed #' . $orderId, 'mail');
+                }
+            }
+        }
+
+        return ['success' => true, 'refunded' => $charge];
+    }
+
     private function refundCharge(int $userId, float $charge): void {
         try {
             $this->db->beginTransaction();

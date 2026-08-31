@@ -3,11 +3,28 @@ require_once __DIR__ . '/_init.php';
 $pageTitle = 'Manage Orders';
 $db = Database::getInstance();
 
-$statusFilter = trim($_GET['status'] ?? '');
-$search = trim($_GET['q'] ?? '');
-$page = max(1, (int)($_GET['p'] ?? 1));
+$statusFilter = trim($_GET['status'] ?? $_POST['status'] ?? '');
+$search = trim($_GET['q'] ?? $_POST['q'] ?? '');
+$page = max(1, (int)($_GET['p'] ?? $_POST['p'] ?? 1));
 $perPage = 30;
 $offset = ($page - 1) * $perPage;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancel_order_id']) && csrf_verify()) {
+    $om = new OrderManager();
+    $result = $om->cancelOrder((int) $_POST['cancel_order_id'], true);
+    if (!empty($result['success'])) {
+        $refunded = (float) ($result['refunded'] ?? 0);
+        flash('success', 'Order cancelled. $' . number_format($refunded, 4) . ' refunded to the user.');
+    } else {
+        flash('error', $result['error'] ?? 'Could not cancel order.');
+    }
+    $qs = http_build_query(array_filter([
+        'q' => $search !== '' ? $search : null,
+        'status' => $statusFilter !== '' ? $statusFilter : null,
+        'p' => $page > 1 ? $page : null,
+    ]));
+    redirect(url('admin/admin-orders.php') . ($qs !== '' ? '?' . $qs : ''));
+}
 
 $where = "1=1";
 $params = [];
@@ -63,13 +80,15 @@ require_once __DIR__ . '/../layouts/header.php';
           <th>Charge</th>
           <th>Status</th>
           <th>Date</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
         <?php if (empty($orders)): ?>
-        <tr><td colspan="8" data-label="" style="text-align:center;padding:40px;color:var(--text-muted);">No orders found.</td></tr>
+        <tr><td colspan="9" data-label="" style="text-align:center;padding:40px;color:var(--text-muted);">No orders found.</td></tr>
         <?php else: ?>
         <?php foreach ($orders as $o): ?>
+        <?php $canCancel = in_array((string) ($o['status'] ?? ''), OrderManager::cancellableStatuses(), true); ?>
         <tr>
           <td data-label="ID"><strong>#<?= (int)$o['id'] ?></strong></td>
           <td data-label="User"><?= h($o['username']) ?><br><span style="font-size:11px;color:var(--text-muted);"><?= h($o['email']) ?></span></td>
@@ -79,6 +98,20 @@ require_once __DIR__ . '/../layouts/header.php';
           <td data-label="Charge"><strong>$<?= number_format($o['charge'], 4) ?></strong></td>
           <td data-label="Status"><span class="badge status-<?= str_replace(' ', '-', h($o['status'])) ?>"><?= h($o['status']) ?></span></td>
           <td data-label="Date" style="font-size:11px;color:var(--text-muted);"><?= date('Y-m-d H:i', strtotime($o['created_at'])) ?></td>
+          <td data-label="Action">
+            <?php if ($canCancel): ?>
+            <form method="POST" style="display:inline;" onsubmit="return confirm('Cancel order #<?= (int)$o['id'] ?> and refund $<?= h(number_format((float)$o['charge'], 4)) ?> to <?= h($o['username']) ?>?');">
+              <input type="hidden" name="csrf_token" value="<?= h(csrf_token()) ?>">
+              <input type="hidden" name="cancel_order_id" value="<?= (int)$o['id'] ?>">
+              <input type="hidden" name="q" value="<?= h($search) ?>">
+              <input type="hidden" name="status" value="<?= h($statusFilter) ?>">
+              <input type="hidden" name="p" value="<?= (int)$page ?>">
+              <button type="submit" class="btn" style="padding:6px 12px;font-size:12px;background:var(--text-muted);color:#fff;">Cancel</button>
+            </form>
+            <?php else: ?>
+            <span style="color:var(--text-muted);font-size:12px;">—</span>
+            <?php endif; ?>
+          </td>
         </tr>
         <?php endforeach; ?>
         <?php endif; ?>
