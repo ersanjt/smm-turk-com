@@ -322,7 +322,7 @@ textarea.form-control{min-height:120px}
 .admin-chart-card{background:#fff;border-radius:14px;padding:20px;box-shadow:var(--shadow);border:1px solid var(--border)}
 .admin-chart-card h3{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px}
 .admin-chart-wrap{position:relative;height:220px}
-.theme-toggle-btn{width:36px;height:36px;min-width:36px;min-height:36px;border-radius:10px;background:rgba(255,255,255,.9);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);transition:all .2s;flex-shrink:0;font-size:16px;line-height:1}
+.theme-toggle-btn{width:36px;height:36px;min-width:36px;min-height:36px;padding:0;border-radius:10px;background:rgba(255,255,255,.9);border:1px solid var(--border);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-muted);transition:all .2s;flex-shrink:0;font-size:16px;line-height:0;position:relative;box-sizing:border-box}
 .theme-toggle-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
 body.theme-dark{--bg:#0d090b;--text:#f0e9eb;--text-muted:#a89398;--border:rgba(255,255,255,.08);--white:#141013;--shadow:0 4px 24px rgba(0,0,0,.4);--table-row-hover:rgba(255,255,255,.06)}
 body.theme-dark .topbar{background:linear-gradient(180deg,rgba(20,16,19,.97) 0%,rgba(15,12,14,.95) 100%);border-bottom-color:rgba(255,255,255,.06);box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 4px 20px rgba(0,0,0,.3)}
@@ -345,7 +345,9 @@ body.theme-dark .mob-bottom-nav{background:#141013;border-top-color:rgba(255,255
 body.theme-dark .qa-btn.qa-btn-outline{background:#141013;color:var(--text);border-color:rgba(255,255,255,.1)}
 body.theme-dark .qa-btn.qa-btn-outline:hover{background:rgba(227,10,23,.12);color:var(--primary-light)}
 body.theme-dark .theme-toggle-btn .theme-icon-light{display:none}
-body.theme-dark .theme-toggle-btn .theme-icon-dark{display:inline}
+body.theme-dark .theme-toggle-btn .theme-icon-dark{display:flex}
+.theme-toggle-btn .theme-icon{display:flex;align-items:center;justify-content:center;line-height:0}
+.theme-toggle-btn .theme-icon svg{display:block}
 .theme-toggle-btn .theme-icon-dark{display:none}
 @media(max-width:768px){.admin-charts{grid-template-columns:1fr}}
 .a11y-skip{position:fixed;top:-80px;left:12px;z-index:100001;background:#1d4ed8;color:#fff;padding:12px 20px;border-radius:10px;font-weight:800;font-size:15px;text-decoration:none}
