@@ -39,6 +39,7 @@ $addUrl = static function (string $loc, string $lastmod, string $freq, string $p
 // Public marketing pages
 $static = [
     '/' => ['freq' => 'daily', 'priority' => '1.0'],
+    '/app' => ['freq' => 'weekly', 'priority' => '0.9'],
     '/earn' => ['freq' => 'weekly', 'priority' => '0.92'],
     '/pricing' => ['freq' => 'daily', 'priority' => '0.95'],
     '/help' => ['freq' => 'weekly', 'priority' => '0.85'],

@@ -390,6 +390,115 @@ class Auth {
         return (int)($_SESSION['user_id'] ?? 0);
     }
 
+    public function ensureApiKey(int $userId): string {
+        $row = $this->db->fetch("SELECT api_key FROM users WHERE id = ?", [$userId]);
+        $key = trim((string)($row['api_key'] ?? ''));
+        if (strlen($key) >= 20) {
+            return $key;
+        }
+        $key = bin2hex(random_bytes(20));
+        $this->db->execute("UPDATE users SET api_key = ? WHERE id = ?", [$key, $userId]);
+        return $key;
+    }
+
+    public function mobileUserPayload(array $user, string $apiKey): array {
+        $userId = (int)($user['id'] ?? 0);
+        $fresh = $this->db->fetch(
+            "SELECT id, username, email, balance, spent, role, status, referral_code FROM users WHERE id = ?",
+            [$userId]
+        ) ?: $user;
+        $vip = ['name' => 'Bronze', 'discount_percent' => 0.0, 'next_tier' => null, 'next_at' => null];
+        if (class_exists('RevenueEngine')) {
+            $vip = (new RevenueEngine())->vipTier($userId);
+        }
+        return [
+            'id' => (int)($fresh['id'] ?? $userId),
+            'username' => (string)($fresh['username'] ?? ''),
+            'email' => (string)($fresh['email'] ?? ''),
+            'balance' => number_format((float)($fresh['balance'] ?? 0), 4, '.', ''),
+            'spent' => number_format((float)($fresh['spent'] ?? 0), 4, '.', ''),
+            'role' => (string)($fresh['role'] ?? 'user'),
+            'status' => (string)($fresh['status'] ?? 'active'),
+            'referral_code' => (string)($fresh['referral_code'] ?? ''),
+            'vip' => $vip,
+            'api_key' => $apiKey,
+        ];
+    }
+
+    public function issueMobileSession(array $user): array {
+        if (($user['status'] ?? '') === 'banned') {
+            return ['success' => false, 'error' => 'Account not found.'];
+        }
+        $this->db->execute("UPDATE users SET last_login = NOW() WHERE id = ?", [$user['id']]);
+        $key = $this->ensureApiKey((int)$user['id']);
+        $fresh = $this->db->fetch("SELECT * FROM users WHERE id = ?", [$user['id']]) ?: $user;
+        return [
+            'success' => true,
+            'api_key' => $key,
+            'user' => $this->mobileUserPayload($fresh, $key),
+        ];
+    }
+
+    public function loginForMobile(string $email_or_username, string $password, string $totpCode = ''): array {
+        $email_or_username = trim($email_or_username);
+        $loginEmail = str_contains($email_or_username, '@') ? strtolower($email_or_username) : $email_or_username;
+        $user = $this->db->fetch(
+            "SELECT * FROM users WHERE (LOWER(email) = ? OR username = ?) AND status != 'banned'",
+            [$loginEmail, $email_or_username]
+        );
+
+        if (!$user || !password_verify($password, $user['password'])) {
+            return ['success' => false, 'error' => 'Invalid credentials'];
+        }
+        if (($user['status'] ?? 'active') === 'pending') {
+            return ['success' => false, 'error' => 'Please verify your email first. Check your inbox and click the activation link.'];
+        }
+        if ($this->userNeedsTwoFactor($user)) {
+            if (trim($totpCode) === '') {
+                return [
+                    'success' => true,
+                    'needs_2fa' => true,
+                    'challenge' => MobileAuth::createChallenge((int)$user['id']),
+                ];
+            }
+            if (!Totp::verify($user['two_factor_secret'], $totpCode)) {
+                return ['success' => false, 'error' => 'Invalid authentication code. Try again.'];
+            }
+        }
+        return $this->issueMobileSession($user);
+    }
+
+    public function completeMobileTwoFactor(string $challenge, string $code): array {
+        $userId = MobileAuth::peekChallenge($challenge);
+        if ($userId <= 0) {
+            return ['success' => false, 'error' => 'Two-factor session expired. Please sign in again.'];
+        }
+        $user = $this->db->fetch("SELECT * FROM users WHERE id = ? AND status != 'banned'", [$userId]);
+        if (!$user || empty($user['two_factor_secret']) || empty($user['two_factor_enabled'])) {
+            MobileAuth::consumeChallenge($challenge);
+            return ['success' => false, 'error' => 'Invalid two-factor session. Please sign in again.'];
+        }
+        if (!Totp::verify($user['two_factor_secret'], $code)) {
+            return ['success' => false, 'error' => 'Invalid authentication code. Try again.'];
+        }
+        MobileAuth::consumeChallenge($challenge);
+        return $this->issueMobileSession($user);
+    }
+
+    private function finishGoogleUser(array $user, bool $forMobile): array {
+        if ($forMobile) {
+            if ($this->userNeedsTwoFactor($user)) {
+                return [
+                    'success' => true,
+                    'needs_2fa' => true,
+                    'challenge' => MobileAuth::createChallenge((int)$user['id']),
+                ];
+            }
+            return $this->issueMobileSession($user);
+        }
+        return $this->finalizeLogin($user);
+    }
+
     public function updateEmail(int $userId, string $newEmail, string $currentPassword): array {
         if (!filter_var($newEmail, FILTER_VALIDATE_EMAIL)) {
             return ['success' => false, 'error' => 'Invalid email address'];
@@ -486,7 +595,7 @@ class Auth {
      * Login or create user from Google OAuth (email, name, google_id from Google profile).
      * Returns ['success' => bool, 'error' => string|null].
      */
-    public function loginOrCreateFromGoogle(string $googleId, string $email, string $name): array {
+    public function loginOrCreateFromGoogle(string $googleId, string $email, string $name, bool $forMobile = false): array {
         $email = trim($email);
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return ['success' => false, 'error' => 'Invalid email from Google'];
@@ -501,7 +610,7 @@ class Auth {
         if ($user) {
             $this->db->execute("UPDATE users SET last_login = NOW(), email = ? WHERE id = ?", [$email, $user['id']]);
             $user = $this->db->fetch("SELECT * FROM users WHERE id = ?", [$user['id']]) ?: $user;
-            return $this->finalizeLogin($user);
+            return $this->finishGoogleUser($user, $forMobile);
         }
 
         // Existing user by email — only link verified (active) accounts without Google linked yet
@@ -519,7 +628,7 @@ class Auth {
                 return ['success' => false, 'error' => 'Google sign-in is not available yet. Please contact support.'];
             }
             $user = $this->db->fetch("SELECT * FROM users WHERE id = ?", [$user['id']]) ?: $user;
-            return $this->finalizeLogin($user);
+            return $this->finishGoogleUser($user, $forMobile);
         }
 
         // New user: create (no email verification for Google sign-in)
@@ -541,7 +650,7 @@ class Auth {
             Notify::welcome($username, $email);
             $this->reportChildEndUser((int) $id, $username, $email, 'active');
             $this->applyGrowthOnSignup((int) $id, true);
-            return $this->finalizeLogin($user);
+            return $this->finishGoogleUser($user, $forMobile);
         }
         return ['success' => false, 'error' => 'Could not create account'];
     }

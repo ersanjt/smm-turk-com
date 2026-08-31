@@ -21,6 +21,9 @@ RSYNC_EXCLUDES=(
   --exclude='uploads/'
   --exclude='storage/'
   --exclude='node_modules'
+  --exclude='android-app/'
+  --exclude='ios-app/'
+  --exclude='.cursor/'
 )
 
 rsync_to_web() {

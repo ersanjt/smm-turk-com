@@ -1,4 +1,4 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/smmturk/public_html/
-    - /usr/bin/rsync -av --delete --exclude=".git" --exclude=".cpanel.yml" --exclude="config.php" --exclude=".well-known" --exclude="uploads" --exclude="tmp" --chmod=D755,F644 ./ $DEPLOYPATH
+    - /usr/bin/rsync -av --delete --exclude=".git" --exclude=".cpanel.yml" --exclude="config.php" --exclude=".well-known" --exclude="uploads" --exclude="tmp" --exclude="android-app" --exclude="ios-app" --exclude=".cursor" --chmod=D755,F644 ./ $DEPLOYPATH

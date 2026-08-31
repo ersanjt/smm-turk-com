@@ -4,8 +4,25 @@
  */
 require_once __DIR__ . '/app/init.php';
 
-if ($auth->isLoggedIn()) {
+$isMobile = MobileAuth::isRequested();
+if ($isMobile) {
+    MobileAuth::markMobile(!empty($_GET['app']));
+}
+
+if ($auth->isLoggedIn() && !$isMobile) {
     redirect(url('dashboard.php'));
+}
+
+if ($auth->isLoggedIn() && $isMobile) {
+    $user = $auth->getCurrentUser();
+    if ($user) {
+        $issued = $auth->issueMobileSession($user);
+        if (!empty($issued['success'])) {
+            $token = MobileAuth::createHandshake($issued['api_key'], $issued['user']);
+            MobileAuth::clearMobile();
+            redirect(MobileAuth::appUrl(['oauth_token' => $token]));
+        }
+    }
 }
 
 $clientId = defined('GOOGLE_CLIENT_ID') ? trim(GOOGLE_CLIENT_ID) : '';
@@ -13,6 +30,9 @@ $siteUrl = defined('SITE_URL') ? rtrim(SITE_URL, '/') : '';
 $redirectUri = url('login-google-callback.php');
 
 if ($clientId === '' || $siteUrl === '') {
+    if ($isMobile) {
+        redirect(MobileAuth::appUrl(['oauth_error' => 'not_configured']));
+    }
     flash('error', 'Google Sign-In is not configured.');
     redirect(url('login.php'));
 }

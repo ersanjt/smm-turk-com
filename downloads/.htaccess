@@ -1,0 +1,19 @@
+# Protect this directory: only APK/IPA downloads
+<IfModule mod_autoindex.c>
+  Options -Indexes
+</IfModule>
+<IfModule mod_mime.c>
+  AddType application/vnd.android.package-archive .apk
+  AddType application/octet-stream .ipa
+</IfModule>
+<FilesMatch "\.(apk|ipa)$">
+  <IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set Content-Disposition "attachment"
+  </IfModule>
+</FilesMatch>
+<FilesMatch "\.(php|php8|phtml|phar|htaccess)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+</FilesMatch>

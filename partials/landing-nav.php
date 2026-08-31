@@ -17,6 +17,7 @@ $navActive = $navActive ?? '';
 
 $navItems = [
     ['id' => 'login', 'href' => route_path('login.php'), 'label' => __('nav_sign_in')],
+    ['id' => 'app', 'href' => path('app.php'), 'label' => __('nav_app')],
     ['id' => 'pricing', 'href' => path('pricing.php'), 'label' => __('nav_prices')],
     ['id' => 'earn', 'href' => path('earn.php'), 'label' => __('nav_earn')],
     ['id' => 'blog', 'href' => path('blog.php'), 'label' => __('blog_nav_blog')],

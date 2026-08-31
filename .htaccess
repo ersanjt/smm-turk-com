@@ -54,7 +54,7 @@ RewriteBase /
 # Block dumps, backups, and env files even if they are not matched by FilesMatch
 RewriteRule \.(?:sql|sh|bak|env|log)$ - [F,L]
 # Block direct HTTP access to internal directories (each also has its own .htaccess)
-RewriteRule ^(?:app|migrations|lang|layouts|scripts|docs)/ - [F,L]
+RewriteRule ^(?:app|migrations|lang|layouts|scripts|docs|android-app|ios-app)/ - [F,L]
 # Real files and directories: do not rewrite
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]
@@ -62,6 +62,7 @@ RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 # API and referral
 RewriteRule ^api/v2$ api/v2.php [L,QSA]
+RewriteRule ^api/mobile$ api/mobile.php [L,QSA]
 RewriteRule ^c/([a-zA-Z0-9_-]+)/?$ c.php?ref=$1 [L,QSA]
 # Sitemap & robots
 RewriteRule ^sitemap\.xml$ sitemap.php [L]

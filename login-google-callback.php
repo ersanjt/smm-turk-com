@@ -4,7 +4,9 @@
  */
 require_once __DIR__ . '/app/init.php';
 
-if ($auth->isLoggedIn()) {
+$isMobile = MobileAuth::isMobile() || MobileAuth::isRequested();
+
+if ($auth->isLoggedIn() && !$isMobile) {
     redirect(url('dashboard.php'));
 }
 
@@ -65,8 +67,22 @@ if ($clientId === '' || $clientSecret === '' || $siteUrl === '') {
                 $googleId = $profile['id'] ?? '';
                 $email    = $profile['email'] ?? '';
                 $name     = $profile['name'] ?? $profile['given_name'] ?? 'User';
-                $result   = $auth->loginOrCreateFromGoogle($googleId, $email, $name);
+                $result   = $auth->loginOrCreateFromGoogle($googleId, $email, $name, $isMobile);
                 if ($result['success']) {
+                    if ($isMobile) {
+                        $wantApp = MobileAuth::wantsAppDeepLink();
+                        MobileAuth::clearMobile();
+                        if (!empty($result['needs_2fa'])) {
+                            redirect(MobileAuth::appUrl(['challenge' => $result['challenge']]));
+                        }
+                        $handshake = MobileAuth::createHandshake($result['api_key'], $result['user']);
+                        if ($wantApp) {
+                            header('Location: smmturk://auth?token=' . rawurlencode($handshake));
+                            echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Opening SMM Turk</title></head><body style="font-family:sans-serif;padding:32px;text-align:center;background:#1a0a0e;color:#fff;"><p>Opening the app…</p><p><a style="color:#FF5566" href="' . h(MobileAuth::appUrl(['oauth_token' => $handshake])) . '">Continue in browser</a></p></body></html>';
+                            exit;
+                        }
+                        redirect(MobileAuth::appUrl(['oauth_token' => $handshake]));
+                    }
                     if (!empty($result['needs_2fa'])) {
                         redirect(url('login-2fa.php'));
                     }
@@ -78,5 +94,9 @@ if ($clientId === '' || $clientSecret === '' || $siteUrl === '') {
     }
 }
 
+if ($isMobile) {
+    MobileAuth::clearMobile();
+    redirect(MobileAuth::appUrl(['oauth_error' => '1']));
+}
 $_SESSION['flash'] = ['type' => 'error', 'message' => $error];
 redirect(url('login.php'));

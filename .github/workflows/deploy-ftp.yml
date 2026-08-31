@@ -35,4 +35,5 @@ jobs:
           **/tmp/**
           **/storage/**
           **/android-app/**
+          **/ios-app/**
           **/node_modules/**
