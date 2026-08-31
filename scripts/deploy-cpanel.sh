@@ -16,6 +16,7 @@ RSYNC_EXCLUDES=(
   --exclude='deploy-secret.txt'
   --exclude='deploy-smm.sh'
   --exclude='deploy-cron.sh'
+  --exclude='.well-known/'
   --exclude='tmp/'
   --exclude='uploads/'
   --exclude='storage/'
