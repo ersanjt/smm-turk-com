@@ -37,11 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $resendEmail = trim($_POST['resend_email'] ?? '');
         $resend = $auth->resendVerificationEmail($resendEmail);
         if ($resend['success']) {
-            if (!empty($resend['email_sent'])) {
-                $success = 'Verification email sent! Check your inbox and click the link to activate your account.';
-            } else {
-                $success = 'If that email has a pending account, a new verification link was sent. Check your inbox and spam folder.';
-            }
+            $success = 'If that email has a pending account, a new verification link was sent. Check your inbox and spam folder.';
             $_SESSION['pending_verify_email'] = strtolower($resendEmail);
             $mode = 'login';
         } else {

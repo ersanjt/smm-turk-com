@@ -135,8 +135,8 @@ class GrowthEngine
         );
         $minPrice = (float) ($minRate['m'] ?? 0.001);
 
-        $boostOrders = max(0, (int) ($this->db->getSetting('growth_stats_boost_orders') ?: 50000));
-        $boostUsers = max(0, (int) ($this->db->getSetting('growth_stats_boost_users') ?: 1000));
+        $boostOrders = max(0, (int) ($this->db->getSetting('growth_stats_boost_orders') ?: 0));
+        $boostUsers = max(0, (int) ($this->db->getSetting('growth_stats_boost_users') ?: 0));
         $displayOrders = $orders + $boostOrders;
         $displayUsers = $users + $boostUsers;
 
@@ -177,7 +177,9 @@ class GrowthEngine
         return [
             'enabled' => $enabled,
             'text' => (string) ($this->db->getSetting('growth_promo_bar_text') ?: $defaultText),
-            'cta_url' => page_url(ltrim((string) ($this->db->getSetting('growth_promo_bar_cta_url') ?: 'login.php?mode=register'), '/')),
+            'cta_url' => function_exists('safe_app_href')
+                ? safe_app_href((string) ($this->db->getSetting('growth_promo_bar_cta_url') ?: 'login.php?mode=register'), 'login.php')
+                : page_url(ltrim((string) ($this->db->getSetting('growth_promo_bar_cta_url') ?: 'login.php?mode=register'), '/')),
             'cta_label' => (string) ($this->db->getSetting('growth_promo_bar_cta_label') ?: 'Sign up free →'),
         ];
     }

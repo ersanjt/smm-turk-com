@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/app/init.php';
+require_once __DIR__ . '/app/RateLimit.php';
 
 if ($auth->isLoggedIn()) {
     redirect(url('dashboard.php'));
@@ -8,11 +9,15 @@ if ($auth->isLoggedIn()) {
 $siteName = function_exists('site_name') ? site_name() : (defined('SITE_NAME') ? SITE_NAME : 'SMM Turk');
 $error = '';
 $success = '';
+$resetLimit = new RateLimit(5, 900, 'forgot_' . ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0'));
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'] ?? '', $_POST['csrf_token'] ?? '')) {
         $error = 'Invalid request. Please try again.';
+    } elseif ($resetLimit->isLimited()) {
+        $error = 'Too many reset attempts. Please try again in 15 minutes.';
     } else {
+        $resetLimit->recordAttempt();
         $result = $auth->requestPasswordReset(trim($_POST['email'] ?? ''));
         if ($result['success']) {
             $success = 'If an account exists with that email, you will receive a password reset link shortly. Check your inbox and spam folder.';
@@ -30,7 +35,6 @@ if (empty($_SESSION['csrf_token'])) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="<?= h(Seo::robotsContent(false)) ?>">
 <meta name="robots" content="<?= h(Seo::robotsContent(false)) ?>">
 <title><?= htmlspecialchars($siteName) ?> — Forgot Password</title>
 <link rel="icon" type="image/png" href="<?= h(logo_url()) ?>">

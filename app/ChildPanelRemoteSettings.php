@@ -263,7 +263,6 @@ class ChildPanelRemoteSettings
             'image/png' => 'png',
             'image/gif' => 'gif',
             'image/webp' => 'webp',
-            'image/svg+xml' => 'svg',
             'image/x-icon' => 'ico',
         ];
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -271,7 +270,7 @@ class ChildPanelRemoteSettings
         finfo_close($finfo);
 
         if (!isset($allowed[$mime]) || (int) ($file['size'] ?? 0) > 2 * 1024 * 1024) {
-            return ['success' => false, 'error' => 'Upload a valid image (JPEG, PNG, GIF, WebP, SVG or ICO, max 2 MB).'];
+            return ['success' => false, 'error' => 'Upload a valid image (JPEG, PNG, GIF, WebP or ICO, max 2 MB).'];
         }
 
         $dir = $documentRoot . '/assets/img/branding';

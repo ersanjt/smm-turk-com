@@ -6,6 +6,7 @@
 require_once __DIR__ . '/app/init.php';
 require_once __DIR__ . '/app/Lang.php';
 Lang::initPublic();
+require_once __DIR__ . '/app/RateLimit.php';
 
 $wantsJson = (
     (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
@@ -14,8 +15,17 @@ $wantsJson = (
 );
 
 $redirectBack = function (string $status) {
-    $ref = $_SERVER['HTTP_REFERER'] ?? '';
-    $target = $ref !== '' ? $ref : url('blog.php');
+    $target = url('blog.php');
+    $ref = trim((string) ($_SERVER['HTTP_REFERER'] ?? ''));
+    if ($ref !== '') {
+        $refHost = strtolower((string) (parse_url($ref, PHP_URL_HOST) ?? ''));
+        $siteHost = strtolower((string) (parse_url(defined('SITE_URL') ? (string) SITE_URL : '', PHP_URL_HOST) ?? ''));
+        $refPath = (string) (parse_url($ref, PHP_URL_PATH) ?? '');
+        if ($refHost !== '' && $siteHost !== '' && hash_equals($siteHost, $refHost)
+            && ($refPath === '' || str_starts_with($refPath, '/'))) {
+            $target = $ref;
+        }
+    }
     $target = preg_replace('/[?&]sub=[^&]*/', '', $target);
     $sep = strpos($target, '?') !== false ? '&' : '?';
     redirect($target . $sep . 'sub=' . $status . '#newsletter');
@@ -36,9 +46,14 @@ $respond = function (bool $ok, string $messageKey, int $code = 200) use ($wantsJ
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $respond(false, 'newsletter_err', 405);
 }
+$nlLimit = new RateLimit(8, 3600, 'newsletter_' . ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0'));
+if ($nlLimit->isLimited()) {
+    $respond(false, 'newsletter_err', 429);
+}
 if (!csrf_verify()) {
     $respond(false, 'newsletter_err', 403);
 }
+$nlLimit->recordAttempt();
 
 $email = (string) ($_POST['email'] ?? '');
 $lang = Lang::current();

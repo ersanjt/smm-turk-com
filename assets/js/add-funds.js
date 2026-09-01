@@ -23,6 +23,12 @@
     afterBalance.textContent = '$' + (currentBalance + amt).toFixed(3);
   }
 
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, function (ch) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+    });
+  }
+
   function updateMethodDetail() {
     if (!methodDetail) return;
     var slug = selectedMethod();
@@ -31,8 +37,8 @@
       methodDetail.hidden = true;
       return;
     }
-    var label = card.dataset.label || '';
-    var badge = card.dataset.badge || '';
+    var label = escapeHtml(card.dataset.label || '');
+    var badge = escapeHtml(card.dataset.badge || '');
     var type = card.dataset.type || '';
     var html = '<strong>' + label + '</strong>';
     if (badge) html += ' <span class="af-detail-badge">' + badge + '</span>';

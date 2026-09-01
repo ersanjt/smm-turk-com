@@ -1,15 +1,15 @@
 <?php
 /**
- * Shows the exact redirect URI used for Google Sign-In.
- * Open this in the browser and add the shown URL to Google Cloud Console → Credentials → Authorized redirect URIs.
- * Delete or restrict access in production if you prefer.
+ * Shows the exact redirect URI used for Google Sign-In (admin only).
  */
 require_once __DIR__ . '/app/init.php';
+$auth->requireAdmin();
 
 $base = defined('SITE_URL') && SITE_URL !== '' ? rtrim(SITE_URL, '/') : '';
 $redirectUri = $base !== '' ? $base . '/login-google-callback' : '';
 
 header('Content-Type: text/plain; charset=utf-8');
+header('X-Robots-Tag: noindex, nofollow');
 if ($redirectUri === '') {
     echo "SITE_URL is not set in config.php. Set it to your site URL (e.g. https://smm-turk.com).\n";
     exit;

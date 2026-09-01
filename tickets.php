@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_ticket']) && c
             if (move_uploaded_file($tmpPath, $path)) {
                 $rel = 'uploads/tickets/' . (int)$tid . '/' . basename($path);
                 try {
-                    $db->insert("INSERT INTO ticket_attachments (ticket_id, reply_id, file_path, original_name) VALUES (?, NULL, ?, ?)", [$tid, $rel, $name]);
+                    $db->insert("INSERT INTO ticket_attachments (ticket_id, reply_id, file_path, original_name) VALUES (?, NULL, ?, ?)", [$tid, $rel, basename($name)]);
                 } catch (Throwable $e) {
                     // table might not exist
                 }

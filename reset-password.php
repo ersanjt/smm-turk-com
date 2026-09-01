@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/app/init.php';
+require_once __DIR__ . '/app/RateLimit.php';
 
 if ($auth->isLoggedIn()) {
     redirect(url('dashboard.php'));
@@ -9,11 +10,15 @@ $siteName = function_exists('site_name') ? site_name() : (defined('SITE_NAME') ?
 $token = trim($_GET['token'] ?? '');
 $error = '';
 $success = false;
+$resetLimit = new RateLimit(10, 900, 'resetpw_' . ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0'));
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $token !== '') {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'] ?? '', $_POST['csrf_token'] ?? '')) {
         $error = 'Invalid request. Please try again.';
+    } elseif ($resetLimit->isLimited()) {
+        $error = 'Too many attempts. Please try again in 15 minutes.';
     } else {
+        $resetLimit->recordAttempt();
         $password = $_POST['password'] ?? '';
         $confirm = $_POST['password_confirm'] ?? '';
         if ($password !== $confirm) {
@@ -85,7 +90,7 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:linear-gradient(135de
   <form method="POST">
     <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
     <div class="form-group">
-      <label class="form-label">New password (min 6 characters)</label>
+      <label class="form-label">New password (min <?= (int) Auth::MIN_PASSWORD_LENGTH ?> characters)</label>
       <input type="password" name="password" class="form-control" required minlength="8" autofocus autocomplete="new-password">
     </div>
     <div class="form-group">

@@ -85,6 +85,7 @@ if (php_sapi_name() !== 'cli') {
     if ($httpsOn) {
         header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
     }
+    header('Cross-Origin-Opener-Policy: same-origin-allow-popups');
     // CSP: enforce in production unless SMM_CSP_REPORT_ONLY is explicitly enabled
     $csp = "default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://cdn.jsdelivr.net https://static.cloudflareinsights.com https://www.googletagmanager.com https://www.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://accounts.google.com https://apis.google.com https://cloudflareinsights.com https://www.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com https://googleads.g.doubleclick.net; frame-src https://accounts.google.com https://www.googletagmanager.com; manifest-src 'self'; worker-src 'self';";
     $cspReportOnly = defined('SMM_CSP_REPORT_ONLY') && SMM_CSP_REPORT_ONLY;
@@ -115,6 +116,37 @@ if (php_sapi_name() !== 'cli') {
 
 function h(string $str): string {
     return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+}
+
+/** True when $path is a same-origin relative URL (no scheme, no protocol-relative, no backslash). */
+function is_safe_internal_path(string $path): bool {
+    $path = trim($path);
+    if ($path === '' || !str_starts_with($path, '/') || str_starts_with($path, '//')) {
+        return false;
+    }
+    if (str_contains($path, '\\') || str_contains($path, "\0") || str_contains($path, '://')) {
+        return false;
+    }
+    return !preg_match('#^[a-z][a-z0-9+.-]*:#i', $path);
+}
+
+/** Sanitize admin/user-supplied hrefs to same-origin paths. */
+function safe_app_href(string $raw, string $fallbackScript = 'dashboard.php'): string {
+    $raw = trim($raw);
+    if ($raw === '') {
+        return path($fallbackScript);
+    }
+    $site = defined('SITE_URL') ? rtrim((string) SITE_URL, '/') : '';
+    if ($site !== '' && (str_starts_with($raw, $site . '/') || $raw === $site)) {
+        $raw = $raw === $site ? '/' : substr($raw, strlen($site));
+    }
+    if (is_safe_internal_path($raw)) {
+        return $raw;
+    }
+    if (!preg_match('#^[a-z][a-z0-9+.-]*:#i', $raw) && !str_contains($raw, '\\') && !str_contains($raw, '://')) {
+        return page_url(ltrim($raw, '/'));
+    }
+    return path($fallbackScript);
 }
 
 /** Keyboard skip link (works without JavaScript). */
@@ -294,7 +326,7 @@ function normalize_order_link(string $link): string {
 /** Remember internal path to return after login. */
 function store_login_next(?string $next = null): void {
     $next = trim($next ?? ($_GET['next'] ?? ''));
-    if ($next === '' || !str_starts_with($next, '/') || str_starts_with($next, '//')) {
+    if (!is_safe_internal_path($next)) {
         return;
     }
     $_SESSION['login_next'] = $next;
@@ -304,7 +336,7 @@ function store_login_next(?string $next = null): void {
 function consume_login_next(): string {
     $next = trim($_SESSION['login_next'] ?? '');
     unset($_SESSION['login_next']);
-    if ($next === '' || !str_starts_with($next, '/') || str_starts_with($next, '//')) {
+    if (!is_safe_internal_path($next)) {
         return url('dashboard.php');
     }
     $base = site_base();

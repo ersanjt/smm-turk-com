@@ -122,6 +122,13 @@ function deploy_repair_files(): array
         'partials/child-panel-manage.php',
         'app/ChildPanelRemoteSettings.php',
         'child-panel.php',
+        '404.php',
+        'dashboard.php',
+        'tickets.php',
+        'google-redirect-uri.php',
+        'app/RevenueEngine.php',
+        'assets/js/add-funds.js',
+        'storage/.htaccess',
         'DEPLOY_VERSION',
     ];
     $repaired = [];

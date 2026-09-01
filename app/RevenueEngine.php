@@ -285,7 +285,9 @@ class RevenueEngine
             'title' => (string) ($this->db->getSetting('dashboard_promo_title') ?: '🎁 Add funds — start ordering'),
             'text' => (string) ($this->db->getSetting('dashboard_promo_text') ?: 'Crypto deposits credited fast.'),
             'cta_label' => (string) ($this->db->getSetting('dashboard_promo_cta_label') ?: 'Add Funds →'),
-            'cta_url' => page_url(ltrim((string) ($this->db->getSetting('dashboard_promo_cta_url') ?: 'add-funds.php'), '/')),
+            'cta_url' => function_exists('safe_app_href')
+                ? safe_app_href((string) ($this->db->getSetting('dashboard_promo_cta_url') ?: 'add-funds.php'), 'add-funds.php')
+                : page_url(ltrim((string) ($this->db->getSetting('dashboard_promo_cta_url') ?: 'add-funds.php'), '/')),
         ];
     }
 

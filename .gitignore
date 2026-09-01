@@ -17,8 +17,9 @@ Thumbs.db
 *.log
 logs/
 
-# Temp / Cache
-tmp/
+# Temp / Cache (keep deny-all htaccess)
+tmp/*
+!tmp/.htaccess
 temp/
 cache/
 *.cache
@@ -26,6 +27,10 @@ cache/
 # Backup
 *.bak
 *.backup
+
+# Child panel runtime configs (keep deny-all htaccess)
+storage/*
+!storage/.htaccess
 
 # User uploads (keep uploads/.htaccess via negation)
 uploads/*

@@ -154,14 +154,12 @@ if ($searchQ !== '') {
     }
 }
 $hasServices = count($services) > 0;
-$showEmptyFilterWarning = !$hasServices && !$searchQ;
+$showEmptyFilterWarning = !$hasServices && ($searchQ !== '' || $selectedCat !== '' || $platform !== '');
 $featuredServices = $revenue->featuredServices(8, $providerFilter ?: null);
 
 require_once __DIR__ . '/app/PlatformIcons.php';
 require_once __DIR__ . '/layouts/header.php';
 ?>
-<link rel="stylesheet" href="<?= h(asset_url('assets/css/order.css')) ?>">
-
 <link rel="stylesheet" href="<?= h(asset_url('assets/css/order.css')) ?>">
 
 <?php require_once __DIR__ . '/partials/onboarding-strip.php'; ?>
@@ -306,6 +304,8 @@ echo platformFilterStrip('dashboard.php', $platform, $searchQ, $tierExtra);
 <?php endif; ?>
 <?php if ($showEmptyFilterWarning): ?>
 <div class="alert alert-warning">No services match your filter. Try another category or <a href="<?= h(path('dashboard.php')) ?>">clear filters</a>.</div>
+<?php elseif (!$hasServices): ?>
+<div class="alert alert-info">No services are available right now. <a href="<?= h(path('tickets.php')) ?>">Open a ticket</a> if this lasts more than a few minutes.</div>
 <?php endif; ?>
 
 <div class="order-grid">

@@ -125,6 +125,13 @@ $files = [
     'assets/js/landing.js',
     'assets/js/pwa.js',
     'assets/js/a11y.js',
+    'assets/js/add-funds.js',
+    '404.php',
+    'dashboard.php',
+    'tickets.php',
+    'google-redirect-uri.php',
+    'app/RevenueEngine.php',
+    'storage/.htaccess',
     'DEPLOY_VERSION',
 ];
 

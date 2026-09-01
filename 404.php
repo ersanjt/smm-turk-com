@@ -23,6 +23,8 @@ require_once __DIR__ . '/layouts/blog-header.php';
   </p>
   <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;">
     <a href="<?= h(home_path()) ?>" class="blog-nav-cta" style="display:inline-block;padding:12px 24px;">← Home</a>
+    <a href="<?= h(path('buy.php')) ?>" style="padding:12px 24px;border:1px solid var(--border,#e2e8f0);border-radius:8px;"><?= h(__('buy_nav')) ?></a>
+    <a href="<?= h(path('pricing.php')) ?>" style="padding:12px 24px;border:1px solid var(--border,#e2e8f0);border-radius:8px;"><?= h(__('nav_prices')) ?></a>
     <a href="<?= h(path('blog.php')) ?>" style="padding:12px 24px;border:1px solid var(--border,#e2e8f0);border-radius:8px;">Blog</a>
     <a href="<?= h(path('help.php')) ?>" style="padding:12px 24px;border:1px solid var(--border,#e2e8f0);border-radius:8px;">Help</a>
     <a href="<?= h(route_path('login.php')) ?>" style="padding:12px 24px;border:1px solid var(--border,#e2e8f0);border-radius:8px;">Login</a>
