@@ -190,7 +190,7 @@ $homeJsonLd = [
     </div>
 </section>
 
-<section id="services" class="section" style="background: var(--white); padding: 60px 24px;">
+<section id="services" class="section">
     <div class="section-label"><?= h(__('benefit_heading')) ?></div>
     <h2 class="section-title"><?= h(__('services_title')) ?></h2>
     <div class="three-cols">
@@ -221,7 +221,7 @@ $homeJsonLd = [
     </p>
 </section>
 
-<section id="earn" class="section" style="background: linear-gradient(180deg, var(--light-warm), var(--white)); padding: 60px 24px;">
+<section id="earn" class="section">
     <div class="section-label"><?= h(__('home_earn_label')) ?></div>
     <h2 class="section-title"><?= h(__('earn_hero_h1')) ?></h2>
     <p class="section-desc"><?= h(__('home_earn_desc')) ?></p>
@@ -277,7 +277,7 @@ $homeJsonLd = [
     </div>
 </section>
 
-<section id="faq" class="section" style="background: var(--white);">
+<section id="faq" class="section">
     <div class="section-label"><?= h(__('faq_label')) ?></div>
     <h2 class="section-title"><?= h(__('faq_title')) ?></h2>
     <div class="faq-list">

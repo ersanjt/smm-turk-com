@@ -376,6 +376,8 @@
         .hero-form-box .register-link a:hover { color: var(--primary-dark); }
 
         .section { padding: 80px 24px; max-width: 1100px; margin: 0 auto; }
+        #services, #faq { background: var(--white); }
+        #earn { background: linear-gradient(180deg, var(--light-warm), var(--white)); }
         .section-benefits { background: linear-gradient(180deg, var(--light-warm) 0%, #fefafa 50%, #fafafa 100%); position: relative; }
         .section-benefits::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(227,10,23,.1), transparent); }
         .section-label { font-size: 11px; font-weight: 700; letter-spacing: 2.2px; text-transform: uppercase; color: var(--primary); margin-bottom: 10px; }
@@ -584,10 +586,13 @@
         body.theme-dark .hero-form-box .register-link a { color: #FF5566; }
         body.theme-dark .section { background: transparent; }
         body.theme-dark #services,
-        body.theme-dark #faq { background: #0f0c0e !important; }
+        body.theme-dark #earn,
+        body.theme-dark #faq { background: transparent; }
         body.theme-dark #services .section-label,
+        body.theme-dark #earn .section-label,
         body.theme-dark #faq .section-label { color: #FF5566; }
         body.theme-dark #services .section-title,
+        body.theme-dark #earn .section-title,
         body.theme-dark #faq .section-title { color: #f5eef0; }
         body.theme-dark .section-benefits { background: linear-gradient(180deg, #0f0c0e 0%, #0d090b 100%); }
         body.theme-dark .section-benefits::before { background: linear-gradient(90deg, transparent, rgba(255, 85, 102, 0.15), transparent); }
