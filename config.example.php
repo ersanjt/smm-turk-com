@@ -25,7 +25,7 @@ define('GEO_LNG', 32.8597);
 define('GEO_TIMEZONE', 'Europe/Istanbul');
 // Social sharing image (1200x630 PNG/JPG). Relative path or full URL.
 define('OG_IMAGE_URL', 'assets/img/og-default.png');
-// Google Search Console → HTML tag verification (optional)
+// Google Search Console → HTML tag verification (optional). Also settable in Admin → Settings.
 define('GOOGLE_SITE_VERIFICATION', '');
 define('MAIL_FROM', 'noreply@yourdomain.com'); // Optional; used for verification emails (cPanel: use an email from your domain)
 

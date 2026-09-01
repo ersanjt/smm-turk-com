@@ -27,7 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrf_verify()) {
         'revenue_low_balance_threshold','revenue_winback_days',
         'signup_welcome_credit','growth_promo_bar_enabled','growth_promo_bar_text',
         'growth_promo_bar_cta_label','growth_promo_bar_cta_url',
-        'growth_stats_boost_orders','growth_stats_boost_users'];
+        'growth_stats_boost_orders','growth_stats_boost_users',
+        'ga4_measurement_id','google_ads_id','google_ads_signup_label','google_ads_purchase_label','google_site_verification'];
     foreach ($fields as $f) {
         if (!isset($_POST[$f])) {
             continue;
@@ -327,6 +328,35 @@ require_once __DIR__ . '/../layouts/header.php';
         <div class="form-group">
           <label class="form-label">Stats boost — users display</label>
           <input type="number" name="growth_stats_boost_users" class="form-control" value="<?= s($settings,'growth_stats_boost_users') ?: '1200' ?>" min="0">
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="google-acquisition" style="margin-bottom:18px;">
+      <div class="card-title">Google acquisition (unique customers)</div>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Organic landings live at <a href="<?= h(path('buy.php')) ?>" style="color:var(--primary);">/buy</a>. Dashboard: <a href="<?= h(path('admin/admin-acquisition.php')) ?>" style="color:var(--primary);">Google customers</a>. Search Console HTML tag + GA4 ID. Google Ads conversions are optional — do not advertise fake engagement; Ads policy will ban the account. Advertise child panel, API, and reseller tools instead.</p>
+      <div class="grid2">
+        <div class="form-group">
+          <label class="form-label">GA4 measurement ID</label>
+          <input type="text" name="ga4_measurement_id" class="form-control" value="<?= s($settings,'ga4_measurement_id') ?>" placeholder="G-XXXXXXXXXX" maxlength="20" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Search Console HTML tag</label>
+          <input type="text" name="google_site_verification" class="form-control" value="<?= s($settings,'google_site_verification') ?>" placeholder="content= value only" maxlength="128" autocomplete="off">
+        </div>
+      </div>
+      <div class="grid3">
+        <div class="form-group">
+          <label class="form-label">Google Ads ID</label>
+          <input type="text" name="google_ads_id" class="form-control" value="<?= s($settings,'google_ads_id') ?>" placeholder="AW-000000000" maxlength="24" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ads signup conversion label</label>
+          <input type="text" name="google_ads_signup_label" class="form-control" value="<?= s($settings,'google_ads_signup_label') ?>" maxlength="64" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ads purchase conversion label</label>
+          <input type="text" name="google_ads_purchase_label" class="form-control" value="<?= s($settings,'google_ads_purchase_label') ?>" maxlength="64" autocomplete="off">
         </div>
       </div>
     </div>

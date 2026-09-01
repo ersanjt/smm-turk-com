@@ -18,7 +18,7 @@ class Lang {
 
     /** @var string[] Scripts served as public marketing (URL-based language). */
     private static array $publicScripts = [
-        'home', 'help', 'terms', 'blog', 'blog-post', '404', 'index', 'pricing', 'earn',
+        'home', 'help', 'terms', 'blog', 'blog-post', '404', 'index', 'pricing', 'earn', 'buy',
     ];
 
     public static function init(): string {

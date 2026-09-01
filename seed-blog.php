@@ -274,6 +274,40 @@ $articles = [
 <p>We support resellers and developers with API and reseller options. You can sell our services or integrate them into your own platform. Join SMM Turk and grow your social media at the best price.</p>',
         'reading_time_min' => 4,
     ],
+    [
+        'slug' => 'ucuz-instagram-takipci-smm-panel-turkiye',
+        'title' => 'Ucuz Instagram Takipçi Satın Al: SMM Panel Türkiye Rehberi',
+        'meta_description' => 'Türkiye’den ucuz Instagram takipçi nasıl alınır? SMM panel ile kayıt, kripto ödeme ve canlı fiyat. Google’dan gelenler için adım adım rehber.',
+        'meta_keywords' => 'ucuz instagram takipçi, instagram takipçi satın al, smm panel türkiye, cheap instagram followers',
+        'excerpt' => 'Google’da ucuz Instagram takipçi arayanlar için SMM Turk paneli: ücretsiz kayıt, kripto bakiye, canlı 1K fiyatı.',
+        'category' => 'instagram-growth',
+        'tags' => ['instagram', 'followers', 'cheap-smm', 'smm-panel', 'growth'],
+        'body' => '<p><strong>Ucuz Instagram takipçi</strong> arıyorsanız doğru adres bir SMM paneldir. Ajans teklifi beklemek yerine bakiyeden sipariş açarsınız; fiyat 1.000 adet başına listelenir.</p>
+<h2>Google’dan gelenler için 3 adım</h2>
+<p>1) Ücretsiz hesap açın (Google ile giriş mümkün). 2) USDT, BTC veya ETH yatırın. 3) <a href="/buy/instagram-followers">Instagram takipçi sayfasındaki</a> canlı fiyattan servisi seçin, profil linkini yapıştırın.</p>
+<h2>Neden SMM Turk?</h2>
+<p>Türkiye odaklı panel, TR/EN/DE arayüz, yalnızca kripto ödeme (kart vaadi yok). İlk sipariş için hoş geldin bakiyesi ve ilk yatırıma bonus tanımlanabilir. Tekil Google müşterisi, ilk ziyaretten itibaren kaydedilir.</p>
+<h2>Dikkat</h2>
+<p>En ucuz satır her zaman en kaliteli değildir. Kademeli sipariş + gerçek içerik, ani sıçramadan daha güvenlidir. Düşüş olursa bilet açın.</p>',
+        'reading_time_min' => 4,
+    ],
+    [
+        'slug' => 'tiktok-izlenme-ve-takipci-smm-panel',
+        'title' => 'TikTok İzlenme ve Takipçi: Ucuz SMM Panel ile Nasıl Alınır',
+        'meta_description' => 'TikTok izlenme ve takipçi satın al. Ucuz SMM panel, kripto ödeme, video URL vs profil URL farkı. Türkiye ve dünya.',
+        'meta_keywords' => 'tiktok izlenme satın al, tiktok takipçi, smm panel tiktok, buy tiktok views',
+        'excerpt' => 'TikTok’ta izlenme ucuz bir sinyal, takipçi ayrı üründür. Yanlış URL teslimatı durdurur — bu rehber ayırır.',
+        'category' => 'tiktok-viral',
+        'tags' => ['tiktok', 'views', 'followers', 'smm-panel', 'cheap-smm'],
+        'body' => '<p>TikTok siparişinde en sık hata: takipçi servisine video linki, izlenme servisine profil linki yapıştırmak. İkisi ayrı üründür.</p>
+<h2>İzlenme</h2>
+<p><a href="/buy/tiktok-views">TikTok izlenme sayfasında</a> yalnızca video URL’si kullanın. 1K fiyatı genelde takipçiden düşüktür. Yeni videonun ilk saatlerinde küçük paket daha doğal durur.</p>
+<h2>Takipçi</h2>
+<p><a href="/buy/tiktok-followers">Takipçi sayfası</a> tiktok.com/@kullanici ister. Beğeni ayrı servistir; For You için izlenme + beğeni kombinasyonu daha tutarlıdır.</p>
+<h2>Ödeme</h2>
+<p>SMM Turk şu an yalnızca kripto kabul eder. Kayıt ücretsizdir. Bayi iseniz child panel veya API ile aynı kataloğu kendi müşterinize satabilirsiniz.</p>',
+        'reading_time_min' => 3,
+    ],
 ];
 
 foreach ($articles as $a) {

@@ -74,6 +74,9 @@ RewriteRule ^llms\.txt$ llms.php [L]
 # Blog: /blog -> blog.php, /blog/slug -> blog-post.php?slug=slug
 RewriteRule ^blog/?$ blog.php [L,QSA]
 RewriteRule ^blog/([a-zA-Z0-9\-]+)/?$ blog-post.php?slug=$1 [L,QSA]
+# Commercial SEO landings: /buy and /buy/instagram-followers
+RewriteRule ^buy/?$ buy.php [L,QSA]
+RewriteRule ^buy/([a-z0-9\-]+)/?$ buy.php?slug=$1 [L,QSA]
 # Clean URLs: / -> home (landing), /dashboard -> panel, /page -> page.php
 RewriteRule ^home/?$ / [R=301,L]
 RewriteRule ^$ home.php [L,QSA]

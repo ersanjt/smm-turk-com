@@ -20,7 +20,7 @@ if ($user && !empty($user['id'])) {
 }
 $currentPage = basename($_SERVER['PHP_SELF'], '.php');
 $isAdminArea = str_contains($_SERVER['SCRIPT_NAME'] ?? '', '/admin/');
-$isAdminPanelActive = $isAdminArea && !in_array($currentPage, ['admin-blog', 'admin-blog-edit'], true);
+$isAdminPanelActive = $isAdminArea && !in_array($currentPage, ['admin-blog', 'admin-blog-edit', 'admin-acquisition'], true);
 $siteName = function_exists('site_name') ? site_name() : (defined('SITE_NAME') ? SITE_NAME : 'SMM Turk');
 $siteUrl  = defined('SITE_URL') ? rtrim(SITE_URL, '/') : '';
 $canonicalPath = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
@@ -74,6 +74,7 @@ $ogLocale = Seo::ogLocale($dashLang);
 <?php if ($isAdminArea): ?><link rel="stylesheet" href="<?= h(asset_url('assets/css/admin.css')) ?>"><?php endif; ?>
 <?php if (!empty($extraCssHref)): ?><link rel="stylesheet" href="<?= h($extraCssHref) ?>"><?php endif; ?>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"<?= h($siteName) ?>","url":"<?= h($siteUrl) ?>","description":"<?= h($pageDesc) ?>"}</script>
+<?php require dirname(__DIR__) . '/partials/google-tags.php'; ?>
 </head>
 <body class="panel-follows<?= $isAdminArea ? ' admin-area' : '' ?>" data-sw="<?= h(path('pwa-sw.php')) ?>" data-sw-scope="<?= h(base_path() !== '' ? base_path() . '/' : '/') ?>">
 <script>(function(){var k='smmturk_theme',d=localStorage.getItem(k)==='dark'||(!localStorage.getItem(k)&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.body.classList.add('theme-dark');})();</script>
@@ -183,6 +184,10 @@ $ogLocale = Seo::ogLocale($dashLang);
     <a class="nav-item <?= $currentPage === 'admin-blog' || $currentPage === 'admin-blog-edit' ? 'active' : '' ?>" href="<?= h(admin_path('admin-blog.php')) ?>">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
       Manage Blog
+    </a>
+    <a class="nav-item <?= $currentPage === 'admin-acquisition' ? 'active' : '' ?>" href="<?= h(admin_path('admin-acquisition.php')) ?>">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Google customers
     </a>
     <?php endif; ?>
     <div class="sidebar-nav-footer">
@@ -308,6 +313,7 @@ if ($isAdminArea && $currentPage !== 'index' && empty($hideAdminPageHeader)) {
             'admin-tickets' => 'Support tickets from customers.',
             'admin-blog' => 'Publish and manage blog articles.',
             'admin-blog-edit' => 'Write SEO content for the public blog.',
+            'admin-acquisition' => 'Unique Google visitors, signups, and paying customers.',
         ];
         if (isset($adminPageHints[$currentPage])) {
             $pageSubtitle = $adminPageHints[$currentPage];

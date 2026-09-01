@@ -2,7 +2,7 @@
 /**
  * Public landing header — desktop menu + mobile drawer.
  *
- * Optional: $navActive (pricing|earn|blog|help|terms|login), $registrationEnabled, $lang, $siteName
+ * Optional: $navActive (pricing|earn|blog|help|terms|login|buy), $registrationEnabled, $lang, $siteName
  */
 if (!isset($registrationEnabled)) {
     $registrationEnabled = (Database::getInstance()->getSetting('registration_enabled') ?? '1') === '1';
@@ -19,6 +19,7 @@ $navItems = [
     ['id' => 'login', 'href' => route_path('login.php'), 'label' => __('nav_sign_in')],
     ['id' => 'app', 'href' => path('get-app.php'), 'label' => __('nav_app')],
     ['id' => 'pricing', 'href' => path('pricing.php'), 'label' => __('nav_prices')],
+    ['id' => 'buy', 'href' => path('buy.php'), 'label' => __('buy_nav')],
     ['id' => 'earn', 'href' => path('earn.php'), 'label' => __('nav_earn')],
     ['id' => 'blog', 'href' => path('blog.php'), 'label' => __('blog_nav_blog')],
     ['id' => 'help', 'href' => path('help.php'), 'label' => __('help_title')],

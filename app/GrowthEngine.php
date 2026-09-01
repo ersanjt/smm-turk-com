@@ -48,12 +48,15 @@ class GrowthEngine
         }
         foreach (['utm_source', 'utm_campaign', 'utm_medium'] as $key) {
             $val = trim((string) ($_GET[$key] ?? ''));
-            if ($val !== '' && strlen($val) <= 64) {
+            if ($val !== '' && strlen($val) <= 64 && empty($_SESSION['growth_' . $key])) {
                 $_SESSION['growth_' . $key] = $val;
             }
         }
         if (!empty($_GET['ref']) && empty($_SESSION['growth_utm_source'])) {
             $_SESSION['growth_utm_source'] = 'ref:' . substr(trim((string) $_GET['ref']), 0, 48);
+        }
+        if (class_exists('GoogleAcquisition', false)) {
+            GoogleAcquisition::capture();
         }
     }
 
@@ -71,6 +74,9 @@ class GrowthEngine
             );
         } catch (Throwable $e) {
             /* columns may not exist yet */
+        }
+        if (class_exists('GoogleAcquisition', false)) {
+            (new GoogleAcquisition())->applyToUser($userId);
         }
     }
 

@@ -238,6 +238,11 @@ db_apply_sql_file($pdo, __DIR__ . '/migrations/015_mail_lang.sql');
 db_apply_sql_file($pdo, __DIR__ . '/migrations/016_child_panel_automation.sql');
 db_apply_sql_file($pdo, __DIR__ . '/migrations/017_child_panel_full_auto.sql');
 db_apply_sql_file($pdo, __DIR__ . '/migrations/018_child_panel_domain_reuse.sql');
+db_apply_sql_file($pdo, __DIR__ . '/migrations/019_admin_notify_settings.sql');
+db_apply_sql_file($pdo, __DIR__ . '/migrations/020_child_panel_end_users.sql');
+db_apply_sql_file($pdo, __DIR__ . '/migrations/021_revenue_growth.sql');
+db_apply_sql_file($pdo, __DIR__ . '/migrations/022_growth_traffic.sql');
+db_apply_sql_file($pdo, __DIR__ . '/migrations/023_google_acquisition.sql');
 
 // ─── Analyze tables (refresh optimizer stats) ────────────────────────────────
 echo "\n--- Analyze ---\n";

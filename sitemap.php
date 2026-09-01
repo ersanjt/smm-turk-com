@@ -37,17 +37,29 @@ $addUrl = static function (string $loc, string $lastmod, string $freq, string $p
 };
 
 // Public marketing pages
+$staticLastmod = @filemtime(__DIR__ . '/home.php');
+$staticLastmod = $staticLastmod ? date('Y-m-d', $staticLastmod) : date('Y-m-d');
 $static = [
-    '/' => ['freq' => 'daily', 'priority' => '1.0'],
-    '/get-app' => ['freq' => 'weekly', 'priority' => '0.9'],
-    '/earn' => ['freq' => 'weekly', 'priority' => '0.92'],
-    '/pricing' => ['freq' => 'daily', 'priority' => '0.95'],
-    '/help' => ['freq' => 'weekly', 'priority' => '0.85'],
-    '/blog' => ['freq' => 'daily', 'priority' => '0.9'],
-    '/terms' => ['freq' => 'yearly', 'priority' => '0.5'],
+    '/' => ['freq' => 'daily', 'priority' => '1.0', 'file' => 'home.php'],
+    '/get-app' => ['freq' => 'weekly', 'priority' => '0.9', 'file' => 'get-app.php'],
+    '/earn' => ['freq' => 'weekly', 'priority' => '0.92', 'file' => 'earn.php'],
+    '/pricing' => ['freq' => 'daily', 'priority' => '0.95', 'file' => 'pricing.php'],
+    '/buy' => ['freq' => 'daily', 'priority' => '0.96', 'file' => 'buy.php'],
+    '/help' => ['freq' => 'weekly', 'priority' => '0.85', 'file' => 'help.php'],
+    '/blog' => ['freq' => 'daily', 'priority' => '0.9', 'file' => 'blog.php'],
+    '/terms' => ['freq' => 'yearly', 'priority' => '0.5', 'file' => 'terms.php'],
 ];
 foreach ($static as $path => $meta) {
-    $addUrl($base . $path, date('Y-m-d'), $meta['freq'], $meta['priority']);
+    $mtime = !empty($meta['file']) && is_file(__DIR__ . '/' . $meta['file'])
+        ? date('Y-m-d', (int) filemtime(__DIR__ . '/' . $meta['file']))
+        : $staticLastmod;
+    $addUrl($base . $path, $mtime, $meta['freq'], $meta['priority']);
+}
+
+if (class_exists('GoogleAcquisition', false)) {
+    foreach (GoogleAcquisition::catalog() as $buyPage) {
+        $addUrl($base . '/buy/' . rawurlencode((string) $buyPage['slug']), is_file(__DIR__ . '/buy.php') ? date('Y-m-d', (int) filemtime(__DIR__ . '/buy.php')) : date('Y-m-d'), 'daily', '0.9');
+    }
 }
 
 try {
@@ -68,52 +80,6 @@ try {
             false,
             $image
         );
-    }
-} catch (Throwable $e) {}
-
-try {
-    $categories = $db->fetchAll(
-        "SELECT c.slug, MAX(a.updated_at) AS lastmod FROM blog_categories c
-         INNER JOIN blog_articles a ON a.category_id = c.id
-         WHERE a.status = 'published' AND a.published_at IS NOT NULL AND a.published_at <= NOW()
-         GROUP BY c.slug"
-    );
-    foreach ($categories as $cat) {
-        $addUrl(
-            $base . '/blog?category=' . rawurlencode((string) $cat['slug']),
-            !empty($cat['lastmod']) ? date('Y-m-d', strtotime((string) $cat['lastmod'])) : date('Y-m-d'),
-            'weekly',
-            '0.7'
-        );
-    }
-} catch (Throwable $e) {}
-
-try {
-    $tags = $db->fetchAll(
-        "SELECT t.slug, MAX(a.updated_at) AS lastmod FROM blog_tags t
-         INNER JOIN blog_article_tags at ON at.tag_id = t.id
-         INNER JOIN blog_articles a ON a.id = at.article_id
-         WHERE a.status = 'published' AND a.published_at IS NOT NULL AND a.published_at <= NOW()
-         GROUP BY t.slug"
-    );
-    foreach ($tags as $tag) {
-        $addUrl(
-            $base . '/blog?tag=' . rawurlencode((string) $tag['slug']),
-            !empty($tag['lastmod']) ? date('Y-m-d', strtotime((string) $tag['lastmod'])) : date('Y-m-d'),
-            'weekly',
-            '0.65'
-        );
-    }
-} catch (Throwable $e) {}
-
-try {
-    $totalPosts = (int) $db->fetch(
-        "SELECT COUNT(*) c FROM blog_articles WHERE status = 'published' AND published_at IS NOT NULL AND published_at <= NOW()"
-    )['c'];
-    $perPage = 12;
-    $totalPages = max(1, (int) ceil($totalPosts / $perPage));
-    for ($p = 2; $p <= $totalPages; $p++) {
-        $addUrl($base . '/blog?p=' . $p, date('Y-m-d'), 'weekly', '0.6');
     }
 } catch (Throwable $e) {}
 

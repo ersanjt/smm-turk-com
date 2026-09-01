@@ -19,6 +19,7 @@ echo "Primary market: Turkey. Service area: worldwide. Languages: Turkish (defau
 echo "## Public pages\n\n";
 echo "- [Home]({$base}/): Marketing landing — cheapest SMM panel, crypto checkout, reseller API\n";
 echo "- [Pricing]({$base}/pricing): Live Instagram, TikTok, YouTube SMM prices\n";
+echo "- [Buy]({$base}/buy): Unique commercial landings (Instagram followers, TikTok likes, YouTube views)\n";
 echo "- [Earn]({$base}/earn): Child panel, affiliate program, reseller API\n";
 echo "- [Blog]({$base}/blog): Growth guides (Instagram, TikTok, YouTube, API)\n";
 echo "- [Help]({$base}/help): Getting started, deposits, orders, FAQ\n";

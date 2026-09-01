@@ -223,6 +223,7 @@ $adminLinks = [
     ['url' => 'admin/admin-child-panels.php', 'icon' => 'server', 'title' => 'Child Panels', 'desc' => 'Activate reseller panels'],
     ['url' => 'admin/admin-mail.php', 'icon' => 'message', 'title' => 'Mail', 'desc' => 'SMTP test & templates'],
     ['url' => 'admin/admin-blog.php', 'icon' => 'clipboard', 'title' => 'Blog', 'desc' => 'SEO posts & content'],
+    ['url' => 'admin/admin-acquisition.php', 'icon' => 'users', 'title' => 'Google customers', 'desc' => 'Unique visitors from Search & Ads'],
 ];
 
 require_once __DIR__ . '/layouts/header.php';

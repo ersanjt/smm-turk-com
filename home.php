@@ -80,6 +80,7 @@ $homeJsonLd = [
     <link rel="stylesheet" href="<?= h(asset_url('assets/css/landing.css')) ?>">
     <link rel="stylesheet" href="<?= h(asset_url('assets/css/pricing-public.css')) ?>">
     <link rel="stylesheet" href="<?= h(asset_url('assets/css/ui-pro.css')) ?>">
+    <?php require __DIR__ . '/partials/google-tags.php'; ?>
 </head>
 <body data-sw="<?= h(path('pwa-sw.php')) ?>" data-sw-scope="<?= h(base_path() !== '' ? base_path() . '/' : '/') ?>">
 <script>(function(){var k='smmturk_theme',d=localStorage.getItem(k)==='dark'||(!localStorage.getItem(k)&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.body.classList.add('theme-dark');})();</script>
@@ -198,7 +199,15 @@ $homeJsonLd = [
             <p><?= h(__('support_24_7_desc')) ?></p>
         </div>
     </div>
-    <p style="text-align:center;margin-top:20px;"><a href="<?= h(path('pricing.php')) ?>" style="color:var(--primary);font-weight:700;"><?= h(__('view_price_list')) ?> →</a></p>
+    <p style="text-align:center;margin-top:20px;"><a href="<?= h(path('pricing.php')) ?>" style="color:var(--primary);font-weight:700;"><?= h(__('view_price_list')) ?> →</a>
+    &nbsp;·&nbsp;
+    <a href="<?= h(path('buy.php')) ?>" style="color:var(--primary);font-weight:700;"><?= h(__('buy_nav')) ?> →</a></p>
+    <p style="text-align:center;margin-top:12px;font-size:14px;line-height:1.7;">
+        <?php foreach (['instagram-followers', 'tiktok-views', 'youtube-views', 'cheap-smm-panel'] as $homeBuySlug):
+            $homeBuyCopy = GoogleAcquisition::copy($homeBuySlug, $lang); ?>
+        <a href="<?= h(GoogleAcquisition::pageUrl($homeBuySlug)) ?>" style="color:var(--primary);font-weight:600;margin:0 8px;"><?= h($homeBuyCopy['h1']) ?></a>
+        <?php endforeach; ?>
+    </p>
 </section>
 
 <section id="earn" class="section" style="background: linear-gradient(180deg, var(--light-warm), var(--white)); padding: 60px 24px;">

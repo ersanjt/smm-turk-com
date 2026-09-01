@@ -49,7 +49,7 @@ $seoDescription = __('app_seo_desc');
         .app-hero { padding: 140px 24px 48px; max-width: 1080px; margin: 0 auto; }
         .app-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 28px; }
         .app-card { background: var(--white); border: 1px solid var(--border); border-radius: 20px; padding: 28px; box-shadow: var(--shadow-md); }
-        .app-card h2 { font-family: Syne, sans-serif; font-size: 28px; margin-bottom: 10px; }
+        .app-card h2 { font-family: Syne, sans-serif; font-size: 28px; margin-bottom: 10px; color: var(--dark); }
         .app-card p { color: var(--muted); margin-bottom: 18px; line-height: 1.6; }
         .app-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 12px 18px; border-radius: 12px; font-weight: 700; }
         .app-btn-primary { background: linear-gradient(145deg, var(--primary), var(--primary-dark)); color: #fff; }
@@ -57,6 +57,18 @@ $seoDescription = __('app_seo_desc');
         .app-steps { margin: 0; padding-left: 18px; color: var(--muted); }
         .app-steps li { margin: 8px 0; }
         .app-note { font-size: 13px; color: var(--muted); margin-top: 12px; }
+        .app-hero .hero-badge { color: #fff; }
+        body.theme-dark .app-card {
+            background: #1a1416;
+            border-color: rgba(255,255,255,.08);
+            box-shadow: 0 8px 32px rgba(0,0,0,.35);
+        }
+        body.theme-dark .app-card:hover { border-color: rgba(255, 85, 102, 0.28); }
+        body.theme-dark .app-card h2 { color: #f5eef0; }
+        body.theme-dark .app-card p,
+        body.theme-dark .app-steps,
+        body.theme-dark .app-note { color: #b8a8ac; }
+        body.theme-dark .app-btn-outline { border-color: rgba(255, 85, 102, 0.4); color: #FF5566; }
         @media (max-width: 800px) { .app-grid { grid-template-columns: 1fr; } .app-hero { padding-top: 110px; } }
     </style>
 </head>

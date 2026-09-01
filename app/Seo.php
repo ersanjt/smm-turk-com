@@ -34,10 +34,21 @@ class Seo
     /** Google Search Console verification meta (set GOOGLE_SITE_VERIFICATION in config.php). */
     public static function verificationMeta(): string
     {
-        if (!defined('GOOGLE_SITE_VERIFICATION') || trim((string) GOOGLE_SITE_VERIFICATION) === '') {
+        $code = '';
+        if (defined('GOOGLE_SITE_VERIFICATION')) {
+            $code = trim((string) GOOGLE_SITE_VERIFICATION);
+        }
+        if ($code === '' && class_exists('Database')) {
+            try {
+                $code = trim((string) (Database::getInstance()->getSetting('google_site_verification') ?: ''));
+            } catch (Throwable $e) {
+                $code = '';
+            }
+        }
+        if ($code === '') {
             return '';
         }
-        return '<meta name="google-site-verification" content="' . self::e(trim((string) GOOGLE_SITE_VERIFICATION)) . '">';
+        return '<meta name="google-site-verification" content="' . self::e($code) . '">';
     }
 
     public static function geoRegion(): string
@@ -324,6 +335,34 @@ class Seo
             $schema['inLanguage'] = self::pageLanguage($lang);
         }
         return $schema;
+    }
+
+    /**
+     * @param array{lowPrice?: float, offerCount?: int, currency?: string} $offer
+     */
+    public static function productOfferSchema(string $name, string $description, string $url, array $offer = []): array
+    {
+        $low = isset($offer['lowPrice']) ? (float) $offer['lowPrice'] : 0.0;
+        $count = max(1, (int) ($offer['offerCount'] ?? 1));
+        $currency = (string) ($offer['currency'] ?? 'USD');
+        return [
+            '@type' => 'Product',
+            'name' => $name,
+            'description' => $description,
+            'url' => $url,
+            'brand' => [
+                '@type' => 'Brand',
+                'name' => self::siteName(),
+            ],
+            'offers' => [
+                '@type' => 'AggregateOffer',
+                'priceCurrency' => $currency,
+                'lowPrice' => number_format(max(0.0001, $low), 4, '.', ''),
+                'offerCount' => $count,
+                'availability' => 'https://schema.org/InStock',
+                'url' => $url,
+            ],
+        ];
     }
 
     /** @param array<int, array{name: string, text: string}> $items */

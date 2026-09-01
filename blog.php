@@ -70,10 +70,8 @@ if ($searchQuery !== '') {
     $params[] = $like;
     $params[] = $like;
     $filterActive = true;
-    $seoIndexable = false;
     $pageTitle = __('blog_search_title');
     $pageDescription = sprintf('%s — %s', __('blog_search_title'), $siteName);
-    $canonicalUrl = Seo::absoluteUrl(path('blog.php'));
 }
 
 $whereSql = implode(' AND ', $where);
@@ -83,6 +81,11 @@ if ($pageNum > $totalPages) {
     $pageNum = 1;
 }
 $offset = ($pageNum - 1) * $perPage;
+
+if ($filterActive || $pageNum > 1) {
+    $seoIndexable = false;
+    $canonicalUrl = Seo::absoluteUrl(path('blog.php'));
+}
 
 $articles = $db->fetchAll(
     "SELECT a.id, a.slug, a.title, a.excerpt, a.published_at, a.reading_time_min, a.featured_image, c.name AS category_name, c.slug AS category_slug

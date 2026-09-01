@@ -676,6 +676,9 @@ class Auth {
         }
         $growth = new GrowthEngine();
         $growth->applyUtmToUser($userId);
+        if (class_exists('GoogleAcquisition', false)) {
+            (new GoogleAcquisition())->trackSignup($userId);
+        }
         if ($grantCredit) {
             $growth->grantWelcomeCredit($userId);
         }

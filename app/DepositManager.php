@@ -139,6 +139,14 @@ class DepositManager {
         }
         $bonusResult = (new RevenueEngine())->applyDepositBonus($userId, $amount, is_string($couponCode) ? $couponCode : null);
 
+        if (class_exists('GoogleAcquisition', false) && $type === 'deposit') {
+            try {
+                (new GoogleAcquisition())->trackFirstDeposit($userId, $amount);
+            } catch (Throwable $e) {
+                /* best effort */
+            }
+        }
+
         return [
             'success' => true,
             'amount' => $amount,

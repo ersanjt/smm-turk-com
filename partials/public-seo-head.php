@@ -61,3 +61,4 @@ $hreflangBase = Seo::stripLangParam($baseCanonical);
     <?php foreach ($extraCssHrefs as $cssHref): ?>
     <link rel="stylesheet" href="<?= h($cssHref) ?>">
     <?php endforeach; ?>
+    <?php require dirname(__DIR__) . '/partials/google-tags.php'; ?>

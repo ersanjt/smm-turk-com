@@ -104,10 +104,11 @@ foreach ($jsonLdExtra as $block) {
     <script type="application/ld+json"><?= Seo::jsonLd($schemaGraph) ?></script>
     <?php if (!empty($extraStyles)): ?><style><?= $extraStyles ?></style><?php endif; ?>
     <?php if (!empty($extraCssHref)): ?><link rel="stylesheet" href="<?= h($extraCssHref) ?>"><?php endif; ?>
+    <?php require dirname(__DIR__) . '/partials/google-tags.php'; ?>
 </head>
 <body class="blog-page<?= !empty($bodyClassExtra) ? ' ' . h($bodyClassExtra) : '' ?>" data-sw="<?= h(path('pwa-sw.php')) ?>" data-sw-scope="<?= h(base_path() !== '' ? base_path() . '/' : '/') ?>">
 <script>(function(){var k='smmturk_theme',d=localStorage.getItem(k)==='dark'||(!localStorage.getItem(k)&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.body.classList.add('theme-dark');})();</script>
 <?php
-$navActive = in_array($blogNavActive, ['blog', 'help', 'pricing', 'earn', 'terms'], true) ? $blogNavActive : '';
+$navActive = in_array($blogNavActive, ['blog', 'help', 'pricing', 'earn', 'terms', 'buy'], true) ? $blogNavActive : '';
 require dirname(__DIR__) . '/partials/landing-nav.php';
 ?>

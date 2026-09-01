@@ -111,6 +111,14 @@ class OrderManager {
 
             $this->db->commit();
 
+            if (class_exists('GoogleAcquisition', false)) {
+                try {
+                    (new GoogleAcquisition())->trackFirstOrder($userId, (float) $charge);
+                } catch (Throwable $e) {
+                    /* best effort */
+                }
+            }
+
             $buyerRow = $this->db->fetch("SELECT username, email FROM users WHERE id = ?", [$userId]);
             if ($buyerRow && !empty($buyerRow['email'])) {
                 try {

@@ -41,6 +41,8 @@ require_once __DIR__ . '/ChildPanelRenewal.php';
 RevenueEngine::ensureSchema(Database::getInstance());
 require_once __DIR__ . '/GrowthEngine.php';
 GrowthEngine::ensureSchema(Database::getInstance());
+require_once __DIR__ . '/GoogleAcquisition.php';
+GoogleAcquisition::ensureSchema(Database::getInstance());
 require_once __DIR__ . '/Newsletter.php';
 Newsletter::ensureSchema(Database::getInstance());
 require_once __DIR__ . '/UserOnboarding.php';
@@ -84,7 +86,7 @@ if (php_sapi_name() !== 'cli') {
         header('Strict-Transport-Security: max-age=31536000; includeSubDomains');
     }
     // CSP: enforce in production unless SMM_CSP_REPORT_ONLY is explicitly enabled
-    $csp = "default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://cdn.jsdelivr.net https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://accounts.google.com https://apis.google.com https://cloudflareinsights.com; frame-src https://accounts.google.com; manifest-src 'self'; worker-src 'self';";
+    $csp = "default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://apis.google.com https://cdn.jsdelivr.net https://static.cloudflareinsights.com https://www.googletagmanager.com https://www.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://accounts.google.com https://apis.google.com https://cloudflareinsights.com https://www.google-analytics.com https://www.googletagmanager.com https://stats.g.doubleclick.net https://www.google.com https://googleads.g.doubleclick.net; frame-src https://accounts.google.com https://www.googletagmanager.com; manifest-src 'self'; worker-src 'self';";
     $cspReportOnly = defined('SMM_CSP_REPORT_ONLY') && SMM_CSP_REPORT_ONLY;
     if ($cspReportOnly) {
         header("Content-Security-Policy-Report-Only: $csp");

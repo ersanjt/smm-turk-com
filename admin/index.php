@@ -95,6 +95,7 @@ $quickLinks = [
     ['url' => 'admin/admin-settings.php', 'label' => 'Settings', 'icon' => 'settings', 'style' => 'outline'],
     ['url' => 'admin/admin-mail.php', 'label' => 'Test Email', 'icon' => 'message', 'style' => 'outline'],
     ['url' => 'admin/admin-blog.php', 'label' => 'Manage Blog' . ($blogArticles > 0 ? " ($blogArticles)" : ''), 'icon' => 'clipboard', 'style' => 'outline'],
+    ['url' => 'admin/admin-acquisition.php', 'label' => 'Google customers', 'icon' => 'users', 'style' => 'outline'],
 ];
 if (!is_child_panel()) {
     array_splice($quickLinks, 6, 0, [

@@ -192,6 +192,7 @@ body{font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,sans-serif
 .a11y-skip{position:fixed;top:-80px;left:12px;z-index:100001;background:#1d4ed8;color:#fff;padding:12px 20px;border-radius:10px;font-weight:800;font-size:15px;text-decoration:none}
 .a11y-skip:focus{top:12px;outline:3px solid #fff;outline-offset:2px}
 </style>
+<?php require __DIR__ . '/partials/google-tags.php'; ?>
 </head>
 <body>
 <?= skip_to_content_link() ?>
