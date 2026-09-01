@@ -356,10 +356,13 @@ function logo_url(): string {
             if (preg_match('#^https?://#i', $custom)) {
                 return $custom;
             }
+            if (preg_match('#logo-icon\.svg$#i', $custom)) {
+                $custom = 'assets/img/logo-icon.png';
+            }
             return asset_url(ltrim($custom, '/'));
         }
     }
-    return asset_url('assets/img/logo-icon.svg');
+    return asset_url('assets/img/logo-icon.png');
 }
 
 /** Favicon URL — custom path in settings or default logo. */
@@ -369,6 +372,9 @@ function favicon_url(): string {
         if ($custom !== '') {
             if (preg_match('#^https?://#i', $custom)) {
                 return $custom;
+            }
+            if (preg_match('#logo-icon\.svg$#i', $custom)) {
+                $custom = 'assets/img/logo-icon.png';
             }
             return asset_url(ltrim($custom, '/'));
         }

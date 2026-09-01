@@ -113,6 +113,7 @@ function deploy_repair_files(): array
         'robots.php',
         'sitemap.php',
         'manifest.php',
+        'pwa-sw.php',
         'blog-post.php',
         'layouts/header.php',
         'layouts/footer.php',
