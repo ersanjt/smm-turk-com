@@ -27,7 +27,7 @@ $pageImg = og_image_url();
 if ($pageImg !== '' && !preg_match('#^https?://#i', $pageImg)) {
     $pageImg = Seo::absoluteUrl($pageImg);
 }
-$seoTitle = $siteName . ' — ' . __('seo_title');
+$seoTitle = __('seo_title');
 $seoDescription = __('seo_description');
 $seoOgTitle = $siteName . ' — ' . __('seo_og_title');
 $seoOgDescription = __('seo_og_description');
@@ -111,7 +111,7 @@ $homeJsonLd = [
         <div class="hero-copy">
             <span class="hero-badge"><?= h(__('hero_badge')) ?></span>
             <h1 id="hero-title"><?= h(__('hero_title')) ?><br><span class="hero-title-2"><?= h(__('hero_title_2')) ?></span></h1>
-            <div class="hero-buy-link"><a href="<?= h(GoogleAcquisition::pageUrl('cheap-smm-panel')) ?>"><?= h(GoogleAcquisition::copy('cheap-smm-panel', $lang)['h1']) ?></a></div>
+            <div class="hero-buy-link"><a href="<?= h(GoogleAcquisition::pageUrl('cheap-smm-panel')) ?>"><?= h(__('buy_cheap_cta')) ?></a></div>
             <p class="hero-desc"><?= __('hero_desc_1') ?></p>
             <?php if (!empty($offerLines)): ?>
             <div class="hero-offers">
@@ -281,12 +281,12 @@ $homeJsonLd = [
     <div class="section-label"><?= h(__('faq_label')) ?></div>
     <h2 class="section-title"><?= h(__('faq_title')) ?></h2>
     <div class="faq-list">
-        <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_1')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_1_a')) ?></div></div>
-        <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_2')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_2_a')) ?></div></div>
-        <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_3')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_3_a')) ?></div></div>
-        <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_4')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_4_a')) ?></div></div>
-        <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_5')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_5_a')) ?></div></div>
-        <div class="faq-item"><button type="button" class="faq-q" aria-expanded="false"><?= h(__('faq_6')) ?> <span aria-hidden="true">+</span></button><div class="faq-a"><?= h(__('faq_6_a')) ?></div></div>
+        <?php for ($faqIndex = 1; $faqIndex <= 6; $faqIndex++): ?>
+        <div class="faq-item">
+            <button type="button" class="faq-q" id="faq-q-<?= (int) $faqIndex ?>" aria-expanded="false" aria-controls="faq-a-<?= (int) $faqIndex ?>"><?= h(__('faq_' . $faqIndex)) ?> <span aria-hidden="true">+</span></button>
+            <div class="faq-a" id="faq-a-<?= (int) $faqIndex ?>" role="region" aria-labelledby="faq-q-<?= (int) $faqIndex ?>"><?= h(__('faq_' . $faqIndex . '_a')) ?></div>
+        </div>
+        <?php endfor; ?>
     </div>
 </section>
 

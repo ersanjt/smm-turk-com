@@ -92,6 +92,9 @@ $files = [
     'app/GrowthEngine.php',
     'app/DepositManager.php',
     'app/OrderManager.php',
+    'app/PaymentProcessor.php',
+    'payment-callback.php',
+    'add-funds.php',
     '.htaccess',
     'llms.php',
     'layouts/blog-header.php',
@@ -120,6 +123,7 @@ $files = [
     'assets/css/terms.css',
     'assets/css/panel-follows.css',
     'assets/css/landing.css',
+    'assets/css/pricing-public.css',
     'assets/css/ui-pro.css',
     'assets/css/a11y.css',
     'assets/js/landing.js',
@@ -152,9 +156,6 @@ foreach ($files as $rel) {
     $dir = dirname($dest);
     if (!is_dir($dir)) {
         @mkdir($dir, 0755, true);
-    }
-    if (is_file($dest)) {
-        @unlink($dest);
     }
     $tmp = $dest . '.tmp.' . getmypid();
     if (@file_put_contents($tmp, $content) === false) {

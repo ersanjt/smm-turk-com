@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/app/init.php';
+require_once __DIR__ . '/app/RateLimit.php';
 
 if ($auth->isLoggedIn()) {
     redirect(url('dashboard.php'));
@@ -10,14 +11,19 @@ if (!$auth->hasPendingTwoFactor()) {
 
 $siteName = function_exists('site_name') ? site_name() : (defined('SITE_NAME') ? SITE_NAME : 'SMM Turk');
 $error = '';
+$twoFaLimit = new RateLimit(8, 900, '2fa_' . (string) ($_SESSION['pending_2fa_user_id'] ?? ($_SERVER['REMOTE_ADDR'] ?? '0')));
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!csrf_verify()) {
         $error = 'Invalid request. Please try again.';
+    } elseif ($twoFaLimit->isLimited()) {
+        $error = 'Too many attempts. Please try again in 15 minutes.';
     } else {
+        $twoFaLimit->recordAttempt();
         $code = trim($_POST['code'] ?? '');
         $result = $auth->completeTwoFactorLogin($code);
         if ($result['success']) {
+            $twoFaLimit->clear();
             redirect($auth->postLoginRedirectUrl($result));
         }
         $error = $result['error'] ?? 'Verification failed.';
@@ -29,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="<?= h(Seo::robotsContent(false)) ?>">
 <meta name="robots" content="<?= h(Seo::robotsContent(false)) ?>">
 <title><?= h($siteName) ?> — Two-factor authentication</title>
 <link rel="icon" type="image/png" href="<?= h(logo_url()) ?>">

@@ -99,6 +99,9 @@ $jsonLdGraph = [
     <section class="section pricing-table-section">
         <h2 class="section-title"><?= h(__('pricing_table_title')) ?></h2>
         <p class="section-desc"><?= h(__('pricing_table_desc')) ?></p>
+        <?php if ($table === []): ?>
+        <p class="buy-empty" role="status"><?= h(__('pricing_table_empty')) ?></p>
+        <?php else: ?>
         <div class="pricing-table-wrap">
             <table class="pricing-table">
                 <thead><tr><th><?= h(__('pricing_th_id')) ?></th><th><?= h(__('pricing_th_service')) ?></th><th><?= h(__('pricing_th_category')) ?></th><th><?= h(__('pricing_th_rate')) ?></th><th><?= h(__('pricing_th_min')) ?></th></tr></thead>
@@ -115,6 +118,7 @@ $jsonLdGraph = [
                 </tbody>
             </table>
         </div>
+        <?php endif; ?>
         <div class="cta-block" style="margin-top:40px;">
             <h2 class="section-title"><?= h(__('pricing_cta_title')) ?></h2>
             <p class="section-desc"><?= h(__('pricing_cta_desc')) ?></p>
@@ -125,10 +129,7 @@ $jsonLdGraph = [
 </main>
 
 <?php require __DIR__ . '/partials/public-buy-links.php'; ?>
-
-<footer class="footer" style="padding:24px;text-align:center;font-size:13px;color:var(--muted);">
-    <a href="<?= h(home_path()) ?>"><?= h($siteName) ?></a> · <a href="<?= h(path('buy.php')) ?>"><?= h(__('buy_nav')) ?></a> · <a href="<?= h(GoogleAcquisition::pageUrl('cheap-smm-panel')) ?>"><?= h(GoogleAcquisition::copy('cheap-smm-panel', $lang)['h1']) ?></a> · <a href="<?= h(path('terms.php')) ?>"><?= h(__('nav_terms')) ?></a> · <a href="<?= h(path('help.php')) ?>"><?= h(__('help_title')) ?></a>
-</footer>
+<?php require __DIR__ . '/partials/landing-footer.php'; ?>
 <script src="<?= h(asset_url('assets/js/landing.js')) ?>" defer></script>
 <?php require __DIR__ . '/partials/a11y.php'; ?>
 </body>

@@ -20,7 +20,13 @@ $hreflangBase = Seo::stripLangParam($baseCanonical);
 ?>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= h($seoTitle) ?> — <?= h($siteName) ?></title>
+    <title><?php
+        $headTitle = (string) $seoTitle;
+        if ($siteName !== '' && stripos($headTitle, $siteName) === false) {
+            $headTitle .= ' — ' . $siteName;
+        }
+        echo h($headTitle);
+    ?></title>
     <meta name="description" content="<?= h($seoDescription) ?>">
     <?php if (!empty($metaKeywords)): ?><meta name="keywords" content="<?= h($metaKeywords) ?>"><?php endif; ?>
     <meta name="robots" content="<?= h(Seo::robotsContent($seoIndexable)) ?>">
@@ -54,7 +60,12 @@ $hreflangBase = Seo::stripLangParam($baseCanonical);
     <?php endif; ?>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <?php
+    $publicFontCss = 'https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap';
+    ?>
+    <link rel="preload" as="style" href="<?= h($publicFontCss) ?>">
+    <link rel="stylesheet" href="<?= h($publicFontCss) ?>" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="<?= h($publicFontCss) ?>"></noscript>
     <link rel="stylesheet" href="<?= h(asset_url('assets/css/landing.css')) ?>">
     <link rel="stylesheet" href="<?= h(asset_url('assets/css/pricing-public.css')) ?>">
     <link rel="stylesheet" href="<?= h(asset_url('assets/css/ui-pro.css')) ?>">

@@ -98,20 +98,32 @@ class GrowthEngine
         }
         try {
             $this->db->beginTransaction();
-            $before = (float) ($user['balance'] ?? 0);
+            $locked = $this->db->fetch(
+                'SELECT welcome_credit_granted, balance, username, email FROM users WHERE id = ? FOR UPDATE',
+                [$userId]
+            );
+            if (!$locked || !empty($locked['welcome_credit_granted'])) {
+                $this->db->rollBack();
+                return ['granted' => false];
+            }
+            $before = (float) ($locked['balance'] ?? 0);
             $after = round($before + $amount, 4);
-            $this->db->execute(
+            $updated = $this->db->execute(
                 'UPDATE users SET balance = balance + ?, welcome_credit_granted = 1 WHERE id = ? AND welcome_credit_granted = 0',
                 [$amount, $userId]
             );
+            if ($updated === 0) {
+                $this->db->rollBack();
+                return ['granted' => false];
+            }
             $this->db->insert(
                 "INSERT INTO transactions (user_id, type, amount, balance_before, balance_after, description, status) VALUES (?, 'admin', ?, ?, ?, ?, 'completed')",
                 [$userId, $amount, $before, $after, 'Welcome bonus — try your first order']
             );
             $this->db->commit();
-            if (!empty($user['email']) && filter_var($user['email'], FILTER_VALIDATE_EMAIL)) {
+            if (!empty($locked['email']) && filter_var($locked['email'], FILTER_VALIDATE_EMAIL)) {
                 try {
-                    (new Mail())->sendWelcomeCredit((string) $user['email'], (string) $user['username'], $amount);
+                    (new Mail())->sendWelcomeCredit((string) $locked['email'], (string) $locked['username'], $amount);
                 } catch (Throwable $e) {
                     /* best effort */
                 }

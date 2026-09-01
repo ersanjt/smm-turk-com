@@ -219,10 +219,10 @@ $extraCssHrefs = [asset_url('assets/css/buy-public.css')];
     <section class="buy-faq" aria-labelledby="buy-faq-title">
         <h2 id="buy-faq-title" class="section-title"><?= h(__('buy_faq_title')) ?></h2>
         <div class="faq-list">
-            <?php foreach ($copy['faqs'] as $faq): ?>
+            <?php foreach ($copy['faqs'] as $faqIndex => $faq): ?>
             <div class="faq-item">
-                <button type="button" class="faq-q" aria-expanded="false"><?= h($faq['name']) ?> <span aria-hidden="true">+</span></button>
-                <div class="faq-a"><?= h($faq['text']) ?></div>
+                <button type="button" class="faq-q" id="buy-faq-q-<?= (int) $faqIndex ?>" aria-expanded="false" aria-controls="buy-faq-a-<?= (int) $faqIndex ?>"><?= h($faq['name']) ?> <span aria-hidden="true">+</span></button>
+                <div class="faq-a" id="buy-faq-a-<?= (int) $faqIndex ?>" role="region" aria-labelledby="buy-faq-q-<?= (int) $faqIndex ?>"><?= h($faq['text']) ?></div>
             </div>
             <?php endforeach; ?>
         </div>

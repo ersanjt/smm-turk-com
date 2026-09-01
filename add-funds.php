@@ -51,7 +51,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_tx']) && csrf_
             [$depositId, $user['id']]
         );
         if ($tx) {
-            $db->execute("UPDATE transactions SET reference = ? WHERE id = ?", [substr($txId, 0, 100), $tx['id']]);
+            $hash = substr($txId, 0, 100);
+            $dup = $db->fetch(
+                "SELECT id FROM transactions WHERE type = 'deposit' AND reference = ? AND id != ? LIMIT 1",
+                [$hash, $tx['id']]
+            );
+            if ($dup) {
+                flash('error', 'This transaction ID was already used. Contact support if you were not credited.');
+                redirect(url('add-funds.php'));
+            }
+            $db->execute("UPDATE transactions SET reference = ? WHERE id = ?", [$hash, $tx['id']]);
             $fullTx = $db->fetch(
                 "SELECT id, user_id, amount, description, reference, status, created_at FROM transactions WHERE id = ?",
                 [$tx['id']]
@@ -108,9 +117,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_funds']) && csrf_
         unset($_SESSION['deposit_coupon']);
     }
 
-    if ($pendingDeposit) {
+    if ($pendingDeposit && trim((string) ($pendingDeposit['reference'] ?? '')) === '') {
         $db->execute(
-            "UPDATE transactions SET amount = ?, description = ?, reference = '' WHERE id = ? AND user_id = ?",
+            "UPDATE transactions SET amount = ?, description = ? WHERE id = ? AND user_id = ? AND status = 'pending' AND (reference IS NULL OR reference = '')",
             [$amount, PaymentRegistry::depositDescription($amount, $method), $pendingDeposit['id'], $user['id']]
         );
         $depositId = (int) $pendingDeposit['id'];

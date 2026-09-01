@@ -263,6 +263,18 @@
         .mob-footer-bar .mob-footer-btn-outline { background: var(--white); color: var(--primary); border: 2px solid var(--primary); }
         .mob-footer-bar .mob-footer-btn-outline:hover { background: var(--primary-soft); transform: translateY(-2px); }
 
+        .growth-promo-bar {
+            position: sticky; top: 0; z-index: 1000;
+            display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;
+            padding: 10px 20px; background: linear-gradient(90deg, #E30A17, #ff4d5a); color: #fff;
+            font-size: 14px; font-weight: 600; box-shadow: 0 4px 20px rgba(227, 10, 23, 0.25);
+        }
+        .growth-promo-bar a {
+            color: #E30A17; background: #fff; padding: 6px 16px; border-radius: 999px;
+            text-decoration: none; font-weight: 700; white-space: nowrap;
+        }
+        .growth-promo-bar a:hover { opacity: 0.92; }
+
         .hero {
             min-height: 92vh; display: flex; align-items: center; padding: 100px 24px 60px;
             background: linear-gradient(160deg, var(--light) 0%, var(--light-warm) 35%, #fff0f2 70%, var(--light) 100%);
@@ -403,7 +415,7 @@
         .faq-q span { color: var(--primary); font-size: 22px; transition: transform var(--duration-normal) var(--ease-spring); flex-shrink: 0; margin-left: 12px; }
         .faq-item.open .faq-q span { transform: rotate(45deg); }
         .faq-a { padding: 0 26px; font-size: 14px; color: var(--muted-dark); line-height: 1.75; max-height: 0; overflow: hidden; transition: max-height var(--duration-slow) var(--ease-out-expo); font-weight: 500; }
-        .faq-item.open .faq-a { padding: 0 26px 22px 26px; max-height: 320px; }
+        .faq-item.open .faq-a { padding: 0 26px 22px 26px; max-height: 2000px; }
 
         .why-us-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; margin-top: 40px; }
         @media (max-width: 900px) { .why-us-grid { grid-template-columns: 1fr; } }
@@ -634,8 +646,6 @@
             .hero h1 { font-size: clamp(26px, 6.5vw, 34px); margin-bottom: 14px; }
             .hero-badge { margin-bottom: 14px; }
             .hero-desc { font-size: 15px; margin-bottom: 12px; }
-            /* Keep the mobile hero action-focused: show the lead line + offers, drop extra marketing paragraphs */
-            .hero-desc:nth-of-type(2), .hero-desc:nth-of-type(3) { display: none; }
             .hero-copy .hero-offers { justify-content: center; margin: 12px 0 4px; }
             .hero-form-box { padding: 24px 20px; }
             .section { padding: 48px 16px; padding-bottom: max(100px, env(safe-area-inset-bottom)); }

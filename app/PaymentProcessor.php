@@ -200,6 +200,29 @@ class PaymentProcessor
         return $resp['result'] ?? $resp['data'] ?? null;
     }
 
+    private function creditIfPaidMatches(int $transactionId, ?float $paidAmount): array
+    {
+        $tx = $this->db->fetch(
+            "SELECT amount FROM transactions WHERE id = ? AND type = 'deposit'",
+            [$transactionId]
+        );
+        if (!$tx) {
+            return ['success' => false, 'error' => 'Deposit not found.'];
+        }
+        if ($paidAmount !== null) {
+            $expected = (float) $tx['amount'];
+            $tolerance = max(0.02, abs($expected) * 0.02);
+            if ($paidAmount <= 0 || abs($paidAmount - $expected) > $tolerance) {
+                Logger::log(
+                    "Deposit #{$transactionId} amount mismatch paid={$paidAmount} expected={$expected}",
+                    'deposits'
+                );
+                return ['success' => false, 'error' => 'Paid amount does not match deposit.'];
+            }
+        }
+        return $this->creditIfPending($transactionId);
+    }
+
     private function heleketWebhook(string $rawBody, string $headerSign): array
     {
         $apiKey = trim((string) $this->db->getSetting('payment_heleket_api_key'));
@@ -227,7 +250,8 @@ class PaymentProcessor
         if (!$tx) {
             return ['success' => false, 'error' => 'Deposit not found.'];
         }
-        $result = $this->creditIfPending((int) $tx['id']);
+        $paid = (float) ($data['payment_amount_usd'] ?? $data['amount'] ?? $data['payer_amount'] ?? 0);
+        $result = $this->creditIfPaidMatches((int) $tx['id'], $paid > 0 ? $paid : (float) $tx['amount']);
         return $result['success']
             ? ['success' => true, 'credited' => true, 'message' => 'Heleket payment credited.']
             : ['success' => false, 'error' => $result['error'] ?? 'Credit failed.'];
@@ -267,26 +291,53 @@ class PaymentProcessor
 
     private function cryptoCloudWebhook(array $params, string $rawBody): array
     {
-        $status = strtolower((string) ($params['status'] ?? $params['invoice_status'] ?? ''));
-        $orderId = (string) ($params['order_id'] ?? '');
-        if ($orderId === '' && $rawBody !== '') {
+        $apiKey = trim((string) $this->db->getSetting('payment_cryptocloud_api_key'));
+        if ($apiKey === '') {
+            return ['success' => false, 'error' => 'CryptoCloud is not configured.'];
+        }
+        if ($params === [] && $rawBody !== '') {
             $json = json_decode($rawBody, true);
             if (is_array($json)) {
-                $orderId = (string) ($json['order_id'] ?? '');
-                $status = strtolower((string) ($json['status'] ?? $status));
+                $params = $json;
             }
         }
-        if (!in_array($status, ['success', 'paid', 'overpaid'], true)) {
-            return ['success' => true, 'message' => 'Status: ' . $status];
+        $invoiceId = trim((string) ($params['invoice_id'] ?? $params['uuid'] ?? $params['token'] ?? ''));
+        $orderId = (string) ($params['order_id'] ?? '');
+        $tx = $orderId !== '' ? $this->findPendingByOrderId($orderId) : null;
+        if (!$tx && $invoiceId !== '') {
+            $tx = $this->db->fetch(
+                "SELECT id, user_id, amount, description, reference, status FROM transactions
+                 WHERE type = 'deposit' AND status = 'pending' AND reference = ? LIMIT 1",
+                ['cc:' . $invoiceId]
+            );
         }
-        $tx = $this->findPendingByOrderId($orderId);
         if (!$tx) {
             return ['success' => false, 'error' => 'Deposit not found.'];
         }
-        $result = $this->creditIfPending((int) $tx['id']);
-        return $result['success']
+        if ($invoiceId === '' && str_starts_with((string) ($tx['reference'] ?? ''), 'cc:')) {
+            $invoiceId = substr((string) $tx['reference'], 3);
+        }
+        if ($invoiceId === '') {
+            return ['success' => false, 'error' => 'Missing CryptoCloud invoice id.'];
+        }
+        $info = $this->httpJson('POST', 'https://api.cryptocloud.plus/v2/invoice/merchant/info', [
+            'uuid' => $invoiceId,
+        ], ['Authorization: Token ' . $apiKey]);
+        if ($info === null) {
+            $info = $this->httpJson('POST', 'https://api.cryptocloud.plus/v1/invoice/info', [
+                'uuid' => $invoiceId,
+            ], ['Authorization: Token ' . $apiKey]);
+        }
+        $result = is_array($info) ? ($info['result'] ?? $info) : [];
+        $status = strtolower((string) ($result['status'] ?? $result['invoice_status'] ?? ''));
+        if (!in_array($status, ['paid', 'overpaid', 'success'], true)) {
+            return ['success' => true, 'message' => 'CryptoCloud status: ' . $status];
+        }
+        $paid = (float) ($result['amount_usd'] ?? $result['amount'] ?? $result['paid_amount'] ?? 0);
+        $credited = $this->creditIfPaidMatches((int) $tx['id'], $paid > 0 ? $paid : (float) $tx['amount']);
+        return $credited['success']
             ? ['success' => true, 'credited' => true, 'message' => 'CryptoCloud payment credited.']
-            : ['success' => false, 'error' => $result['error'] ?? 'Credit failed.'];
+            : ['success' => false, 'error' => $credited['error'] ?? 'Credit failed.'];
     }
 
     // ─── Binance Pay ─────────────────────────────────────────────────────────
@@ -341,20 +392,41 @@ class PaymentProcessor
 
     private function binancePayWebhook(string $rawBody): array
     {
-        $data = json_decode($rawBody, true);
-        if (!is_array($data)) {
-            return ['success' => false, 'error' => 'Invalid payload.'];
+        $secret = trim((string) $this->db->getSetting('payment_binance_pay_secret'));
+        $apiKey = trim((string) $this->db->getSetting('payment_binance_pay_api_key'));
+        if ($secret === '' || $apiKey === '') {
+            return ['success' => false, 'error' => 'Binance Pay is not configured.'];
         }
-        $bizStatus = strtoupper((string) ($data['bizStatus'] ?? $data['data']['status'] ?? ''));
-        $orderId = (string) ($data['data']['merchantTradeNo'] ?? $data['merchantTradeNo'] ?? '');
-        if ($bizStatus !== 'PAY_SUCCESS' && $bizStatus !== 'SUCCESS') {
+        $data = json_decode($rawBody, true);
+        $orderId = '';
+        if (is_array($data)) {
+            $orderId = (string) ($data['data']['merchantTradeNo'] ?? $data['merchantTradeNo'] ?? '');
+        }
+        if ($orderId === '') {
+            return ['success' => false, 'error' => 'Missing Binance order id.'];
+        }
+        $queryBody = json_encode(['merchantTradeNo' => $orderId]);
+        $query = $this->httpJson(
+            'POST',
+            'https://bpay.binanceapi.com/binancepay/openapi/v2/order/query',
+            ['merchantTradeNo' => $orderId],
+            $this->binancePayHeaders($queryBody)
+        );
+        if ($query === null || ($query['status'] ?? '') !== 'SUCCESS') {
+            Logger::log('Binance Pay query failed for ' . $orderId, 'deposits');
+            return ['success' => false, 'error' => 'Could not verify Binance Pay order.'];
+        }
+        $order = $query['data'] ?? [];
+        $bizStatus = strtoupper((string) ($order['status'] ?? $order['orderStatus'] ?? ''));
+        if (!in_array($bizStatus, ['PAID', 'PAY_SUCCESS', 'SUCCESS'], true)) {
             return ['success' => true, 'message' => 'Binance status: ' . $bizStatus];
         }
         $tx = $this->findPendingByOrderId($orderId);
         if (!$tx) {
             return ['success' => false, 'error' => 'Deposit not found.'];
         }
-        $result = $this->creditIfPending((int) $tx['id']);
+        $paid = (float) ($order['orderAmount'] ?? $order['amount'] ?? 0);
+        $result = $this->creditIfPaidMatches((int) $tx['id'], $paid > 0 ? $paid : (float) $tx['amount']);
         return $result['success']
             ? ['success' => true, 'credited' => true, 'message' => 'Binance Pay credited.']
             : ['success' => false, 'error' => $result['error'] ?? 'Credit failed.'];
@@ -481,15 +553,16 @@ class PaymentProcessor
             }
         }
         $secret = trim((string) $this->db->getSetting('payment_smmpaygate_secret'));
-        if ($secret !== '') {
-            $sign = (string) ($params['sign'] ?? $params['signature'] ?? $_SERVER['HTTP_X_SIGNATURE'] ?? '');
-            $orderId = (string) ($params['order_id'] ?? '');
-            $expected = hash_hmac('sha256', $orderId . ($params['amount'] ?? ''), $secret);
-            if ($sign !== '' && !hash_equals($expected, $sign)) {
-                return ['success' => false, 'error' => 'Invalid SmmPayGate signature.'];
-            }
+        if ($secret === '') {
+            Logger::log('SmmPayGate webhook rejected: secret not configured', 'deposits');
+            return ['success' => false, 'error' => 'SmmPayGate secret is not configured.'];
         }
+        $sign = (string) ($params['sign'] ?? $params['signature'] ?? $_SERVER['HTTP_X_SIGNATURE'] ?? '');
         $orderId = (string) ($params['order_id'] ?? '');
+        $expected = hash_hmac('sha256', $orderId . ($params['amount'] ?? ''), $secret);
+        if ($sign === '' || !hash_equals($expected, $sign)) {
+            return ['success' => false, 'error' => 'Invalid SmmPayGate signature.'];
+        }
         $status = strtolower((string) ($params['status'] ?? $params['payment_status'] ?? ''));
         if (!in_array($status, ['paid', 'success', 'completed', 'approved'], true)) {
             return ['success' => true, 'message' => 'Status: ' . $status];
@@ -498,7 +571,8 @@ class PaymentProcessor
         if (!$tx) {
             return ['success' => false, 'error' => 'Deposit not found.'];
         }
-        $result = $this->creditIfPending((int) $tx['id']);
+        $paid = (float) ($params['amount'] ?? 0);
+        $result = $this->creditIfPaidMatches((int) $tx['id'], $paid > 0 ? $paid : (float) $tx['amount']);
         return $result['success']
             ? ['success' => true, 'credited' => true, 'message' => 'SmmPayGate payment credited.']
             : ['success' => false, 'error' => $result['error'] ?? 'Credit failed.'];

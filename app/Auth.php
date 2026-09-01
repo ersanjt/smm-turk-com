@@ -543,7 +543,7 @@ class Auth {
      * Request password reset: create token and send email. Returns success true even if email not found (avoid enumeration).
      */
     public function requestPasswordReset(string $email): array {
-        $email = trim($email);
+        $email = strtolower(trim($email));
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return ['success' => false, 'error' => 'Invalid email address'];
         }
@@ -593,6 +593,11 @@ class Auth {
             [$hash, $user['id']]
         );
         $this->clearPasswordChangeRequirement((int)$user['id']);
+        try {
+            (new ChildPanelManager())->syncChildPanelsPasswordHashForUser((int) $user['id'], $hash);
+        } catch (Throwable $e) {
+            Logger::log('Child panel password sync after reset: ' . $e->getMessage(), 'child_panel');
+        }
         return ['success' => true];
     }
 
@@ -613,7 +618,7 @@ class Auth {
         // Existing user by google_id
         $user = $this->db->fetch("SELECT * FROM users WHERE google_id = ? AND status != 'banned'", [$googleId]);
         if ($user) {
-            $this->db->execute("UPDATE users SET last_login = NOW(), email = ? WHERE id = ?", [$email, $user['id']]);
+            $this->db->execute("UPDATE users SET last_login = NOW() WHERE id = ?", [$user['id']]);
             $user = $this->db->fetch("SELECT * FROM users WHERE id = ?", [$user['id']]) ?: $user;
             return $this->finishGoogleUser($user, $forMobile);
         }

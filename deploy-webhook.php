@@ -97,6 +97,9 @@ function deploy_repair_files(): array
         'app/GrowthEngine.php',
         'app/DepositManager.php',
         'app/OrderManager.php',
+        'app/PaymentProcessor.php',
+        'payment-callback.php',
+        'add-funds.php',
         '.htaccess',
         'llms.php',
         'migrate-db.php',
@@ -118,6 +121,7 @@ function deploy_repair_files(): array
         'partials/landing-footer.php',
         'partials/public-buy-links.php',
         'assets/css/landing.css',
+        'assets/css/pricing-public.css',
         'assets/css/blog.css',
         'partials/child-panel-manage.php',
         'app/ChildPanelRemoteSettings.php',
@@ -128,6 +132,7 @@ function deploy_repair_files(): array
         'google-redirect-uri.php',
         'app/RevenueEngine.php',
         'assets/js/add-funds.js',
+        'assets/js/landing.js',
         'storage/.htaccess',
         'DEPLOY_VERSION',
     ];
@@ -144,8 +149,10 @@ function deploy_repair_files(): array
         }
         $content = deploy_normalize_php($content);
         $dest = __DIR__ . '/' . str_replace('/', DIRECTORY_SEPARATOR, $rel);
-        if (is_file($dest)) {
-            @unlink($dest);
+        $dir = dirname($dest);
+        if (!is_dir($dir) && !@mkdir($dir, 0755, true)) {
+            $errors[] = "mkdir failed: $rel";
+            continue;
         }
         $tmp = $dest . '.tmp.' . getmypid();
         if (@file_put_contents($tmp, $content) === false) {

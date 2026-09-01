@@ -152,6 +152,7 @@ class OrderManager {
             if (class_exists('Logger')) {
                 Logger::log('placeOrder insert failed after provider OK: ' . $e->getMessage(), 'orders');
             }
+            $this->refundCharge($userId, $charge);
             return ['success' => false, 'error' => 'Order placed at provider but local save failed. Contact support with your link and service ID.'];
         }
     }
@@ -303,6 +304,48 @@ class OrderManager {
         }
     }
 
+    /** Idempotent provider-driven refund (cancel / partial / refunded). */
+    private function creditOrderRefund(int $orderId, int $userId, float $amount, string $reason): void
+    {
+        $amount = round(max(0, $amount), 4);
+        if ($amount <= 0 || $orderId <= 0 || $userId <= 0) {
+            return;
+        }
+        $ref = (string) $orderId;
+        try {
+            $this->db->beginTransaction();
+            $dup = $this->db->fetch(
+                "SELECT id FROM transactions WHERE type = 'refund' AND reference = ? LIMIT 1",
+                [$ref]
+            );
+            if ($dup) {
+                $this->db->rollBack();
+                return;
+            }
+            $userRow = $this->db->fetch("SELECT balance FROM users WHERE id = ? FOR UPDATE", [$userId]);
+            if (!$userRow) {
+                $this->db->rollBack();
+                return;
+            }
+            $before = (float) ($userRow['balance'] ?? 0);
+            $this->db->execute(
+                "UPDATE users SET balance = balance + ?, spent = GREATEST(spent - ?, 0) WHERE id = ?",
+                [$amount, $amount, $userId]
+            );
+            $this->db->insert(
+                "INSERT INTO transactions (user_id, type, amount, balance_before, balance_after, description, reference, status)
+                 VALUES (?, 'refund', ?, ?, ?, ?, ?, 'completed')",
+                [$userId, $amount, $before, round($before + $amount, 4), $reason . ' #' . $orderId, $ref]
+            );
+            $this->db->commit();
+        } catch (Throwable $e) {
+            $this->db->rollBack();
+            if (class_exists('Logger')) {
+                Logger::log("creditOrderRefund #{$orderId}: " . $e->getMessage(), 'orders');
+            }
+        }
+    }
+
     public function syncOrders(): int {
         $orders = $this->db->fetchAll(
             "SELECT id, provider, provider_order_id FROM orders
@@ -338,7 +381,7 @@ class OrderManager {
                 }
                 try {
                     $row = $this->db->fetch(
-                        "SELECT o.status, o.start_count, o.remains, o.user_id, o.service_name, u.username, u.email
+                        "SELECT o.status, o.start_count, o.remains, o.user_id, o.service_name, o.charge, o.quantity, u.username, u.email
                          FROM orders o JOIN users u ON u.id = o.user_id WHERE o.id = ?",
                         [$order['id']]
                     );
@@ -360,6 +403,25 @@ class OrderManager {
                         $updated++;
                     }
                     if ($row && $oldStatus !== $newStatus && in_array($newStatus, ['Completed', 'Canceled', 'Cancelled', 'Partial', 'Refunded'], true)) {
+                        if (in_array($newStatus, ['Canceled', 'Cancelled', 'Refunded'], true)) {
+                            $this->creditOrderRefund(
+                                (int) $order['id'],
+                                (int) $row['user_id'],
+                                (float) $row['charge'],
+                                'Provider ' . $newStatus
+                            );
+                        } elseif ($newStatus === 'Partial') {
+                            $qty = max(1, (int) ($row['quantity'] ?? 1));
+                            $partial = round((float) $row['charge'] * ($remains / $qty), 4);
+                            if ($partial > 0) {
+                                $this->creditOrderRefund(
+                                    (int) $order['id'],
+                                    (int) $row['user_id'],
+                                    $partial,
+                                    'Provider partial refund'
+                                );
+                            }
+                        }
                         if (!empty($row['email'])) {
                             try {
                                 $mail = new Mail();

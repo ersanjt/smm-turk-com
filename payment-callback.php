@@ -1,6 +1,8 @@
 <?php
 /**
  * Payment return URL (user redirect after paying).
+ * Credits only ZarinPal here — it verifies with the merchant API.
+ * Other gateways credit exclusively via server-to-server payment-webhook.php.
  */
 require_once __DIR__ . '/app/init.php';
 
@@ -13,31 +15,29 @@ if (!isset($defs[$gateway])) {
     exit;
 }
 
-$processor = new PaymentProcessor();
-$result = $processor->handleCallback($gateway, $_GET);
+$loggedIn = !empty($_SESSION['user_id']);
 
-if ($gateway === PaymentRegistry::HELEKET || $gateway === PaymentRegistry::SMMPAYGATE || $gateway === PaymentRegistry::BINANCE_PAY) {
-    $status = $_GET['status'] ?? '';
-    if ($status === 'success' || ($result['credited'] ?? false)) {
-        if (!empty($_SESSION['user_id'])) {
-            flash('success', $result['message'] ?? 'Payment received! Your balance will update shortly.');
+if ($gateway === PaymentRegistry::ZARINPAL) {
+    $processor = new PaymentProcessor();
+    $result = $processor->handleCallback($gateway, $_GET);
+    if ($result['credited'] ?? false) {
+        if ($loggedIn) {
+            flash('success', $result['message'] ?? 'Payment confirmed! Your balance has been credited.');
         }
         redirect(page_url('add-funds.php', ['tab' => 'history']));
     }
-    if (!empty($_SESSION['user_id'])) {
-        flash('info', 'Payment submitted. We will credit your balance after confirmation.');
+    if ($loggedIn) {
+        flash('error', $result['error'] ?? 'Payment could not be verified. Contact support with your deposit ID.');
     }
     redirect(url('add-funds.php'));
 }
 
-if ($result['credited'] ?? false) {
-    if (!empty($_SESSION['user_id'])) {
-        flash('success', $result['message'] ?? 'Payment confirmed! Your balance has been credited.');
+if ($loggedIn) {
+    $status = strtolower((string) ($_GET['status'] ?? ''));
+    if (in_array($status, ['success', 'paid', 'ok'], true)) {
+        flash('success', 'Payment received! Your balance will update shortly after confirmation.');
+        redirect(page_url('add-funds.php', ['tab' => 'history']));
     }
-    redirect(page_url('add-funds.php', ['tab' => 'history']));
-}
-
-if (!empty($_SESSION['user_id'])) {
-    flash('error', $result['error'] ?? 'Payment could not be verified. Contact support with your deposit ID.');
+    flash('info', 'Payment submitted. We will credit your balance after confirmation.');
 }
 redirect(url('add-funds.php'));
