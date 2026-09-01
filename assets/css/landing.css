@@ -315,6 +315,8 @@
         .hero-badge { display: inline-block; background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: var(--white); font-size: 11px; font-weight: 700; letter-spacing: 1.8px; padding: 8px 16px; border-radius: 24px; margin-bottom: 18px; text-transform: uppercase; box-shadow: 0 2px 10px rgba(227, 10, 23, .25); }
         .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(28px, 4vw, 44px); font-weight: 800; line-height: 1.15; margin-bottom: 18px; letter-spacing: -.03em; color: var(--dark); }
         .hero h1 .hero-title-2 { display: block; font-size: clamp(32px, 4.5vw, 52px); color: var(--primary); margin-top: 4px; }
+        .hero-buy-link { margin: 0 0 14px; max-width: 520px; }
+        .hero-buy-link a { color: var(--primary); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
         .hero-desc { font-size: 15px; color: var(--muted-dark); margin-bottom: 14px; line-height: 1.7; max-width: 520px; font-weight: 500; }
         .hero-desc:last-of-type { margin-bottom: 28px; }
         .hero-desc strong { color: var(--primary); font-weight: 700; }
@@ -422,6 +424,16 @@
         .footer-links a { color: rgba(255,255,255,.85); font-size: 14px; font-weight: 600; padding: 12px 20px; min-height: 48px; display: inline-flex; align-items: center; justify-content: center; border-radius: 12px; transition: color .2s, background .2s; }
         .footer-links a:hover { color: var(--white); background: rgba(255,255,255,.08); }
         .footer-copy { font-size: 13px; color: rgba(255,255,255,.5); word-break: break-word; line-height: 1.6; }
+        .public-buy-links { margin: 0 0 20px; text-align: center; }
+        .public-buy-links-lead { display: inline-block; font-weight: 800; margin-bottom: 10px; color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+        .public-buy-links ul { display: flex; flex-wrap: wrap; gap: 8px 16px; justify-content: center; list-style: none; margin: 0; padding: 0; }
+        .public-buy-links a { color: rgba(255,255,255,.9); font-size: 13px; font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+        .blog-article-wrap .public-buy-links,
+        .pricing-public + .public-buy-links { margin: 28px auto; padding: 0 20px; max-width: 720px; text-align: left; }
+        .blog-article-wrap .public-buy-links-lead,
+        .blog-article-wrap .public-buy-links a,
+        .pricing-public + .public-buy-links .public-buy-links-lead,
+        .pricing-public + .public-buy-links a { color: var(--primary, #E30A17); }
         .footer-nav-label { display: none; }
 
         /* Desktop vs mobile footer layouts */
@@ -505,6 +517,7 @@
         body.theme-dark .hero h1 .hero-title-2 { color: #FF5566; }
         body.theme-dark .hero-desc { color: #c4b5b9; }
         body.theme-dark .hero-desc strong { color: #FF5566; }
+        body.theme-dark .hero-buy-link a { color: #FF5566; }
         body.theme-dark .hero-form-box {
             background: #1a1416;
             border-color: rgba(255, 85, 102, 0.15);
@@ -617,6 +630,7 @@
             .hero { padding: 76px 16px 88px; min-height: auto; padding-top: calc(72px + env(safe-area-inset-top)); }
             .hero-inner { gap: 24px; }
             .hero-copy { text-align: center; }
+            .hero-buy-link { margin-left: auto; margin-right: auto; }
             .hero h1 { font-size: clamp(26px, 6.5vw, 34px); margin-bottom: 14px; }
             .hero-badge { margin-bottom: 14px; }
             .hero-desc { font-size: 15px; margin-bottom: 12px; }

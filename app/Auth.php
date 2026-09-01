@@ -11,6 +11,11 @@ class Auth {
             $lifetime = defined('SESSION_LIFETIME') ? (int) SESSION_LIFETIME : 0;
             $isSecure = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
                 || (defined('SITE_URL') && str_starts_with((string) SITE_URL, 'https://'));
+            $ua = (string) ($_SERVER['HTTP_USER_AGENT'] ?? '');
+            if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'GET'
+                && preg_match('/Googlebot|Google-InspectionTool|bingbot|AdsBot-Google/i', $ua)) {
+                session_cache_limiter('public');
+            }
             ini_set('session.use_strict_mode', '1');
             ini_set('session.use_only_cookies', '1');
             session_set_cookie_params([

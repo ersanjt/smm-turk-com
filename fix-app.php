@@ -112,6 +112,7 @@ $files = [
     'partials/public-seo-head.php',
     'partials/landing-nav.php',
     'partials/landing-footer.php',
+    'partials/public-buy-links.php',
     'partials/a11y.php',
     'assets/css/earn.css',
     'assets/css/blog.css',

@@ -111,6 +111,7 @@ $homeJsonLd = [
         <div class="hero-copy">
             <span class="hero-badge"><?= h(__('hero_badge')) ?></span>
             <h1 id="hero-title"><?= h(__('hero_title')) ?><br><span class="hero-title-2"><?= h(__('hero_title_2')) ?></span></h1>
+            <div class="hero-buy-link"><a href="<?= h(GoogleAcquisition::pageUrl('cheap-smm-panel')) ?>"><?= h(GoogleAcquisition::copy('cheap-smm-panel', $lang)['h1']) ?></a></div>
             <p class="hero-desc"><?= __('hero_desc_1') ?></p>
             <?php if (!empty($offerLines)): ?>
             <div class="hero-offers">
@@ -213,7 +214,7 @@ $homeJsonLd = [
     &nbsp;·&nbsp;
     <a href="<?= h(path('buy.php')) ?>" style="color:var(--primary);font-weight:700;"><?= h(__('buy_nav')) ?> →</a></p>
     <p style="text-align:center;margin-top:12px;font-size:14px;line-height:1.7;">
-        <?php foreach (['instagram-followers', 'tiktok-views', 'youtube-views', 'cheap-smm-panel'] as $homeBuySlug):
+        <?php foreach (['cheap-smm-panel', 'instagram-followers', 'tiktok-views', 'youtube-views'] as $homeBuySlug):
             $homeBuyCopy = GoogleAcquisition::copy($homeBuySlug, $lang); ?>
         <a href="<?= h(GoogleAcquisition::pageUrl($homeBuySlug)) ?>" style="color:var(--primary);font-weight:600;margin:0 8px;"><?= h($homeBuyCopy['h1']) ?></a>
         <?php endforeach; ?>

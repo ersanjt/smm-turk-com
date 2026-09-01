@@ -12,11 +12,21 @@ $footerTiles = [
     ['href' => register_path(), 'label' => __('footer_signup'), 'icon' => 'plus'],
     ['href' => path('pricing.php'), 'label' => __('nav_prices'), 'icon' => 'dollar'],
     ['href' => path('buy.php'), 'label' => __('buy_nav'), 'icon' => 'package'],
+];
+if (class_exists('GoogleAcquisition', false)) {
+    $footerCheapCopy = GoogleAcquisition::copy('cheap-smm-panel', $lang ?? 'tr');
+    $footerTiles[] = [
+        'href' => GoogleAcquisition::pageUrl('cheap-smm-panel'),
+        'label' => $footerCheapCopy['h1'],
+        'icon' => 'package',
+    ];
+}
+$footerTiles = array_merge($footerTiles, [
     ['href' => path('get-app.php'), 'label' => __('nav_app'), 'icon' => 'package'],
     ['href' => path('blog.php'), 'label' => __('blog_nav_blog'), 'icon' => 'message'],
     ['href' => path('help.php'), 'label' => __('help_nav'), 'icon' => 'info'],
     ['href' => path('terms.php'), 'label' => __('nav_terms'), 'icon' => 'clipboard'],
-];
+]);
 if (!$footerIsChild) {
     $footerTiles[] = ['href' => login_next_path('api-page.php'), 'label' => __('footer_api'), 'icon' => 'api'];
 }
@@ -28,6 +38,7 @@ $footerTiles[] = ['href' => path('help.php'), 'label' => __('footer_support'), '
 </nav>
 
 <footer class="footer" role="contentinfo">
+    <?php require __DIR__ . '/public-buy-links.php'; ?>
     <div class="footer-desktop">
         <div class="footer-links">
             <?php foreach ($footerTiles as $tile): ?>

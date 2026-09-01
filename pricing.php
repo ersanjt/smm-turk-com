@@ -119,12 +119,15 @@ $jsonLdGraph = [
             <h2 class="section-title"><?= h(__('pricing_cta_title')) ?></h2>
             <p class="section-desc"><?= h(__('pricing_cta_desc')) ?></p>
             <a href="<?= h(register_path()) ?>" class="btn-cta"><?= h(__('pricing_cta_btn')) ?></a>
+            <p style="margin-top:16px;"><a href="<?= h(GoogleAcquisition::pageUrl('cheap-smm-panel')) ?>"><?= h(GoogleAcquisition::copy('cheap-smm-panel', $lang)['h1']) ?></a></p>
         </div>
     </section>
 </main>
 
+<?php require __DIR__ . '/partials/public-buy-links.php'; ?>
+
 <footer class="footer" style="padding:24px;text-align:center;font-size:13px;color:var(--muted);">
-    <a href="<?= h(home_path()) ?>"><?= h($siteName) ?></a> · <a href="<?= h(path('terms.php')) ?>"><?= h(__('nav_terms')) ?></a> · <a href="<?= h(path('help.php')) ?>"><?= h(__('help_title')) ?></a>
+    <a href="<?= h(home_path()) ?>"><?= h($siteName) ?></a> · <a href="<?= h(path('buy.php')) ?>"><?= h(__('buy_nav')) ?></a> · <a href="<?= h(GoogleAcquisition::pageUrl('cheap-smm-panel')) ?>"><?= h(GoogleAcquisition::copy('cheap-smm-panel', $lang)['h1']) ?></a> · <a href="<?= h(path('terms.php')) ?>"><?= h(__('nav_terms')) ?></a> · <a href="<?= h(path('help.php')) ?>"><?= h(__('help_title')) ?></a>
 </footer>
 <script src="<?= h(asset_url('assets/js/landing.js')) ?>" defer></script>
 <?php require __DIR__ . '/partials/a11y.php'; ?>

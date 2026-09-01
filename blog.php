@@ -188,6 +188,9 @@ function blog_category_initial(?string $name): string {
       · <?= (int) $total ?> <?= h($total === 1 ? __('blog_result') : __('blog_results')) ?><?php if ($searchQuery !== ''): ?> · “<?= h($searchQuery) ?>”<?php endif; ?>
     </p>
     <?php endif; ?>
+    <?php if (!$filterActive): ?>
+    <?php require __DIR__ . '/partials/public-buy-links.php'; ?>
+    <?php endif; ?>
     <form class="blog-search" method="get" action="<?= h(path('blog.php')) ?>" role="search">
       <input type="search" name="q" value="<?= h($searchQuery) ?>" placeholder="<?= h(__('blog_search_ph')) ?>" aria-label="<?= h(__('blog_search_ph')) ?>" maxlength="80">
       <button type="submit"><?= h(__('blog_search_btn')) ?></button>

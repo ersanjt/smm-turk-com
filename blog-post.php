@@ -143,6 +143,7 @@ require __DIR__ . '/layouts/blog-header.php';
     <div class="article-body">
         <?= HtmlSanitizer::sanitize((string) $post['body']) ?>
     </div>
+    <?php require __DIR__ . '/partials/public-buy-links.php'; ?>
 </article>
 
 <?php if (!empty($related)): ?>

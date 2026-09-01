@@ -198,6 +198,14 @@ body.theme-dark .blog-empty { background: var(--blog-white); }
   color: #fff;
   text-decoration: underline;
 }
+.blog-hero .public-buy-links {
+  margin: 16px 0 0;
+  text-align: left;
+}
+.blog-hero .public-buy-links-lead,
+.blog-hero .public-buy-links a {
+  color: #fff;
+}
 .blog-search {
   display: flex;
   gap: 8px;
