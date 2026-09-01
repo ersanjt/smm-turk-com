@@ -95,8 +95,20 @@
     }
     syncToggles();
 
-    function openPanel() { panel.classList.add('open'); fab.setAttribute('aria-expanded', 'true'); }
-    function closePanel() { panel.classList.remove('open'); fab.setAttribute('aria-expanded', 'false'); }
+    function openPanel() {
+      panel.classList.add('open');
+      panel.removeAttribute('inert');
+      panel.setAttribute('aria-hidden', 'false');
+      fab.setAttribute('aria-expanded', 'true');
+    }
+    function closePanel() {
+      panel.classList.remove('open');
+      panel.setAttribute('inert', '');
+      panel.setAttribute('aria-hidden', 'true');
+      fab.setAttribute('aria-expanded', 'false');
+    }
+    panel.setAttribute('inert', '');
+    panel.setAttribute('aria-hidden', 'true');
     fab.addEventListener('click', function () {
       panel.classList.contains('open') ? closePanel() : openPanel();
     });

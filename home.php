@@ -76,10 +76,20 @@ $homeJsonLd = [
     <script type="application/ld+json"><?= Seo::jsonLd($homeJsonLd) ?></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= h(asset_url('assets/css/landing.css')) ?>">
-    <link rel="stylesheet" href="<?= h(asset_url('assets/css/pricing-public.css')) ?>">
-    <link rel="stylesheet" href="<?= h(asset_url('assets/css/ui-pro.css')) ?>">
+    <?php
+    $fontCss = 'https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap';
+    $landingCss = asset_url('assets/css/landing.css');
+    $uiProCss = asset_url('assets/css/ui-pro.css');
+    ?>
+    <link rel="preload" as="style" href="<?= h($fontCss) ?>">
+    <link rel="preload" as="style" href="<?= h($landingCss) ?>">
+    <link rel="stylesheet" href="<?= h($fontCss) ?>" media="print" onload="this.media='all'">
+    <link rel="stylesheet" href="<?= h($landingCss) ?>">
+    <link rel="stylesheet" href="<?= h($uiProCss) ?>" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="<?= h($fontCss) ?>">
+        <link rel="stylesheet" href="<?= h($uiProCss) ?>">
+    </noscript>
     <?php require __DIR__ . '/partials/google-tags.php'; ?>
 </head>
 <body data-sw="<?= h(path('pwa-sw.php')) ?>" data-sw-scope="<?= h(base_path() !== '' ? base_path() . '/' : '/') ?>">

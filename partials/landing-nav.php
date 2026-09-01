@@ -73,7 +73,7 @@ $ctaLabel = $registrationEnabled ? __('nav_sign_up') : __('nav_sign_in');
         </button>
     </div>
 
-    <div class="nav-mobile" id="navMobilePanel" aria-hidden="true">
+    <div class="nav-mobile" id="navMobilePanel" aria-hidden="true" inert>
         <button type="button" class="nav-mobile-backdrop" id="navBackdrop" aria-label="Close menu" tabindex="-1"></button>
         <div class="nav-mobile-sheet" role="dialog" aria-modal="true" aria-label="<?= h(__('footer_quick_links') ?: 'Menu') ?>">
             <div class="nav-mobile-head">

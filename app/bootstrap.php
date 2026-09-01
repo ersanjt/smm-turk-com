@@ -342,7 +342,7 @@ function logo_url(): string {
             return asset_url(ltrim($custom, '/'));
         }
     }
-    return asset_url('assets/img/logo-icon.png');
+    return asset_url('assets/img/logo-icon.svg');
 }
 
 /** Favicon URL — custom path in settings or default logo. */
@@ -360,7 +360,9 @@ function favicon_url(): string {
 }
 
 function echo_favicon_links(): void {
-    echo '<link rel="icon" type="image/png" href="' . h(favicon_url()) . '">' . "\n";
+    $href = favicon_url();
+    $type = preg_match('/\.svg(\?|$)/i', $href) ? 'image/svg+xml' : 'image/png';
+    echo '<link rel="icon" type="' . $type . '" href="' . h($href) . '">' . "\n";
     echo '<link rel="apple-touch-icon" href="' . h(logo_url()) . '">' . "\n";
 }
 

@@ -1,8 +1,8 @@
 <?php
 return [
     'site_tagline' => 'Sosyal Medya Pazarlama Paneli',
-    'seo_title' => 'SMM Panel Türkiye — En Ucuz Instagram Takipçi 2026',
-    'seo_description' => 'SMM Panel Türkiye: Instagram takipçi, TikTok beğeni ve YouTube izlenme. Ucuz SMM paneli, kripto ödeme (BTC, USDT), bayi API ve 7/24 destek. Türkiye ve dünya.',
+    'seo_title' => 'SMM Panel Türkiye — Ucuz Türk SMM Paneli 2026',
+    'seo_description' => 'SMM Panel Türkiye ve ucuz Türk SMM: Instagram takipçi, TikTok beğeni, YouTube izlenme. Kripto ödeme (BTC, USDT), bayi API ve 7/24 destek. Türkiye ve dünya.',
     'seo_og_title' => 'SMM Panel Türkiye — En ucuz fiyat',
     'seo_og_description' => 'SMM Panel Türkiye. Sadece kripto yatırım, bayi API, 7/24 destek. Instagram, TikTok, YouTube.',
     'hero_badge' => 'SMM Panel Türkiye',

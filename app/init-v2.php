@@ -329,7 +329,7 @@ function logo_url(): string {
             return asset_url(ltrim($custom, '/'));
         }
     }
-    return asset_url('assets/img/logo-icon.png');
+    return asset_url('assets/img/logo-icon.svg');
 }
 
 /** Favicon URL — custom path in settings or default logo. */

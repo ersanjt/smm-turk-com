@@ -45,12 +45,22 @@ ErrorDocument 404 /404.php
   ExpiresByType image/jpeg "access plus 1 year"
   ExpiresByType image/webp "access plus 1 year"
   ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  <FilesMatch "\.(css|js|png|jpe?g|gif|webp|svg|woff2)$">
+    Header set Cache-Control "public, max-age=31536000"
+  </FilesMatch>
 </IfModule>
 
 # SMM Turk - Clean URLs (no .php in browser) + API rewrite
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteBase /
+# Duplicate homepages must 301 before the "file exists" pass
+RewriteRule ^index\.php$ / [R=301,L]
+RewriteRule ^home\.php$ / [R=301,L]
 # Original request /app — do not let Apache DirectorySlash send it to the forbidden app/ directory
 RewriteCond %{THE_REQUEST} \s/+app(?:[\s?]|$)
 RewriteRule ^app/?$ app.php [L,QSA]

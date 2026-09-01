@@ -6,6 +6,7 @@ if (!isset($pageTitle)) $pageTitle = 'Blog';
 if (!isset($pageDescription)) $pageDescription = 'SMM Turk Blog — Tips for social media growth, SMM panel guides, Instagram, YouTube, TikTok marketing.';
 $siteName = Seo::siteName();
 $siteUrl  = Seo::siteUrl();
+$omitCanonical = $omitCanonical ?? false;
 $canonicalUrl = $canonicalUrl ?? ($siteUrl !== '' ? Seo::absoluteUrl(path('blog.php')) : path('blog.php'));
 $pageImg  = $pageImage ?? og_image_url();
 if ($pageImg !== '' && !preg_match('#^https?://#i', $pageImg)) {
@@ -23,10 +24,14 @@ $paginationNext = $paginationNext ?? null;
 $blogNavActive = $blogNavActive ?? '';
 $blogHero = $blogHero ?? true;
 $seoIndexable = $seoIndexable ?? true;
-$seoHreflang = ($seoHreflang ?? true) && $seoIndexable;
+$seoHreflang = ($seoHreflang ?? true) && $seoIndexable && !$omitCanonical;
 $hreflangBase = Seo::stripLangParam($seoHreflangBase ?? $canonicalUrl);
 $seoHreflangBase = $hreflangBase;
-$canonicalUrl = Seo::pageCanonical($hreflangBase, $lang);
+if ($omitCanonical) {
+    $canonicalUrl = '';
+} else {
+    $canonicalUrl = Seo::pageCanonical($hreflangBase, $lang);
+}
 if ($paginationPrev) {
     $paginationPrev = Seo::pageCanonical($paginationPrev, $lang);
 }
@@ -56,7 +61,7 @@ foreach ($jsonLdExtra as $block) {
     <meta name="description" content="<?= h($pageDescription) ?>">
     <meta name="robots" content="<?= h(Seo::robotsContent($seoIndexable)) ?>">
     <?php if (!empty($metaKeywords)): ?><meta name="keywords" content="<?= h($metaKeywords) ?>"><?php endif; ?>
-    <link rel="canonical" href="<?= h($canonicalUrl) ?>">
+    <?php if ($canonicalUrl): ?><link rel="canonical" href="<?= h($canonicalUrl) ?>"><?php endif; ?>
     <?php if ($seoHreflang && $seoHreflangBase !== ''): ?>
     <?= Seo::hreflangTags($seoHreflangBase) ?>
     <?php endif; ?>

@@ -28,6 +28,7 @@ $boot = [
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title><?= h($siteName) ?> App</title>
     <meta name="description" content="<?= h($siteName) ?> mobile app — new orders, services, crypto deposits, tickets.">
+    <meta name="robots" content="<?= h(Seo::robotsContent(false)) ?>">
     <meta name="theme-color" content="#E30A17">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">

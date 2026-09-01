@@ -38,7 +38,14 @@
   function setNavOpen(open) {
     document.body.classList.toggle('nav-open', open);
     if (navToggle) navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-    if (navPanel) navPanel.setAttribute('aria-hidden', open ? 'false' : 'true');
+    if (navPanel) {
+      navPanel.setAttribute('aria-hidden', open ? 'false' : 'true');
+      if (open) {
+        navPanel.removeAttribute('inert');
+      } else {
+        navPanel.setAttribute('inert', '');
+      }
+    }
     if (navToggle) navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
   }
 

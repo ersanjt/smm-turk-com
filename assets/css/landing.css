@@ -614,8 +614,6 @@
             .nav-toggle {
                 display: inline-flex; width: 44px; height: 44px; border-radius: 12px;
             }
-            .nav-mobile { display: block; pointer-events: none; }
-            .nav-open .nav-mobile { pointer-events: auto; }
             .hero { padding: 76px 16px 88px; min-height: auto; padding-top: calc(72px + env(safe-area-inset-top)); }
             .hero-inner { gap: 24px; }
             .hero-copy { text-align: center; }

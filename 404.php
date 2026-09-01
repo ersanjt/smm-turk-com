@@ -11,7 +11,7 @@ $pageTitle = __('404_title');
 $pageDescription = __('404_desc');
 $blogNavActive = '';
 $seoIndexable = false;
-$canonicalUrl = Seo::absoluteUrl('/404');
+$omitCanonical = true;
 
 require_once __DIR__ . '/layouts/blog-header.php';
 ?>
