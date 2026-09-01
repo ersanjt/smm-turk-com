@@ -244,6 +244,15 @@ db_apply_sql_file($pdo, __DIR__ . '/migrations/021_revenue_growth.sql');
 db_apply_sql_file($pdo, __DIR__ . '/migrations/022_growth_traffic.sql');
 db_apply_sql_file($pdo, __DIR__ . '/migrations/023_google_acquisition.sql');
 
+echo "\n--- Blog guides ---\n";
+$seedBlog = __DIR__ . '/seed-blog.php';
+if (php_sapi_name() === 'cli' && is_file($seedBlog)) {
+    passthru('php ' . escapeshellarg($seedBlog), $seedStatus);
+    if (($seedStatus ?? 0) !== 0) {
+        echo "WARN: seed-blog.php exited " . (int) $seedStatus . "\n";
+    }
+}
+
 // ─── Analyze tables (refresh optimizer stats) ────────────────────────────────
 echo "\n--- Analyze ---\n";
 $analyze = ['users', 'services', 'orders', 'transactions', 'tickets', 'ticket_replies', 'settings'];

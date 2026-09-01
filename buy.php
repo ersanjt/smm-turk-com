@@ -86,7 +86,7 @@ if ($page === null) {
     }
 }
 
-$registerQs = ['utm_source' => 'google', 'utm_medium' => 'organic', 'utm_campaign' => $page['slug'] ?? 'buy-hub'];
+$registerQs = ['utm_campaign' => $page['slug'] ?? 'buy-hub'];
 $ctaRegister = $loggedIn ? path('services.php') : register_path($registerQs);
 $extraCssHrefs = [asset_url('assets/css/buy-public.css')];
 ?>
