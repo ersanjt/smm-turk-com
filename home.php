@@ -139,14 +139,14 @@ $homeJsonLd = [
                     <label class="form-label" for="hero-email"><?= h(__('login_username')) ?></label>
                     <div class="input-wrap">
                         <span class="input-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-                        <input type="text" name="email" id="hero-email" class="form-control" placeholder="<?= h(__('login_username')) ?>" required <?= $googleAuth ? '' : 'autofocus' ?>>
+                        <input type="text" name="email" id="hero-email" class="form-control" placeholder="<?= h(__('login_username')) ?>" autocomplete="username" required <?= $googleAuth ? '' : 'autofocus' ?>>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="hero-password"><?= h(__('login_password')) ?></label>
                     <div class="input-wrap">
                         <span class="input-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-                        <input type="password" name="password" id="hero-password" class="form-control" placeholder="••••••••" required>
+                        <input type="password" name="password" id="hero-password" class="form-control" placeholder="••••••••" autocomplete="current-password" required>
                     </div>
                 </div>
                 <div class="remember"><label><input type="checkbox" name="remember"> <?= h(__('remember_me')) ?></label></div>
