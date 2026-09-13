@@ -19,7 +19,7 @@ img{max-width:100%;height:auto}
 .logo-icon{width:36px;height:36px;flex-shrink:0;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:transform var(--motion-duration) var(--ease-spring),box-shadow var(--motion-duration) var(--ease-out)}
 .sidebar-logo:hover .logo-icon{transform:scale(1.05);box-shadow:0 6px 18px rgba(227,10,23,.3)}
 .logo-icon img{width:36px;height:36px;object-fit:contain;display:block}
-.logo-text{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#fff;letter-spacing:-.03em;line-height:1.1;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logo-text{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;letter-spacing:0;line-height:1.15;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .logo-text span{color:var(--primary-light);letter-spacing:-.02em}
 .sidebar-user{padding:14px 16px;margin:12px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:14px;display:flex;flex-direction:row;align-items:center;gap:12px}
 a.sidebar-user-link{text-decoration:none;color:inherit;cursor:pointer;transition:background .2s,border-color .2s,transform .2s}
@@ -103,7 +103,7 @@ a.sidebar-user-link:focus-visible{outline:2px solid var(--primary-light);outline
 .status-Pending{background:#fff3e0;color:var(--orange)}
 .status-Processing,.status-In-progress{background:#ffe8e8;color:var(--primary)}
 .status-Partial{background:#fff3e0;color:var(--orange)}
-.status-Cancelled{background:#ffe8e8;color:var(--red)}
+.status-Cancelled,.status-Canceled,.status-Refunded{background:#ffe8e8;color:var(--red)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
