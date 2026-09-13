@@ -68,27 +68,75 @@ class Mail
             . htmlspecialchars($href, ENT_QUOTES, 'UTF-8') . '</a></p>';
     }
 
-    /** Branded HTML wrapper */
-    public function wrapHtml(string $title, string $innerHtml, ?string $lang = null): string
+    /** Same PNG the sidebar uses (`logo-icon.png`), as an absolute URL for email clients. */
+    public function brandLogoUrl(): string
+    {
+        $href = function_exists('logo_url') ? logo_url() : '/assets/img/logo-icon.png';
+        if (preg_match('#^https?://#i', $href)) {
+            return $href;
+        }
+        $base = $this->siteUrl();
+        return $base !== '' ? $base . '/' . ltrim($href, '/') : $href;
+    }
+
+    /**
+     * Branded HTML wrapper — same mark as the panel sidebar:
+     * logo-icon 36×36 + "SMM Turk". Light-only so Outlook cannot invert glyphs.
+     */
+    public function wrapHtml(string $title, string $innerHtml, ?string $lang = null, string $preheader = ''): string
     {
         $lang = MailLocale::resolveLang($lang);
         $siteName = htmlspecialchars($this->getSiteName(), ENT_QUOTES, 'UTF-8');
-        $home = htmlspecialchars($this->siteUrl() ?: page_url('home.php'), ENT_QUOTES, 'UTF-8');
+        $homeRaw = $this->siteUrl() ?: page_url('home.php');
+        $home = htmlspecialchars($homeRaw, ENT_QUOTES, 'UTF-8');
+        $logo = htmlspecialchars($this->brandLogoUrl(), ENT_QUOTES, 'UTF-8');
+        $siteHost = htmlspecialchars((string) (parse_url($homeRaw, PHP_URL_HOST) ?: 'smm-turk.com'), ENT_QUOTES, 'UTF-8');
+        $help = htmlspecialchars(page_url('help.php'), ENT_QUOTES, 'UTF-8');
         $year = date('Y');
         $footer = htmlspecialchars(MailLocale::t('footer_auto', $lang), ENT_QUOTES, 'UTF-8');
+        $support = htmlspecialchars(MailLocale::t('footer_support', $lang), ENT_QUOTES, 'UTF-8');
         $enNote = MailLocale::t('footer_en_note', $lang);
-        $enLine = $enNote !== '' ? '<br><span style="color:#aaa;">' . htmlspecialchars($enNote, ENT_QUOTES, 'UTF-8') . '</span>' : '';
+        $enLine = $enNote !== '' ? '<br><span style="color:#6b7280;">' . htmlspecialchars($enNote, ENT_QUOTES, 'UTF-8') . '</span>' : '';
+        $pre = $preheader !== '' ? $preheader : $title;
+        $preSafe = htmlspecialchars(strip_tags($pre), ENT_QUOTES, 'UTF-8');
+        $contact = $this->getReplyTo();
+        $contactLine = $contact
+            ? ' · <a href="mailto:' . htmlspecialchars($contact, ENT_QUOTES, 'UTF-8') . '" style="color:#E30A17;text-decoration:none;">' . htmlspecialchars($contact, ENT_QUOTES, 'UTF-8') . '</a>'
+            : '';
+        $parts = function_exists('site_name_logo_parts')
+            ? site_name_logo_parts()
+            : ['prefix' => 'SMM', 'accent' => 'Turk'];
+        $prefix = htmlspecialchars((string) ($parts['prefix'] ?? 'SMM'), ENT_QUOTES, 'UTF-8');
+        $accent = htmlspecialchars((string) ($parts['accent'] ?? 'Turk'), ENT_QUOTES, 'UTF-8');
+        $wordmark = $prefix !== ''
+            ? $prefix . ' <span style="color:#fecaca;">' . $accent . '</span>'
+            : '<span style="color:#fecaca;">' . $accent . '</span>';
 
-        return '<!DOCTYPE html><html lang="' . $lang . '"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-            . '<title>' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '</title></head>'
-            . '<body style="margin:0;padding:0;background:#f0f2f5;font-family:Arial,Helvetica,sans-serif;">'
-            . '<table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f2f5;padding:28px 12px;"><tr><td align="center">'
-            . '<table width="100%" style="max-width:560px;background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;box-shadow:0 2px 8px rgba(0,0,0,.06);">'
-            . '<tr><td style="background:#E30A17;padding:20px 24px;">'
-            . '<a href="' . $home . '" style="color:#fff;font-size:20px;font-weight:bold;text-decoration:none;">' . $siteName . '</a></td></tr>'
-            . '<tr><td style="padding:28px 24px;color:#1f2937;font-size:15px;line-height:1.65;">' . $innerHtml . '</td></tr>'
-            . '<tr><td style="padding:16px 24px;background:#f9fafb;color:#9ca3af;font-size:11px;border-top:1px solid #e5e7eb;line-height:1.5;">'
-            . '© ' . $year . ' ' . $siteName . '. ' . $footer . $enLine
+        return '<!DOCTYPE html><html lang="' . $lang . '"><head><meta charset="UTF-8">'
+            . '<meta name="viewport" content="width=device-width,initial-scale=1">'
+            . '<meta name="color-scheme" content="light only">'
+            . '<meta name="supported-color-schemes" content="light">'
+            . '<title>' . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '</title>'
+            . '<style type="text/css">:root{color-scheme:light only;}@media (prefers-color-scheme:dark){body,.email-bg{background-color:#f0f2f5!important;} .email-card,.email-body{background-color:#ffffff!important;color:#1f2937!important;}}</style>'
+            . '</head>'
+            . '<body class="email-bg" bgcolor="#f0f2f5" style="margin:0;padding:0;background-color:#f0f2f5;font-family:Arial,Helvetica,sans-serif;color:#1f2937;">'
+            . '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">' . $preSafe . '</div>'
+            . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#f0f2f5" class="email-bg" style="background-color:#f0f2f5;padding:28px 12px;"><tr><td align="center">'
+            . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" class="email-card" style="max-width:560px;background-color:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;">'
+            . '<tr><td bgcolor="#E30A17" style="background-color:#E30A17;padding:16px 24px;">'
+            . '<table role="presentation" cellpadding="0" cellspacing="0"><tr>'
+            . '<td style="vertical-align:middle;padding-right:12px;">'
+            . '<a href="' . $home . '" style="text-decoration:none;">'
+            . '<img src="' . $logo . '" width="36" height="36" alt="' . $siteName . '" style="display:block;border:0;width:36px;height:36px;border-radius:8px;">'
+            . '</a></td>'
+            . '<td style="vertical-align:middle;">'
+            . '<a href="' . $home . '" style="color:#ffffff;font-size:18px;font-weight:bold;text-decoration:none;font-family:Arial,Helvetica,sans-serif;line-height:1.2;text-transform:uppercase;letter-spacing:0.3px;">' . $wordmark . '</a>'
+            . '<div style="color:#ffe4e6;font-size:11px;font-family:Arial,Helvetica,sans-serif;padding-top:2px;">' . $siteHost . '</div>'
+            . '</td></tr></table></td></tr>'
+            . '<tr><td class="email-body" bgcolor="#ffffff" style="padding:28px 24px;color:#1f2937;font-size:15px;line-height:1.65;font-family:Arial,Helvetica,sans-serif;background-color:#ffffff;">' . $innerHtml . '</td></tr>'
+            . '<tr><td bgcolor="#f9fafb" style="padding:16px 24px;background-color:#f9fafb;color:#6b7280;font-size:11px;border-top:1px solid #e5e7eb;line-height:1.6;font-family:Arial,Helvetica,sans-serif;">'
+            . '<a href="' . $help . '" style="color:#E30A17;text-decoration:none;font-weight:bold;">' . $support . '</a>' . $contactLine
+            . '<br>© ' . $year . ' ' . $siteName . '. ' . $footer . $enLine
             . '</td></tr></table></td></tr></table></body></html>';
     }
 
@@ -422,7 +470,17 @@ class Mail
         $subject = $this->subjectPrefix(MailLocale::t('welcome_subject', $lang), $lang);
         $inner = '<p>' . MailLocale::t('welcome_hi', $lang, ['name' => $username]) . '</p>'
             . '<p>' . MailLocale::t('welcome_body', $lang) . '</p>'
-            . $this->btn(page_url('add-funds.php'), MailLocale::t('btn_funds', $lang));
+            . '<p>' . MailLocale::t('welcome_why', $lang) . '</p>'
+            . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;font-size:14px;line-height:1.5;">'
+            . '<tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6;"><strong>1.</strong> ' . MailLocale::t('welcome_step1', $lang) . '</td></tr>'
+            . '<tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6;"><strong>2.</strong> ' . MailLocale::t('welcome_step2', $lang) . '</td></tr>'
+            . '<tr><td style="padding:8px 0;"><strong>3.</strong> ' . MailLocale::t('welcome_step3', $lang) . '</td></tr>'
+            . '</table>'
+            . '<p style="margin:16px 0;padding:12px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;font-size:13px;color:#7f1d1d;">'
+            . MailLocale::t('welcome_trust', $lang) . '</p>'
+            . $this->btn(page_url('add-funds.php'), MailLocale::t('btn_funds', $lang))
+            . '<p style="margin:0;"><a href="' . htmlspecialchars(page_url('pricing.php'), ENT_QUOTES, 'UTF-8') . '" style="color:#E30A17;font-weight:bold;text-decoration:none;">'
+            . htmlspecialchars(MailLocale::t('btn_pricing', $lang), ENT_QUOTES, 'UTF-8') . '</a></p>';
         return $this->send($to, $subject, strip_tags($inner), $this->wrapHtml(MailLocale::t('welcome_subject', $lang), $inner, $lang), $lang);
     }
 
@@ -478,6 +536,7 @@ class Mail
         $subject = $this->subjectPrefix(MailLocale::t('deposit_pending_subject', $lang, ['amount' => $amountFmt]), $lang);
         $inner = '<p>' . MailLocale::t('deposit_pending_hi', $lang, ['name' => $username]) . '</p>'
             . '<p>' . MailLocale::t('deposit_pending_body', $lang, ['amount' => $amountFmt, 'ref' => $ref]) . '</p>'
+            . '<p>' . MailLocale::t('deposit_pending_next', $lang) . '</p>'
             . '<p><strong>' . htmlspecialchars($methodLabel) . '</strong> · #' . (int) $depositId . '</p>'
             . $this->btn(page_url('add-funds.php'), MailLocale::t('btn_funds', $lang));
         return $this->send($to, $subject, strip_tags($inner), $this->wrapHtml(MailLocale::t('deposit_pending_subject', $lang, ['amount' => $amountFmt]), $inner, $lang), $lang);

@@ -35,7 +35,7 @@ $dashLang = Lang::initUser();
 $ogLocale = Seo::ogLocale($dashLang);
 ?>
 <!DOCTYPE html>
-<html lang="<?= h(Seo::htmlLang($dashLang)) ?>">
+<html lang="<?= h(Seo::htmlLang($dashLang)) ?>"<?= $isAdminArea ? ' class="notranslate" translate="no"' : '' ?>>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">

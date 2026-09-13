@@ -630,11 +630,11 @@ require_once __DIR__ . '/layouts/header.php';
         Continue to payment →
       </button>
       <div class="af-trust-row">
-        <span>🔒 Secure</span>
-        <span>⚡ Auto-verify</span>
-        <span>📧 Email on credit</span>
+        <span>🔒 On-chain only</span>
+        <span>⚡ Auto-credit after confirm</span>
+        <span>📧 Email when funded</span>
       </div>
-      <p class="add-funds-hint">Minimum <strong>$<?= (int) $minDeposit ?></strong>. Wrong network or coin may result in lost funds — always match the method shown.</p>
+      <p class="add-funds-hint">Minimum <strong>$<?= (int) $minDeposit ?></strong>. Balance is added only after your TxHash confirms — do not send the same payment twice. Wrong network or coin can lose funds; match the method shown.</p>
     </form>
     <?php endif; ?>
   </div>
@@ -643,7 +643,7 @@ require_once __DIR__ . '/layouts/header.php';
 <div class="add-funds-toast" id="copyToast" role="status">Address copied!</div>
 
 <script>window.ADD_FUNDS_STATUS_URL = <?= json_encode(path('api/deposit-status.php')) ?>;</script>
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
+<script src="<?= h(asset_url('assets/js/qrcode.min.js')) ?>"></script>
 <script src="<?= h(asset_url('assets/js/add-funds.js')) ?>"></script>
 
 <?php require_once __DIR__ . '/layouts/footer.php'; ?>
