@@ -1,5 +1,29 @@
 <?php
 require_once __DIR__ . '/_init.php';
+if (!function_exists('csrf_require')) {
+    function csrf_require(string $redirectTo = ''): void {
+        if (function_exists('csrf_verify') && csrf_verify()) {
+            return;
+        }
+        flash('error', 'Invalid or expired form token. Please try again.');
+        redirect($redirectTo !== '' ? $redirectTo : url('dashboard.php'));
+    }
+}
+if (!function_exists('safe_http_href')) {
+    function safe_http_href(string $raw): string {
+        $raw = trim($raw);
+        if ($raw === '' || str_contains($raw, "\0")) {
+            return '';
+        }
+        if (preg_match('#^(?:javascript|data|vbscript|file|blob|about):#i', $raw)) {
+            return '';
+        }
+        $href = function_exists('normalize_order_link')
+            ? normalize_order_link($raw)
+            : (preg_match('#^https?://#i', $raw) ? $raw : '');
+        return preg_match('#^https?://#i', $href) ? $href : '';
+    }
+}
 $pageTitle = 'Manage Orders';
 $pageSubtitle = 'Search, sync, and manage customer orders. Money moves only on Cancel or Partial.';
 $db = Database::getInstance();
