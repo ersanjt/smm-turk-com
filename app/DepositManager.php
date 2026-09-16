@@ -21,6 +21,38 @@ class DepositManager {
         return $this->approveDeposit($transactionId, true);
     }
 
+    /** Admin: reject a pending deposit (even if a TxHash was submitted). Does not change user balance. */
+    public function rejectPendingDeposit(int $transactionId): array {
+        $tx = $this->db->fetch(
+            "SELECT id, user_id, amount, reference, status FROM transactions WHERE id = ? AND type = 'deposit'",
+            [$transactionId]
+        );
+        if (!$tx) {
+            return ['success' => false, 'error' => 'Deposit not found.'];
+        }
+        if ((string) ($tx['status'] ?? '') !== 'pending') {
+            return ['success' => false, 'error' => 'Only pending deposits can be rejected.'];
+        }
+
+        $updated = $this->db->execute(
+            "UPDATE transactions SET status = 'failed' WHERE id = ? AND type = 'deposit' AND status = 'pending'",
+            [$transactionId]
+        );
+        if ($updated === 0) {
+            return ['success' => false, 'error' => 'Deposit already processed.'];
+        }
+
+        Logger::log(
+            'Admin rejected pending deposit #' . $transactionId
+            . ' user#' . (int) $tx['user_id']
+            . ' $' . number_format((float) $tx['amount'], 2)
+            . (trim((string) ($tx['reference'] ?? '')) !== '' ? ' (had TxHash)' : ''),
+            'deposits'
+        );
+
+        return ['success' => true, 'amount' => (float) $tx['amount']];
+    }
+
     private function approveDeposit(int $transactionId, bool $allowFailed): array {
         $tx = $this->db->fetch(
             "SELECT id, user_id, amount, description, reference, status FROM transactions WHERE id = ? AND type = 'deposit'",

@@ -306,6 +306,15 @@ function csrf_verify(): bool {
     return isset($_POST['csrf_token']) && hash_equals($_SESSION['csrf_token'] ?? '', $_POST['csrf_token']);
 }
 
+/** Require a valid CSRF token; otherwise flash and redirect. */
+function csrf_require(string $redirectTo = ''): void {
+    if (csrf_verify()) {
+        return;
+    }
+    flash('error', 'Invalid or expired form token. Please try again.');
+    redirect($redirectTo !== '' ? $redirectTo : url('dashboard.php'));
+}
+
 function redirect(string $url): void {
     header("Location: $url");
     exit;
@@ -321,6 +330,19 @@ function normalize_order_link(string $link): string {
         $link = 'https://' . ltrim($link, '/');
     }
     return filter_var($link, FILTER_VALIDATE_URL) ? $link : '';
+}
+
+/** Allow only http(s) hrefs for user-supplied links (order URLs, etc.). */
+function safe_http_href(string $raw): string {
+    $raw = trim($raw);
+    if ($raw === '' || str_contains($raw, "\0")) {
+        return '';
+    }
+    if (preg_match('#^(?:javascript|data|vbscript|file|blob|about):#i', $raw)) {
+        return '';
+    }
+    $href = normalize_order_link($raw);
+    return preg_match('#^https?://#i', $href) ? $href : '';
 }
 
 /** Remember internal path to return after login. */

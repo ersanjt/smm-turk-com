@@ -15,10 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrf_verify()) {
             $smtpConfigured = trim((string) ($db->getSetting('smtp_host') ?? '')) !== '';
             if ($ok && $via === 'smtp') {
                 flash('success', 'Test email sent via SMTP to ' . $to . '. Check inbox and spam folder.');
-            } elseif ($ok && $via === 'mail' && $smtpConfigured) {
-                flash('error', 'SMTP auth failed — only PHP mail() fallback ran. Re-enter the noreply mailbox password in Settings → Email, set Encryption to SSL, Mail mode to SMTP only, save, and test again.');
             } elseif ($ok) {
                 flash('success', 'Test email sent to ' . $to . ' (via PHP mail()). Check inbox and spam folder.');
+            } elseif ($smtpConfigured) {
+                flash('error', 'SMTP failed: ' . ($mail->getLastError() ?? 'Unknown error') . ' Re-enter the noreply mailbox password, set Encryption to SSL and Mail mode to SMTP only, then test again.');
             } else {
                 flash('error', 'Send failed: ' . ($mail->getLastError() ?? 'Unknown error'));
             }
@@ -29,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrf_verify()) {
 
 $diag = $mail->getDiagnostics();
 $incoming = $diag['incoming'] ?? $mail->getIncomingMailDiagnostics();
+$outbound = $diag['outbound'] ?? $mail->getOutboundAuthDiagnostics();
 $user = $auth->getCurrentUser();
 $defaultTestTo = $user['email'] ?? '';
 
@@ -76,6 +77,23 @@ require_once __DIR__ . '/../layouts/header.php';
     </p>
     <?php endif; ?>
 
+    <?php if (!empty($outbound) && empty($outbound['aligned'])): ?>
+    <div style="background:#fff7ed;border:1px solid #fdba74;border-radius:10px;padding:14px;margin-bottom:16px;font-size:13px;line-height:1.65;">
+      <strong style="color:#9a3412;">Gmail delivery (554 5.0.0)</strong><br>
+      <?= h($outbound['hint'] ?? '') ?>
+      <p style="margin:12px 0 0;">Also required in Admin → Settings → Email:</p>
+      <ol style="margin:8px 0 0 18px;padding:0;">
+        <li>Mail mode = <strong>SMTP only</strong></li>
+        <li>Host <code>smm-turk.com</code> or <code>mail.smm-turk.com</code>, port <code>465</code>, encryption <strong>SSL</strong></li>
+        <li>User + From = <code>noreply@smm-turk.com</code> and the cPanel mailbox password</li>
+      </ol>
+    </div>
+    <?php elseif (!empty($outbound['aligned'])): ?>
+    <p style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:12px;font-size:13px;color:#166534;margin-bottom:16px;">
+      ✓ Reverse DNS OK<?= !empty($outbound['ptr']) ? ' — ' . h((string) $outbound['ptr']) : '' ?>.
+    </p>
+    <?php endif; ?>
+
     <table class="table" style="font-size:13px;">
       <tr><td>Mail From</td><td><code><?= h($diag['from']) ?></code></td></tr>
       <tr><td>Reply-To</td><td><code><?= h($diag['reply_to'] ?? '—') ?></code></td></tr>
@@ -87,6 +105,8 @@ require_once __DIR__ . '/../layouts/header.php';
       <tr><td>Encryption</td><td><?= h($diag['smtp_encryption']) ?> <?= (int)$diag['smtp_port'] === 465 ? '(use SSL recommended)' : '' ?></td></tr>
       <tr><td>cPanel SMTP (SSL)</td><td><code><?= h($diag['cpanel_hint_host']) ?></code> port 465 (SSL) — or <code><?= h($diag['cpanel_hint_alt'] ?? '') ?></code></td></tr>
       <tr><td>cPanel SMTP (TLS)</td><td>port 587 + TLS</td></tr>
+      <tr><td>Server IP</td><td><code><?= h($outbound['ip'] ?? '—') ?></code></td></tr>
+      <tr><td>PTR (reverse DNS)</td><td><?php if (!empty($outbound['ptr'])): ?><code><?= h($outbound['ptr']) ?></code><?= !empty($outbound['aligned']) ? ' ✓' : ' <strong style="color:#9a3412;">mismatch</strong>' ?><?php else: ?>—<?php endif; ?></td></tr>
     </table>
     <p style="margin-top:14px;font-size:12px;color:var(--text-muted);">
       <a href="<?= h(path('admin/admin-settings.php')) ?>">Edit email settings →</a>

@@ -135,7 +135,12 @@ require_once __DIR__ . '/layouts/header.php';
               <td style="font-size:12px;color:var(--text-muted);"><?= date('Y-m-d H:i', strtotime($o['created_at'])) ?></td>
               <td style="max-width:220px;font-size:12px;"><?= h(mb_substr($o['service_name'] ?? '', 0, 70)) ?><?= mb_strlen($o['service_name'] ?? '') > 70 ? '…' : '' ?></td>
               <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;">
-                <a href="<?= h($o['link']) ?>" target="_blank" rel="noopener noreferrer" style="color:var(--primary);"><?= h(mb_substr($o['link'], 0, 40)) ?><?= mb_strlen($o['link']) > 40 ? '…' : '' ?></a>
+                <?php $userHref = safe_http_href((string) ($o['link'] ?? '')); ?>
+                <?php if ($userHref !== ''): ?>
+                <a href="<?= h($userHref) ?>" target="_blank" rel="noopener noreferrer" style="color:var(--primary);"><?= h(mb_substr((string) $o['link'], 0, 40)) ?><?= mb_strlen((string) $o['link']) > 40 ? '…' : '' ?></a>
+                <?php else: ?>
+                <?= h(mb_substr((string) ($o['link'] ?? ''), 0, 40)) ?>
+                <?php endif; ?>
               </td>
               <td><?= number_format($o['quantity']) ?></td>
               <td><strong>$<?= number_format($o['charge'], 4) ?></strong></td>
@@ -167,7 +172,14 @@ require_once __DIR__ . '/layouts/header.php';
           </div>
           <div class="orders-card-row">
             <span class="label">Link</span>
-            <span class="orders-card-link"><a href="<?= h($o['link']) ?>" target="_blank" rel="noopener noreferrer"><?= h(mb_substr($o['link'], 0, 30)) ?><?= mb_strlen($o['link']) > 30 ? '…' : '' ?></a></span>
+            <span class="orders-card-link">
+              <?php $cardHref = safe_http_href((string) ($o['link'] ?? '')); ?>
+              <?php if ($cardHref !== ''): ?>
+              <a href="<?= h($cardHref) ?>" target="_blank" rel="noopener noreferrer"><?= h(mb_substr((string) $o['link'], 0, 30)) ?><?= mb_strlen((string) $o['link']) > 30 ? '…' : '' ?></a>
+              <?php else: ?>
+              <?= h(mb_substr((string) ($o['link'] ?? ''), 0, 30)) ?>
+              <?php endif; ?>
+            </span>
           </div>
           <div class="orders-card-row">
             <span class="label">Qty</span>

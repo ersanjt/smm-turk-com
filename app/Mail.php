@@ -184,11 +184,10 @@ class Mail
                 $this->lastTransport = 'smtp';
                 return true;
             }
-            if ($mode === 'smtp') {
-                Logger::log("SMTP only mode failed to {$to}: " . ($this->lastError ?? 'unknown'), 'mail');
-                return false;
-            }
-            Logger::log("SMTP failed ({$this->lastError}), falling back to mail() for {$to}", 'mail');
+            // Do not fall back to PHP mail() — unsigned Exim submissions are what
+            // Gmail bounces as 554 5.0.0 (see DSN from server.netinode.net).
+            Logger::log("SMTP failed to {$to}: " . ($this->lastError ?? 'unknown'), 'mail');
+            return false;
         }
 
         $ok = $this->sendPhpMail($from, $to, $subject, $html, $siteName);
@@ -198,16 +197,36 @@ class Mail
         return $ok;
     }
 
+    /** RFC 5322 identity + MIME headers. Omit Subject for PHP mail() (passed separately). */
+    private function rfc5322Headers(string $from, string $to, string $siteName, bool $includeSubject, string $subject = ''): array
+    {
+        $replyTo = $this->getReplyTo() ?? $from;
+        $host = strtolower((string) substr((string) strrchr($from, '@'), 1));
+        if ($host === '' || !preg_match('/^[a-z0-9.-]+$/', $host)) {
+            $host = (string) (parse_url(defined('SITE_URL') ? SITE_URL : '', PHP_URL_HOST) ?: 'localhost');
+        }
+        $headers = [
+            'Date: ' . date('D, d M Y H:i:s O'),
+            'From: ' . $this->encodeHeader($siteName) . ' <' . $from . '>',
+            'To: <' . $to . '>',
+            'Reply-To: <' . $replyTo . '>',
+            'Message-ID: <' . bin2hex(random_bytes(16)) . '@' . $host . '>',
+        ];
+        if ($includeSubject) {
+            $headers[] = 'Subject: ' . $this->encodeHeader($subject);
+        }
+        $headers[] = 'MIME-Version: 1.0';
+        $headers[] = 'Content-Type: text/html; charset=UTF-8';
+        $headers[] = 'Content-Transfer-Encoding: 8bit';
+        $headers[] = 'X-Mailer: SMM-Turk-Mail/3.1';
+        $headers[] = 'Auto-Submitted: auto-generated';
+        return $headers;
+    }
+
     private function sendPhpMail(string $from, string $to, string $subject, string $html, string $siteName): bool
     {
         $encodedSubject = $this->encodeHeader($subject);
-        $headers = [
-            'MIME-Version: 1.0',
-            'Content-Type: text/html; charset=UTF-8',
-            'From: ' . $this->encodeHeader($siteName) . ' <' . $from . '>',
-            'Reply-To: ' . ($this->getReplyTo() ?? $from),
-            'X-Mailer: SMM-Turk-Mail/3.0',
-        ];
+        $headers = $this->rfc5322Headers($from, $to, $siteName, false);
 
         $params = '-f' . $from;
         $ok = @mail($to, $encodedSubject, $html, implode("\r\n", $headers), $params);
@@ -273,6 +292,7 @@ class Mail
         }
 
         $plainErr = $this->lastError;
+        $this->smtpCmd($fp, 'RSET', [250, 220]);
         if ($this->smtpCmd($fp, 'AUTH LOGIN', [334])
             && $this->smtpCmd($fp, base64_encode($user), [334], false)
             && $this->smtpCmd($fp, base64_encode($pass), [235], false)) {
@@ -419,12 +439,8 @@ class Mail
             return false;
         }
 
-        $replyTo = $this->getReplyTo() ?? $from;
-        $msg = 'From: ' . $this->encodeHeader($siteName) . ' <' . $from . ">\r\n"
-            . 'To: <' . $to . ">\r\n"
-            . 'Reply-To: <' . $replyTo . ">\r\n"
-            . 'Subject: ' . $this->encodeHeader($subject) . "\r\nMIME-Version: 1.0\r\n"
-            . "Content-Type: text/html; charset=UTF-8\r\n\r\n"
+        $msg = implode("\r\n", $this->rfc5322Headers($from, $to, $siteName, true, $subject))
+            . "\r\n\r\n"
             . $this->smtpDotStuff($body) . "\r\n";
 
         if (@fwrite($fp, $msg) === false || !$this->smtpCmd($fp, '.', [250])) {
@@ -929,10 +945,53 @@ class Mail
         return '';
     }
 
+    /** @return array{ip: string, ptr: string, aligned: bool, hint: string} */
+    public function getOutboundAuthDiagnostics(): array
+    {
+        $incoming = $this->getIncomingMailDiagnostics();
+        $domain = strtolower((string) ($incoming['domain'] ?? ''));
+        $ip = trim((string) ($incoming['server_ip'] ?? ''));
+        if ($ip === '' || !filter_var($ip, FILTER_VALIDATE_IP)) {
+            $ip = trim((string) ($incoming['mail_a_ip'] ?? ''));
+        }
+        $ptr = '';
+        if ($ip !== '' && filter_var($ip, FILTER_VALIDATE_IP)) {
+            $looked = @gethostbyaddr($ip);
+            if (is_string($looked) && $looked !== '' && $looked !== $ip) {
+                $ptr = strtolower(rtrim($looked, '.'));
+            }
+        }
+        $aligned = $domain !== '' && $ptr !== '' && (
+            $ptr === $domain
+            || $ptr === 'mail.' . $domain
+            || str_ends_with($ptr, '.' . $domain)
+        );
+        $hint = '';
+        if ($ip === '') {
+            $hint = 'Could not resolve the mail server IP for reverse-DNS checks.';
+        } elseif ($ptr === '') {
+            $hint = 'No PTR record for ' . $ip . '. Ask the host to set reverse DNS to mail.' . ($domain ?: 'yourdomain.com') . '.';
+        } elseif (!$aligned) {
+            $hint = 'PTR is ' . $ptr . ' (not mail.' . ($domain ?: 'yourdomain.com') . '). '
+                . 'Gmail often returns 554 5.0.0 when reverse DNS is a generic host like secureserver.net. '
+                . 'Ask Netinode / the VPS host to set PTR for ' . $ip . ' → mail.' . ($domain ?: 'yourdomain.com') . '.';
+        } else {
+            $hint = 'Reverse DNS matches the domain.';
+        }
+
+        return [
+            'ip' => $ip,
+            'ptr' => $ptr,
+            'aligned' => $aligned,
+            'hint' => $hint,
+        ];
+    }
+
     public function getDiagnostics(): array
     {
         $host = parse_url(defined('SITE_URL') ? SITE_URL : '', PHP_URL_HOST) ?: 'yourdomain.com';
         $incoming = $this->getIncomingMailDiagnostics();
+        $outbound = $this->getOutboundAuthDiagnostics();
         return [
             'from' => $this->getFrom(),
             'reply_to' => $this->getReplyTo(),
@@ -948,6 +1007,7 @@ class Mail
             'cpanel_hint_alt' => 'mail.' . $host,
             'last_error' => $this->lastError,
             'incoming' => $incoming,
+            'outbound' => $outbound,
         ];
     }
 }

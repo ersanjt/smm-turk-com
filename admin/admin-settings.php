@@ -116,6 +116,8 @@ require_once __DIR__ . '/../layouts/header.php';
         Alternative: port <code>587</code> with encryption <strong>TLS</strong>.<br>
         Username = full email (<code>noreply@smm-turk.com</code>) · Password = mailbox password from cPanel → Email Accounts.<br>
         <strong>Mail From</strong> must match SMTP user. Use <code>contact@smm-turk.com</code> as Reply-To / contact if needed.<br>
+        Use <strong>SMTP only</strong> — PHP mail() fallback is what Gmail rejects with <code>554 5.0.0</code>.<br>
+        Reverse DNS (PTR) for <code>92.205.182.143</code> must be <code>mail.smm-turk.com</code>, not a generic GoDaddy name like <code>host.secureserver.net</code>. Ask the host to change it.<br>
         <strong>Receiving mail</strong> (e.g. <code>info@smm-turk.com</code>): MX must point to <code>mail.smm-turk.com</code> with A → server IP (<code>92.205.182.143</code>). Broken MX like <code>mx.smm-turk.com</code> without A record blocks Gmail delivery.<br>
         <a href="<?= h(path('admin/admin-mail.php')) ?>" style="color:var(--primary);font-weight:700;">Send test email →</a>
       </p>
@@ -123,7 +125,7 @@ require_once __DIR__ . '/../layouts/header.php';
         <div class="form-group">
           <label class="form-label">Mail mode</label>
           <select name="mail_mode" class="form-control">
-            <option value="auto" <?= ($settings['mail_mode']??'auto')==='auto'?'selected':'' ?>>Auto — SMTP if configured, else PHP mail()</option>
+            <option value="auto" <?= ($settings['mail_mode']??'auto')==='auto'?'selected':'' ?>>Auto — SMTP if host is set (no mail() fallback)</option>
             <option value="smtp" <?= ($settings['mail_mode']??'')==='smtp'?'selected':'' ?>>SMTP only</option>
             <option value="mail" <?= ($settings['mail_mode']??'')==='mail'?'selected':'' ?>>PHP mail() only (cPanel)</option>
           </select>
