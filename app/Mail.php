@@ -168,25 +168,25 @@ class Mail
         }
 
         $mode = strtolower(trim((string) ($this->db->getSetting('mail_mode') ?? 'auto')));
-        $smtpHost = trim((string) ($this->db->getSetting('smtp_host') ?? ''));
+        $smtpHost = $this->resolveSmtpHost();
+        $canSmtp = $smtpHost !== ''
+            && trim((string) ($this->db->getSetting('smtp_user') ?? '')) !== ''
+            && trim((string) ($this->db->getSetting('smtp_pass') ?? '')) !== '';
 
-        if ($mode === 'mail' || ($mode === 'auto' && $smtpHost === '')) {
-            $ok = $this->sendPhpMail($from, $to, $subject, $html, $siteName);
-            if ($ok) {
-                $this->lastTransport = 'mail';
-            }
-            return $ok;
-        }
-
-        if ($smtpHost !== '') {
+        // Authenticated SMTP only — PHP mail() via Exim is what Gmail bounces (554 5.0.0).
+        if ($canSmtp) {
             $ok = $this->sendSmtp($smtpHost, $from, $to, $subject, $html, $siteName);
             if ($ok) {
                 $this->lastTransport = 'smtp';
                 return true;
             }
-            // Do not fall back to PHP mail() — unsigned Exim submissions are what
-            // Gmail bounces as 554 5.0.0 (see DSN from server.netinode.net).
             Logger::log("SMTP failed to {$to}: " . ($this->lastError ?? 'unknown'), 'mail');
+            return false;
+        }
+
+        if ($mode === 'smtp') {
+            $this->lastError = 'SMTP host, user, and mailbox password must all be set in Settings → Email.';
+            Logger::log("SMTP not configured, skipped send to {$to}", 'mail');
             return false;
         }
 
@@ -218,7 +218,7 @@ class Mail
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = 'Content-Type: text/html; charset=UTF-8';
         $headers[] = 'Content-Transfer-Encoding: 8bit';
-        $headers[] = 'X-Mailer: SMM-Turk-Mail/3.1';
+        $headers[] = 'X-Mailer: SMM-Turk-Mail/3.2';
         $headers[] = 'Auto-Submitted: auto-generated';
         return $headers;
     }
@@ -303,6 +303,23 @@ class Mail
             . ($this->lastError ? ' — ' . $this->lastError : '')
             . ($plainErr ? ' (PLAIN: ' . $plainErr . ')' : '');
         return false;
+    }
+
+    private function resolveSmtpHost(): string
+    {
+        $host = trim((string) ($this->db->getSetting('smtp_host') ?? ''));
+        if ($host !== '') {
+            return $host;
+        }
+        $user = trim((string) ($this->db->getSetting('smtp_user') ?? ''));
+        if (str_contains($user, '@')) {
+            $fromUser = strtolower((string) substr((string) strrchr($user, '@'), 1));
+            if ($fromUser !== '' && preg_match('/^[a-z0-9.-]+$/', $fromUser)) {
+                return $fromUser;
+            }
+        }
+        $site = parse_url(defined('SITE_URL') ? SITE_URL : '', PHP_URL_HOST);
+        return is_string($site) ? strtolower($site) : '';
     }
 
     /** @return string[] */
