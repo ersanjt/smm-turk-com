@@ -1,10 +1,10 @@
 <?php
 return [
     'site_tagline' => 'Panel de marketing des réseaux sociaux',
-    'seo_title' => 'Panel SMM le moins cher | Turquie & Monde',
-    'seo_description' => 'SMM Turk : panel SMM le moins cher. Croissance Instagram, YouTube, TikTok. Dépôts crypto uniquement, API revendeur, support 24/7. Turquie & monde.',
-    'seo_og_title' => 'Panel SMM le moins cher',
-    'seo_og_description' => 'Panel SMM le moins cher. Dépôts crypto uniquement, API revendeur, support 24/7. Turquie & monde.',
+    'seo_title' => 'Panel SMM pas cher dès %s | Instagram & TikTok',
+    'seo_description' => 'Dès %s. Abonnés Instagram, likes TikTok, vues YouTube. Panel SMM pas cher, crypto (BTC, USDT), API revendeur, support 24/7.',
+    'seo_og_title' => 'Panel SMM pas cher dès %s',
+    'seo_og_description' => 'Dès %s. Instagram, TikTok et YouTube. Dépôt crypto, API revendeur, support 24/7.',
     'nav_sign_in' => 'Connexion',
     'nav_sign_up' => 'Inscription',
     'nav_terms' => 'CGU',
@@ -12,6 +12,8 @@ return [
     'hero_badge' => 'Panel SMM',
     'hero_title' => "Le meilleur panel SMM pas cher et facile",
     'hero_title_2' => 'au monde',
+    'hero_cta_prices' => 'Prix dès %s',
+    'hero_start_note' => 'Compte gratuit. Voyez les services avant de déposer.',
     'hero_desc' => "Notre panel SMM vous permet de promouvoir votre entreprise sur les réseaux sociaux. Qualité et prix abordables. SMM Turk est le panel SMM le plus rapide et le moins cher. Gagnez de l'argent avec notre programme d'affiliation ou lancez votre propre panel SMM avec notre panel revendeur. Rejoignez SMM Turk — votre partenaire pour développer votre activité.",
     'hero_desc_1' => 'Notre <strong>panel SMM</strong> vous permet de promouvoir votre entreprise sur les réseaux sociaux. Qualité et prix abordables. <strong>SMM Turk</strong> est le panel SMM le plus rapide et le moins cher.',
     'hero_desc_2' => "Gagnez de l'argent avec notre programme d'affiliation. Ou lancez votre propre panel avec notre <strong>panel revendeur SMM</strong>.",

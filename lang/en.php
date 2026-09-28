@@ -1,10 +1,10 @@
 <?php
 return [
     'site_tagline' => 'Social Media Marketing Panel',
-    'seo_title' => 'SMM Panel Turkey — Cheapest Instagram, TikTok, YouTube 2026',
-    'seo_description' => 'SMM panel Turkey: buy Instagram followers, TikTok likes and YouTube views. Cheap SMM panel, crypto deposits (BTC, USDT), reseller API, 24/7 support. Turkey and worldwide.',
-    'seo_og_title' => 'SMM Panel Turkey — Cheapest rates',
-    'seo_og_description' => 'SMM panel Turkey. Crypto-only deposits, reseller API, 24/7 support. Cheap Instagram, TikTok, YouTube growth.',
+    'seo_title' => 'Cheap SMM Panel from %s | Instagram & TikTok',
+    'seo_description' => 'From %s. Instagram followers, TikTok likes, YouTube views. Cheap SMM panel Turkey, crypto (BTC, USDT), reseller API, 24/7 support.',
+    'seo_og_title' => 'Cheap SMM panel from %s',
+    'seo_og_description' => 'Start from %s. Instagram, TikTok and YouTube. Crypto deposits, reseller API, 24/7 support.',
     'hero_badge' => 'SMM Panel Turkey',
     'nav_sign_in' => 'Sign In',
     'nav_sign_up' => 'Sign Up',
@@ -28,6 +28,8 @@ return [
     '404_desc' => 'The page you are looking for does not exist or has been moved.',
     'hero_title' => "World's Best Cheap & Easy",
     'hero_title_2' => 'SMM Panel',
+    'hero_cta_prices' => 'Prices from %s',
+    'hero_start_note' => 'Free account. Browse services before you deposit.',
     'hero_desc' => "Our SMM Panel lets you promote your business on social networks. It's high quality and affordable. SMM Turk is the fastest and cheapest SMM Panel. You can earn money by joining our affiliate program, or start your own SMM panel with our reseller panel. Join SMM Turk — your partner in business expansion. Don't miss the opportunity to develop your business in ways that have never been available before!",
     'hero_desc_1' => 'Our <strong>SMM Panel</strong> lets you promote your business on social networks. It\'s high quality and affordable. <strong>SMM Turk</strong> is the fastest and cheapest SMM Panel.',
     'hero_desc_2' => 'You can earn money by joining our affiliate program. Or start your own SMM panel with our <strong>SMM reseller panel</strong>.',

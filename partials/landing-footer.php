@@ -32,9 +32,10 @@ if (!$footerIsChild) {
 }
 $footerTiles[] = ['href' => path('help.php'), 'label' => __('footer_support'), 'icon' => 'tickets'];
 ?>
+<?php $footerFrom = isset($stats['min_price']) ? trim((string) $stats['min_price']) : ''; ?>
 <nav class="mob-footer-bar" aria-label="<?= h(__('footer_login')) ?>">
     <a href="<?= h(route_path('login.php')) ?>" class="mob-footer-btn mob-footer-btn-outline"><?= h(__('footer_login')) ?></a>
-    <a href="<?= h(register_path()) ?>" class="mob-footer-btn mob-footer-btn-primary"><?= h(__('footer_signup')) ?> →</a>
+    <a href="<?= h(register_path()) ?>" class="mob-footer-btn mob-footer-btn-primary"><?= h(__('footer_signup')) ?><?php if ($footerFrom !== ''): ?><span class="mob-footer-price"><?= h($footerFrom) ?></span><?php endif; ?></a>
 </nav>
 
 <footer class="footer" role="contentinfo">

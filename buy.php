@@ -86,6 +86,24 @@ if ($page === null) {
     }
 }
 
+$priceTag = $page === null
+    ? trim((string) ($stats['min_price'] ?? ''))
+    : ('$' . number_format(max(0.001, (float) $lowPrice), 3) . '/1K');
+if ($priceTag !== '' && !str_contains($seoTitle, '$')) {
+    $baseTitle = $seoTitle;
+    $seoTitle = $priceTag . ' — ' . $baseTitle;
+    if (mb_strlen($seoTitle) > 60) {
+        $room = 60 - mb_strlen($priceTag) - 3;
+        $seoTitle = $priceTag . ' — ' . rtrim(mb_substr($baseTitle, 0, max(18, $room)));
+    }
+}
+if ($priceTag !== '' && !str_contains($seoDescription, '$')) {
+    $seoDescription = $priceTag . '. ' . $seoDescription;
+    if (mb_strlen($seoDescription) > 158) {
+        $seoDescription = rtrim(mb_substr($seoDescription, 0, 155)) . '…';
+    }
+}
+
 $registerQs = ['utm_campaign' => $page['slug'] ?? 'buy-hub'];
 $ctaRegister = $loggedIn ? path('services.php') : register_path($registerQs);
 $extraCssHrefs = [asset_url('assets/css/buy-public.css')];

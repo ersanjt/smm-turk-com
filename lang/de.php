@@ -1,10 +1,10 @@
 <?php
 return [
     'site_tagline' => 'Social Media Marketing Panel',
-    'seo_title' => 'SMM Panel Türkei — Günstigste Instagram, TikTok, YouTube 2026',
-    'seo_description' => 'SMM Panel Türkei: Instagram-Follower, TikTok-Likes und YouTube-Views. Günstiges SMM-Panel, Krypto (BTC, USDT), Reseller-API, 24/7 Support. Türkei und weltweit.',
-    'seo_og_title' => 'SMM Panel Türkei — Günstigste Preise',
-    'seo_og_description' => 'SMM Panel Türkei. Nur Krypto-Einzahlung, Reseller-API, 24/7 Support. Instagram, TikTok, YouTube.',
+    'seo_title' => 'Günstiges SMM-Panel ab %s | Instagram & TikTok',
+    'seo_description' => 'Ab %s. Instagram-Follower, TikTok-Likes, YouTube-Views. Günstiges SMM-Panel, Krypto (BTC, USDT), Reseller-API, 24/7 Support.',
+    'seo_og_title' => 'Günstiges SMM-Panel ab %s',
+    'seo_og_description' => 'Ab %s. Instagram, TikTok und YouTube. Krypto-Einzahlung, Reseller-API, 24/7 Support.',
     'nav_sign_in' => 'Anmelden',
     'nav_sign_up' => 'Registrieren',
     'nav_terms' => 'AGB',
@@ -28,6 +28,8 @@ return [
     'hero_badge' => 'SMM Panel Türkei',
     'hero_title' => "Das günstigste und einfachste",
     'hero_title_2' => 'SMM Panel der Welt',
+    'hero_cta_prices' => 'Preise ab %s',
+    'hero_start_note' => 'Kostenloses Konto. Dienste ansehen, bevor Sie einzahlen.',
     'hero_desc' => "Unser SMM Panel ermöglicht es Ihnen, Ihr Unternehmen in sozialen Netzwerken zu bewerben. Hohe Qualität und erschwinglich. SMM Turk ist das schnellste und günstigste SMM Panel. Sie können durch unser Partnerprogramm Geld verdienen oder mit unserem Reseller-Panel Ihr eigenes SMM Panel starten. SMM Turk — Ihr Partner für Geschäftserweiterung. Verpassen Sie nicht die Chance, Ihr Geschäft neu zu entwickeln!",
     'hero_desc_1' => 'Unser <strong>SMM Panel</strong> ermöglicht es Ihnen, Ihr Unternehmen in sozialen Netzwerken zu bewerben. Hohe Qualität und erschwinglich. <strong>SMM Turk</strong> ist das schnellste und günstigste SMM Panel.',
     'hero_desc_2' => 'Sie können durch unser Partnerprogramm Geld verdienen. Oder starten Sie mit unserem <strong>SMM Reseller-Panel</strong> Ihr eigenes Panel.',

@@ -108,5 +108,20 @@
     var input = document.getElementById('service-filter');
     if (input) input.addEventListener('input', applyServiceFilters);
     applyServiceFilters();
+
+    document.querySelectorAll('[data-pick-service]').forEach(function (el) {
+      el.addEventListener('click', function (e) {
+        var id = el.getAttribute('data-pick-service');
+        var sel = document.getElementById('service-select');
+        if (!sel || !id || !sel.querySelector('option[value="' + id + '"]')) return;
+        e.preventDefault();
+        sel.value = id;
+        if (typeof updateDesc === 'function') updateDesc();
+        var form = document.getElementById('order-form');
+        if (form) form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        var link = document.getElementById('order-link');
+        if (link) link.focus();
+      });
+    });
   });
 })();

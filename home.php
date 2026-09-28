@@ -27,10 +27,11 @@ $pageImg = og_image_url();
 if ($pageImg !== '' && !preg_match('#^https?://#i', $pageImg)) {
     $pageImg = Seo::absoluteUrl($pageImg);
 }
-$seoTitle = __('seo_title');
-$seoDescription = __('seo_description');
-$seoOgTitle = $siteName . ' — ' . __('seo_og_title');
-$seoOgDescription = __('seo_og_description');
+$minPriceLabel = (string) ($stats['min_price'] ?? '');
+$seoTitle = sprintf(__('seo_title'), $minPriceLabel);
+$seoDescription = sprintf(__('seo_description'), $minPriceLabel);
+$seoOgTitle = $siteName . ' — ' . sprintf(__('seo_og_title'), $minPriceLabel);
+$seoOgDescription = sprintf(__('seo_og_description'), $minPriceLabel);
 $ogLocale = Seo::ogLocale($lang);
 $faqItems = [];
 for ($faqIndex = 1; $faqIndex <= 6; $faqIndex++) {
@@ -111,7 +112,12 @@ $homeJsonLd = [
         <div class="hero-copy">
             <span class="hero-badge"><?= h(__('hero_badge')) ?></span>
             <h1 id="hero-title"><?= h(__('hero_title')) ?><br><span class="hero-title-2"><?= h(__('hero_title_2')) ?></span></h1>
-            <div class="hero-buy-link"><a href="<?= h(GoogleAcquisition::pageUrl('cheap-smm-panel')) ?>"><?= h(__('buy_cheap_cta')) ?></a></div>
+            <div class="hero-actions">
+                <?php if ($registrationEnabled): ?>
+                <a href="<?= h(register_path()) ?>" class="hero-btn hero-btn-primary"><?= h(__('cta_btn')) ?></a>
+                <?php endif; ?>
+                <a href="<?= h(path('pricing.php')) ?>" class="hero-btn hero-btn-ghost"><?= h(sprintf(__('hero_cta_prices'), $minPriceLabel)) ?></a>
+            </div>
             <p class="hero-desc"><?= __('hero_desc_1') ?></p>
             <?php if (!empty($offerLines)): ?>
             <div class="hero-offers">
@@ -124,8 +130,29 @@ $homeJsonLd = [
             <p class="hero-desc"><?= __('hero_desc_3') ?></p>
         </div>
         <div class="hero-form-box">
-            <h2 class="form-title"><?= h(__('nav_sign_in')) ?></h2>
             <?php $googleAuth = defined('GOOGLE_CLIENT_ID') && trim(GOOGLE_CLIENT_ID) !== ''; ?>
+            <?php if ($registrationEnabled): ?>
+            <div class="hero-tabs" role="tablist" aria-label="<?= h(__('nav_sign_up')) ?>">
+                <button type="button" class="hero-tab is-active" role="tab" id="hero-tab-register" aria-selected="true" aria-controls="hero-panel-register" data-hero-tab="register"><?= h(__('nav_sign_up')) ?></button>
+                <button type="button" class="hero-tab" role="tab" id="hero-tab-login" aria-selected="false" aria-controls="hero-panel-login" data-hero-tab="login"><?= h(__('nav_sign_in')) ?></button>
+            </div>
+            <div class="hero-panel" id="hero-panel-register" role="tabpanel" aria-labelledby="hero-tab-register" data-hero-panel="register">
+                <p class="hero-register-note"><?= h(__('hero_start_note')) ?></p>
+                <?php if ($minPriceLabel !== ''): ?>
+                <p class="hero-register-price"><?= h($minPriceLabel) ?></p>
+                <?php endif; ?>
+                <?php if ($googleAuth): ?>
+                <a href="<?= h(path('login-google.php')) ?>" class="btn-google btn-google-hero">
+                    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                    <?= h(__('sign_in_with_google')) ?>
+                </a>
+                <?php endif; ?>
+                <a href="<?= h(register_path()) ?>" class="btn-login"><?= h(__('cta_btn')) ?></a>
+            </div>
+            <?php else: ?>
+            <h2 class="form-title"><?= h(__('nav_sign_in')) ?></h2>
+            <?php endif; ?>
+            <div class="hero-panel" id="hero-panel-login" role="tabpanel" data-hero-panel="login"<?= $registrationEnabled ? ' aria-labelledby="hero-tab-login" hidden' : '' ?>>
             <?php if ($googleAuth): ?>
             <a href="<?= h(path('login-google.php')) ?>" class="btn-google btn-google-hero">
                 <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
@@ -134,12 +161,13 @@ $homeJsonLd = [
             <div class="divider">— <?= h(__('or_continue_with_email')) ?> —</div>
             <?php endif; ?>
             <form method="POST" action="<?= h(path('login.php')) ?>">
+                <fieldset class="hero-login-fields"<?= $registrationEnabled ? ' disabled' : '' ?>>
                 <input type="hidden" name="csrf_token" value="<?= h(csrf_token()) ?>">
                 <div class="form-group">
                     <label class="form-label" for="hero-email"><?= h(__('login_username')) ?></label>
                     <div class="input-wrap">
                         <span class="input-icon" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-                        <input type="text" name="email" id="hero-email" class="form-control" placeholder="<?= h(__('login_username')) ?>" autocomplete="username" required <?= $googleAuth ? '' : 'autofocus' ?>>
+                        <input type="text" name="email" id="hero-email" class="form-control" placeholder="<?= h(__('login_username')) ?>" autocomplete="username" required>
                     </div>
                 </div>
                 <div class="form-group">
@@ -152,8 +180,9 @@ $homeJsonLd = [
                 <div class="remember"><label><input type="checkbox" name="remember"> <?= h(__('remember_me')) ?></label></div>
                 <div style="margin-bottom:12px;"><a href="<?= h(path('forgot-password.php')) ?>" class="forgot"><?= h(__('forgot_password')) ?></a></div>
                 <button type="submit" class="btn-login"><?= h(__('btn_login_dashboard')) ?> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
-                <p class="register-link"><?= h(__('no_account')) ?> <a href="<?= h(register_path()) ?>">→ <?= h(__('register')) ?></a></p>
+                </fieldset>
             </form>
+            </div>
         </div>
     </div>
 </section>

@@ -1,10 +1,10 @@
 <?php
 return [
     'site_tagline' => 'Sosyal Medya Pazarlama Paneli',
-    'seo_title' => 'SMM Panel Türkiye — Ucuz Türk SMM Paneli 2026',
-    'seo_description' => 'SMM Panel Türkiye ve ucuz Türk SMM: Instagram takipçi, TikTok beğeni, YouTube izlenme. Kripto ödeme (BTC, USDT), bayi API ve 7/24 destek. Türkiye ve dünya.',
-    'seo_og_title' => 'SMM Panel Türkiye — En ucuz fiyat',
-    'seo_og_description' => 'SMM Panel Türkiye. Sadece kripto yatırım, bayi API, 7/24 destek. Instagram, TikTok, YouTube.',
+    'seo_title' => 'Ucuz SMM Panel %s | Instagram ve TikTok',
+    'seo_description' => '%s başlangıç. Instagram takipçi, TikTok beğeni, YouTube izlenme. Ucuz SMM panel, kripto (BTC, USDT), bayi API, 7/24 destek.',
+    'seo_og_title' => 'Ucuz SMM panel %s',
+    'seo_og_description' => '%s başlangıç. Instagram, TikTok ve YouTube. Kripto yatırım, bayi API, 7/24 destek.',
     'hero_badge' => 'SMM Panel Türkiye',
     'nav_sign_in' => 'Giriş Yap',
     'nav_sign_up' => 'Kayıt Ol',
@@ -28,6 +28,8 @@ return [
     '404_desc' => 'Aradığınız sayfa mevcut değil veya taşınmış olabilir.',
     'hero_title' => "Dünyanın En Ucuz ve Kolay",
     'hero_title_2' => 'SMM Paneli',
+    'hero_cta_prices' => 'Fiyatlar %s',
+    'hero_start_note' => 'Ücretsiz hesap. Yatırım yapmadan servisleri görün.',
     'hero_desc' => "SMM Panelimiz işletmenizi sosyal ağlarda tanıtmanızı sağlar. Yüksek kalite ve uygun fiyat. SMM Turk en hızlı ve en ucuz SMM Panelidir. Ortaklık programımıza katılarak para kazanabilir veya bayi panelimizle kendi SMM panelinizi kurabilirsiniz. SMM Turk — iş büyütme ortağınız. İşinizi geliştirme fırsatını kaçırmayın!",
     'hero_desc_1' => '<strong>SMM Panel</strong>imiz işletmenizi sosyal ağlarda tanıtmanızı sağlar. Yüksek kalite ve uygun fiyat. <strong>SMM Turk</strong> en hızlı ve en ucuz SMM Panelidir.',
     'hero_desc_2' => 'Ortaklık programımıza katılarak para kazanabilir veya <strong>SMM bayi paneli</strong>mizle kendi panelinizi kurabilirsiniz.',

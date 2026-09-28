@@ -68,6 +68,23 @@
     });
   }
 
+  document.querySelectorAll('[data-hero-tab]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var name = btn.getAttribute('data-hero-tab');
+      document.querySelectorAll('[data-hero-tab]').forEach(function (tab) {
+        var on = tab === btn;
+        tab.classList.toggle('is-active', on);
+        tab.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      document.querySelectorAll('[data-hero-panel]').forEach(function (panel) {
+        var show = panel.getAttribute('data-hero-panel') === name;
+        panel.hidden = !show;
+        var fields = panel.querySelector('.hero-login-fields');
+        if (fields) fields.disabled = !show;
+      });
+    });
+  });
+
   document.querySelectorAll('.faq-q').forEach(function (el) {
     if (el.tagName !== 'BUTTON') return;
     el.addEventListener('click', function () {

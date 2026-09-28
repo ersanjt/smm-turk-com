@@ -175,15 +175,6 @@ require_once __DIR__ . '/layouts/header.php';
   <a href="<?= h($promo['cta_url']) ?>" class="btn-promo"><?= h($promo['cta_label']) ?></a>
 </div>
 
-<?php if (!$hasChildPanel): ?>
-<div class="panel-promo-banner" style="margin-top:10px;background:linear-gradient(135deg,#1a1a2e,#16213e);" data-reveal>
-  <div>
-    <strong>🚀 Start your own SMM panel</strong>
-    <p>Resell services under your brand — earn markup on every customer order.</p>
-  </div>
-  <a href="<?= h(path('earn.php')) ?>" class="btn-promo">Earn Money →</a>
-</div>
-<?php endif; ?>
 
 <?php if (!empty($featuredServices)): ?>
 <div class="card" style="margin-bottom:16px;" data-reveal>
@@ -193,7 +184,7 @@ require_once __DIR__ . '/layouts/header.php';
         $retail = $revenue->retailRatePerThousand($fs, $userId);
         $qs = http_build_query(array_filter(['service' => (int)$fs['service_id'], 'tier' => $tier ?: null]));
     ?>
-    <a href="<?= h(path('dashboard.php') . ($qs ? '?' . $qs : '')) ?>" class="order-cat-pill" style="text-decoration:none;">
+    <a href="<?= h(path('dashboard.php') . ($qs ? '?' . $qs : '')) ?>" class="order-cat-pill" data-pick-service="<?= (int) $fs['service_id'] ?>" style="text-decoration:none;">
       <span class="order-cat-name"><?= h(mb_substr($fs['name'], 0, 40)) ?></span>
       <span class="order-cat-count">$<?= number_format($retail, 3) ?>/1k</span>
     </a>
@@ -218,6 +209,19 @@ require_once __DIR__ . '/layouts/header.php';
     <a href="<?= h(path('add-funds.php')) ?>" class="btn btn-primary btn-sm"><?= icon('wallet', 16) ?> Add Funds</a>
   </div>
 </div>
+
+<?php if ($userBalance <= 0): ?>
+<div class="order-onboard">
+  <h2>Get started in 3 steps</h2>
+  <ol>
+    <li><strong>Add Funds (crypto)</strong> — send BTC, ETH, USDT, or other supported coins; we email you when credited</li>
+    <li><strong>Pick a service</strong> — choose category and service below</li>
+    <li><strong>Submit order</strong> — paste your link and quantity</li>
+  </ol>
+  <a href="<?= h(path('add-funds.php')) ?>" class="btn btn-primary">Step 1: Add Funds</a>
+</div>
+<?php endif; ?>
+
 <nav class="order-tabs" aria-label="Order type">
   <a class="order-tab active" href="<?= h(path('dashboard.php')) ?>">New Order</a>
   <a class="order-tab" href="<?= h(path('mass-order.php')) ?>">Mass Order</a>
@@ -272,18 +276,6 @@ echo platformFilterStrip('dashboard.php', $platform, $searchQ, $tierExtra);
   <?php if (stripos($error, 'Insufficient balance') !== false): ?>
   <div class="alert-funds-link"><a href="<?= h(path('add-funds.php')) ?>" class="btn btn-primary btn-sm">Add Funds →</a></div>
   <?php endif; ?>
-</div>
-<?php endif; ?>
-
-<?php if ($userBalance <= 0): ?>
-<div class="order-onboard">
-  <h2>Get started in 3 steps</h2>
-  <ol>
-    <li><strong>Add Funds (crypto)</strong> — send BTC, ETH, USDT, or other supported coins; we email you when credited</li>
-    <li><strong>Pick a service</strong> — choose category and service below</li>
-    <li><strong>Submit order</strong> — paste your link and quantity</li>
-  </ol>
-  <a href="<?= h(path('add-funds.php')) ?>" class="btn btn-primary">Step 1: Add Funds</a>
 </div>
 <?php endif; ?>
 
@@ -379,6 +371,16 @@ echo platformFilterStrip('dashboard.php', $platform, $searchQ, $tierExtra);
     <div id="desc-content">Select a service to see details.</div>
   </div>
 </div>
+
+<?php if (!$hasChildPanel): ?>
+<div class="panel-promo-banner" style="margin-top:16px;background:linear-gradient(135deg,#1a1a2e,#16213e);" data-reveal>
+  <div>
+    <strong>Start your own SMM panel</strong>
+    <p>Resell services under your brand — earn markup on every customer order.</p>
+  </div>
+  <a href="<?= h(path('earn.php')) ?>" class="btn-promo">Earn Money →</a>
+</div>
+<?php endif; ?>
 
 <script src="<?= h(asset_url('assets/js/order.js')) ?>" defer></script>
 
