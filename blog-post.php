@@ -31,7 +31,7 @@ if (!$post) {
     $seoIndexable = false;
     $canonicalUrl = Seo::absoluteUrl(path('blog.php'));
     require __DIR__ . '/layouts/blog-header.php';
-    echo '<main class="blog-article-wrap" role="main" style="max-width:640px;margin:40px auto;padding:20px;text-align:center;">';
+    echo '<main class="blog-article-wrap" role="main" style="max-width:640px;text-align:center;">';
     echo '<h1>Article not found</h1><p><a href="' . h(path('blog.php')) . '">← Back to Blog</a></p></main>';
     require __DIR__ . '/layouts/blog-footer.php';
     exit;
