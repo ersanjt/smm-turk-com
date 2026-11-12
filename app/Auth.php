@@ -681,6 +681,9 @@ class Auth {
 
     private function applyGrowthOnSignup(int $userId, bool $grantCredit): void
     {
+        if (class_exists('VisitTracker', false)) {
+            VisitTracker::attachCountry($userId);
+        }
         if (!class_exists('GrowthEngine', false)) {
             return;
         }

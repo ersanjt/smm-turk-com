@@ -491,7 +491,7 @@
 }
 .af-hero-icon svg { width: 24px; height: 24px; }
 .af-hero-title { margin: 0 0 4px; font-size: 20px; font-weight: 800; font-family: 'Syne', sans-serif; }
-.af-hero-sub { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.55; max-width: 420px; }
+.af-hero-sub { margin: 0; font-size: 13px; color: var(--text-muted); line-height: 1.55; max-width: 520px; }
 
 .add-funds-stats {
   display: flex; gap: 10px; flex-wrap: wrap; align-items: stretch;

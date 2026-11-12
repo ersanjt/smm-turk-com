@@ -43,6 +43,7 @@ require_once __DIR__ . '/GrowthEngine.php';
 GrowthEngine::ensureSchema(Database::getInstance());
 require_once __DIR__ . '/GoogleAcquisition.php';
 GoogleAcquisition::ensureSchema(Database::getInstance());
+require_once __DIR__ . '/VisitTracker.php';
 require_once __DIR__ . '/Newsletter.php';
 Newsletter::ensureSchema(Database::getInstance());
 require_once __DIR__ . '/UserOnboarding.php';
@@ -72,6 +73,9 @@ $auth = new Auth();
 
 if (php_sapi_name() !== 'cli' && !$auth->isLoggedIn()) {
     GrowthEngine::captureUtm();
+    if (class_exists('VisitTracker', false)) {
+        VisitTracker::capture();
+    }
 }
 
 // Security headers (web only)

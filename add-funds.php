@@ -8,6 +8,7 @@ $depositBonusPct = (float) ($db->getSetting('deposit_bonus_percent') ?: 0);
 $completedDeposits = (int) $db->fetch("SELECT COUNT(*) c FROM transactions WHERE user_id = ? AND type = 'deposit' AND status = 'completed'", [$user['id']])['c'];
 $minDeposit = (float) ($db->getSetting('min_deposit') ?: 10);
 $minDeposit = $minDeposit >= 1 ? $minDeposit : 10;
+(new DepositManager())->expireAbandonedCheckouts(24);
 
 $paymentMethods = PaymentRegistry::enabledMethods();
 $methodsAvailable = !empty($paymentMethods);
@@ -334,7 +335,7 @@ require_once __DIR__ . '/layouts/header.php';
     </div>
     <div>
       <h1 class="af-hero-title">Add Funds</h1>
-      <p class="af-hero-sub">Top up your balance with crypto or payment gateways. Funds are credited in USD.
+      <p class="af-hero-sub">Top up your balance with crypto or payment gateways. Funds are credited in USD after the payment is confirmed. The same transaction ID cannot be used twice.
         <?php if ($depositBonusPct > 0 && $completedDeposits === 0): ?>
         <strong style="color:var(--primary);"> First deposit: +<?= number_format($depositBonusPct, 0) ?>% bonus!</strong>
         <?php endif; ?>

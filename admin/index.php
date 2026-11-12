@@ -60,6 +60,11 @@ for ($i = 6; $i >= 0; $i--) {
 
 $chartHasData = array_sum($chartOrders) > 0 || array_sum($chartRevenue) > 0;
 
+$trafficDays = ((int) ($_GET['range'] ?? 7)) === 30 ? 30 : 7;
+$traffic = class_exists('VisitTracker')
+    ? VisitTracker::report($trafficDays)
+    : ['days' => $trafficDays, 'visitors' => 0, 'signups' => 0, 'depositors' => 0, 'deposited' => 0.0, 'signup_rate' => 0.0, 'deposit_rate' => 0.0, 'countries' => [], 'dayseries' => [], 'known_countries' => 0];
+
 $statCards = [
     ['label' => 'Total Users', 'value' => number_format($totalUsers), 'icon' => 'users', 'tone' => 'primary', 'alert' => false, 'url' => 'admin/admin-users.php'],
     ['label' => 'Total Orders', 'value' => number_format($totalOrders), 'icon' => 'orders', 'tone' => 'green', 'alert' => false, 'url' => 'admin/admin-orders.php'],
@@ -112,7 +117,7 @@ require_once __DIR__ . '/../layouts/header.php';
   <header class="admin-dash-header">
     <div>
       <h1>Admin Dashboard</h1>
-      <p>Overview of users, orders, revenue, and support at a glance.</p>
+      <p>Visitors, where they come from, and how many of them sign up and deposit.</p>
     </div>
     <div class="admin-dash-header-actions">
       <div class="admin-dash-date"><?= date('l, M j, Y') ?></div>
@@ -127,6 +132,79 @@ require_once __DIR__ . '/../layouts/header.php';
     <?php endforeach; ?>
   </div>
   <?php endif; ?>
+
+  <section class="dash-traffic" aria-labelledby="dash-traffic-title">
+    <div class="dash-traffic-head">
+      <h2 id="dash-traffic-title">Traffic</h2>
+      <div class="dash-range" role="group" aria-label="Date range">
+        <a href="<?= h(path('admin/index.php') . '?range=7') ?>" class="<?= $trafficDays === 7 ? 'is-on' : '' ?>">7 days</a>
+        <a href="<?= h(path('admin/index.php') . '?range=30') ?>" class="<?= $trafficDays === 30 ? 'is-on' : '' ?>">30 days</a>
+      </div>
+    </div>
+    <div class="dash-kpis">
+      <div class="dash-kpi">
+        <span>Entries</span>
+        <strong><?= number_format((int) $traffic['visitors']) ?></strong>
+        <small>Unique guests</small>
+      </div>
+      <div class="dash-kpi">
+        <span>Signups</span>
+        <strong><?= number_format((int) $traffic['signups']) ?></strong>
+        <small><?= h((string) $traffic['signup_rate']) ?>% of entries</small>
+      </div>
+      <div class="dash-kpi">
+        <span>Depositors</span>
+        <strong><?= number_format((int) $traffic['depositors']) ?></strong>
+        <small><?= h((string) $traffic['deposit_rate']) ?>% of signups</small>
+      </div>
+      <div class="dash-kpi">
+        <span>Deposited</span>
+        <strong>$<?= number_format((float) $traffic['deposited'], 2) ?></strong>
+        <small>Confirmed in this range</small>
+      </div>
+    </div>
+    <div class="dash-traffic-grid">
+      <div class="dash-panel">
+        <h3>Countries</h3>
+        <?php if (empty($traffic['countries'])): ?>
+        <p class="dash-empty">Country data starts with the next guest visit. Older traffic was not stored.</p>
+        <?php else: ?>
+        <ol class="dash-countries">
+          <?php foreach ($traffic['countries'] as $country): ?>
+          <li>
+            <span class="dash-flag" aria-hidden="true"><?= h(VisitTracker::flag((string) $country['code'])) ?></span>
+            <span class="dash-country-name"><?= h((string) $country['name']) ?></span>
+            <span class="dash-bar" style="--share: <?= h((string) $country['share']) ?>%"><span></span></span>
+            <span class="dash-count"><?= number_format((int) $country['visitors']) ?></span>
+          </li>
+          <?php endforeach; ?>
+        </ol>
+        <?php endif; ?>
+      </div>
+      <div class="dash-panel">
+        <h3>Entries by day</h3>
+        <?php if ((int) $traffic['visitors'] === 0): ?>
+        <p class="dash-empty">No guest entries in this range yet. Each person is counted once per day.</p>
+        <?php else: ?>
+        <div class="dash-days" aria-hidden="true">
+          <?php foreach ($traffic['dayseries'] as $point): ?>
+          <div class="dash-day" title="<?= h($point['label'] . ': ' . $point['visitors']) ?>">
+            <span style="height: <?= max(4, (float) ($point['share'] ?? 0)) ?>%"></span>
+            <small><?= h(date('j', strtotime($point['day']))) ?></small>
+          </div>
+          <?php endforeach; ?>
+        </div>
+        <p class="dash-funnel">
+          <?= number_format((int) $traffic['visitors']) ?> entries became
+          <?= number_format((int) $traffic['signups']) ?> accounts, and
+          <?= number_format((int) $traffic['depositors']) ?> people deposited
+          $<?= number_format((float) $traffic['deposited'], 2) ?>.
+          New accounts keep their country; older accounts do not.
+        </p>
+        <?php endif; ?>
+      </div>
+    </div>
+  </section>
 
   <p class="admin-section-label">Overview</p>
   <div class="admin-grid">
