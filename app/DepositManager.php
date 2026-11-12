@@ -21,6 +21,120 @@ class DepositManager {
         return $this->approveDeposit($transactionId, true);
     }
 
+    /**
+     * Drop checkout intents that never received a TxHash.
+     * These rows are created when a user picks an amount, before any payment.
+     */
+    public function expireAbandonedCheckouts(int $hours = 24): int
+    {
+        $hours = max(1, $hours);
+        $cutoff = date('Y-m-d H:i:s', time() - ($hours * 3600));
+        $updated = $this->db->execute(
+            "UPDATE transactions
+             SET status = 'failed'
+             WHERE type = 'deposit'
+               AND status = 'pending'
+               AND (reference IS NULL OR TRIM(reference) = '')
+               AND created_at < ?",
+            [$cutoff]
+        );
+        if ($updated > 0) {
+            Logger::log(
+                'Expired ' . $updated . ' abandoned deposit checkout(s) older than ' . $hours . 'h',
+                'deposits'
+            );
+        }
+        return $updated;
+    }
+
+    /**
+     * One reminder per unpaid checkout (no TxHash), after the user has had time to pay.
+     * Safe to call from cron: a claim file prevents a second send.
+     */
+    public function remindUnpaidCheckouts(int $minAgeHours = 2, int $limit = 30): int
+    {
+        $minAgeHours = max(1, $minAgeHours);
+        $limit = max(1, min(100, $limit));
+        $cutoff = date('Y-m-d H:i:s', time() - ($minAgeHours * 3600));
+        $rows = $this->db->fetchAll(
+            "SELECT t.id, t.amount, t.description, u.username, u.email
+             FROM transactions t
+             INNER JOIN users u ON u.id = t.user_id
+             WHERE t.type = 'deposit'
+               AND t.status = 'pending'
+               AND (t.reference IS NULL OR TRIM(t.reference) = '')
+               AND t.created_at < ?
+             ORDER BY t.created_at ASC
+             LIMIT " . $limit,
+            [$cutoff]
+        );
+        if ($rows === []) {
+            return 0;
+        }
+
+        $alertDir = ROOT_PATH . '/storage/alerts/unpaid-deposit';
+        if (!is_dir($alertDir) && !@mkdir($alertDir, 0755, true) && !is_dir($alertDir)) {
+            Logger::log('Unpaid deposit reminder dir missing: ' . $alertDir, 'mail');
+            return 0;
+        }
+
+        $sent = 0;
+        foreach ($rows as $row) {
+            $id = (int) ($row['id'] ?? 0);
+            $email = trim((string) ($row['email'] ?? ''));
+            if ($id < 1 || $email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                continue;
+            }
+
+            $flag = $alertDir . '/' . $id . '.txt';
+            $handle = @fopen($flag, 'x');
+            if ($handle === false) {
+                continue;
+            }
+            fwrite($handle, date('c'));
+            fclose($handle);
+
+            $method = $this->methodLabelFromDescription((string) ($row['description'] ?? ''));
+            $ok = false;
+            try {
+                $ok = $this->mail->sendDepositUnpaidReminder(
+                    $email,
+                    (string) ($row['username'] ?? ''),
+                    $id,
+                    (float) ($row['amount'] ?? 0),
+                    $method
+                );
+            } catch (Throwable $e) {
+                Logger::log('Unpaid deposit reminder failed #' . $id . ': ' . $e->getMessage(), 'mail');
+            }
+
+            if (!$ok) {
+                @unlink($flag);
+                Logger::log(
+                    'Unpaid deposit reminder not sent #' . $id . ' to ' . $email
+                    . ($this->mail->getLastError() ? ': ' . $this->mail->getLastError() : ''),
+                    'mail'
+                );
+                continue;
+            }
+
+            $sent++;
+            Logger::log('Unpaid deposit reminder sent #' . $id . ' to ' . $email, 'mail');
+        }
+
+        return $sent;
+    }
+
+    private function methodLabelFromDescription(string $description): string
+    {
+        $parts = preg_split('/\s+—\s+/u', $description, 2);
+        if (is_array($parts) && isset($parts[1]) && trim($parts[1]) !== '') {
+            return trim($parts[1]);
+        }
+        $description = trim($description);
+        return $description !== '' ? $description : 'Crypto';
+    }
+
     /** Admin: reject a pending deposit (even if a TxHash was submitted). Does not change user balance. */
     public function rejectPendingDeposit(int $transactionId): array {
         $tx = $this->db->fetch(
@@ -74,6 +188,13 @@ class DepositManager {
             }
         } elseif ($status !== 'pending') {
             return ['success' => false, 'error' => 'Deposit not found or already processed.'];
+        }
+
+        if (trim((string) ($tx['reference'] ?? '')) === '') {
+            return [
+                'success' => false,
+                'error' => 'No TxHash on this deposit. The user started checkout but did not submit a payment. Reject it, or add balance from Users only after the funds are in your wallet.',
+            ];
         }
 
         return $this->creditUser(

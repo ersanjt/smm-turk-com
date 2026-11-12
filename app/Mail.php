@@ -167,13 +167,18 @@ class Mail
             $html = $this->wrapHtml($subject, $html, $lang);
         }
 
+        // The HTML shell is one physical line. Exim's smarthost drops it with
+        // "message has lines too long for transport" (limit 2048) and the bounce
+        // is shown as 554 5.0.0. Quoted-printable keeps every line under 76 bytes.
+        $html = $this->encodeTransferBody($html);
+
         $mode = strtolower(trim((string) ($this->db->getSetting('mail_mode') ?? 'auto')));
         $smtpHost = $this->resolveSmtpHost();
         $canSmtp = $smtpHost !== ''
             && trim((string) ($this->db->getSetting('smtp_user') ?? '')) !== ''
             && trim((string) ($this->db->getSetting('smtp_pass') ?? '')) !== '';
 
-        // Authenticated SMTP only — PHP mail() via Exim is what Gmail bounces (554 5.0.0).
+        // Authenticated SMTP. The body is quoted-printable so Exim will relay it.
         if ($canSmtp) {
             $ok = $this->sendSmtp($smtpHost, $from, $to, $subject, $html, $siteName);
             if ($ok) {
@@ -217,10 +222,16 @@ class Mail
         }
         $headers[] = 'MIME-Version: 1.0';
         $headers[] = 'Content-Type: text/html; charset=UTF-8';
-        $headers[] = 'Content-Transfer-Encoding: 8bit';
+        $headers[] = 'Content-Transfer-Encoding: quoted-printable';
         $headers[] = 'X-Mailer: SMM-Turk-Mail/3.2';
         $headers[] = 'Auto-Submitted: auto-generated';
         return $headers;
+    }
+
+    private function encodeTransferBody(string $html): string
+    {
+        $normalized = str_replace(["\r\n", "\r"], "\n", $html);
+        return quoted_printable_encode($normalized);
     }
 
     private function sendPhpMail(string $from, string $to, string $subject, string $html, string $siteName): bool
@@ -573,6 +584,31 @@ class Mail
             . '<p><strong>' . htmlspecialchars($methodLabel) . '</strong> · #' . (int) $depositId . '</p>'
             . $this->btn(page_url('add-funds.php'), MailLocale::t('btn_funds', $lang));
         return $this->send($to, $subject, strip_tags($inner), $this->wrapHtml(MailLocale::t('deposit_pending_subject', $lang, ['amount' => $amountFmt]), $inner, $lang), $lang);
+    }
+
+    /** Reminder when a checkout is still pending and no TxHash was submitted. */
+    public function sendDepositUnpaidReminder(
+        string $to,
+        string $username,
+        int $depositId,
+        float $amount,
+        string $methodLabel,
+        ?string $lang = null
+    ): bool {
+        $lang = MailLocale::resolveLang($lang);
+        $amountFmt = number_format($amount, 2);
+        $method = htmlspecialchars($methodLabel !== '' ? $methodLabel : 'Crypto', ENT_QUOTES, 'UTF-8');
+        $name = htmlspecialchars($username, ENT_QUOTES, 'UTF-8');
+        $subject = $this->subjectPrefix(MailLocale::t('deposit_unpaid_subject', $lang, ['amount' => $amountFmt]), $lang);
+        $inner = '<p>' . MailLocale::t('deposit_unpaid_hi', $lang, ['name' => $name]) . '</p>'
+            . '<p>' . MailLocale::t('deposit_unpaid_body', $lang, [
+                'amount' => $amountFmt,
+                'method' => $method,
+                'id' => (string) $depositId,
+            ]) . '</p>'
+            . '<p>' . MailLocale::t('deposit_unpaid_next', $lang) . '</p>'
+            . $this->btn(page_url('add-funds.php'), MailLocale::t('btn_funds', $lang));
+        return $this->send($to, $subject, strip_tags($inner), $this->wrapHtml(MailLocale::t('deposit_unpaid_subject', $lang, ['amount' => $amountFmt]), $inner, $lang), $lang);
     }
 
     public function sendDepositPendingToAdmin(
