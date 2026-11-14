@@ -81,6 +81,7 @@ RewriteRule ^c/([a-zA-Z0-9_-]+)/?$ c.php?ref=$1 [L,QSA]
 RewriteRule ^sitemap\.xml$ sitemap.php [L]
 RewriteRule ^robots\.txt$ robots.php [L]
 RewriteRule ^llms\.txt$ llms.php [L]
+RewriteRule ^ads\.txt$ ads.php [L]
 # Blog: /blog -> blog.php, /blog/slug -> blog-post.php?slug=slug
 RewriteRule ^blog/?$ blog.php [L,QSA]
 RewriteRule ^blog/([a-zA-Z0-9\-]+)/?$ blog-post.php?slug=$1 [L,QSA]
@@ -98,6 +99,9 @@ RewriteRule ^api-page/?$ /api-docs [R=301,L]
 RewriteRule ^account-settings/?$ /settings [R=301,L]
 RewriteRule ^add-funds/?$ /funds [R=301,L]
 RewriteRule ^admin/?$ admin/index.php [L,QSA]
+RewriteCond %{DOCUMENT_ROOT}/admin/$1.php -f
 RewriteRule ^admin/([a-zA-Z0-9_.-]+)/?$ admin/$1.php [L,QSA]
+RewriteCond %{DOCUMENT_ROOT}/$1.php -f
 RewriteRule ^([a-zA-Z0-9_.-]+)/?$ $1.php [L,QSA]
+RewriteRule . 404.php [L]
 </IfModule>

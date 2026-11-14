@@ -2,8 +2,10 @@
 /**
  * Custom 404 — SEO-friendly not found page.
  */
-http_response_code(404);
 require_once __DIR__ . '/app/init.php';
+if ((int) ($_SERVER['REDIRECT_STATUS'] ?? 0) !== 404) {
+    http_response_code(404);
+}
 require_once __DIR__ . '/app/Lang.php';
 
 $lang = Lang::initPublic();
