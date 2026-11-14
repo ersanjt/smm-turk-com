@@ -7,7 +7,25 @@ class DepositCampaign
 {
     private const KEY = 'deposit20-20261114';
 
-    public static function run(): array
+    public static function runAll(): array
+    {
+        $last = ['done' => false];
+        for ($round = 0; $round < 20; $round++) {
+            $last = self::run(40);
+            if (!empty($last['done']) || !empty($last['skipped']) || !empty($last['error'])) {
+                return $last;
+            }
+            if ((int) ($last['remaining'] ?? 0) === 0) {
+                return $last;
+            }
+            if ((int) ($last['sent'] ?? 0) === 0) {
+                return $last;
+            }
+        }
+        return $last;
+    }
+
+    public static function run(int $mailLimit = 25): array
     {
         if (function_exists('is_child_panel') && is_child_panel()) {
             return ['skipped' => 'child'];
@@ -51,8 +69,9 @@ class DepositCampaign
              WHERE role = 'user' AND status IN ('active','pending') AND email IS NOT NULL AND email != ''
              ORDER BY id ASC"
         );
+        $mailLimit = max(1, min(80, $mailLimit));
         foreach ($users as $user) {
-            if ($sent >= 25) {
+            if ($sent >= $mailLimit) {
                 break;
             }
             $id = (int) ($user['id'] ?? 0);

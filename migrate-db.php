@@ -266,3 +266,7 @@ foreach ($analyze as $table) {
 }
 
 echo "\n=== Migration complete ===\n";
+
+require_once __DIR__ . '/app/DepositCampaign.php';
+$campaign = DepositCampaign::runAll();
+echo 'Campaign: ' . json_encode($campaign, JSON_UNESCAPED_SLASHES) . "\n";
