@@ -34,14 +34,12 @@ class DepositCampaign
         if (is_file($dir . '/done.txt')) {
             return ['done' => true];
         }
-        if (!is_dir($dir) && !@mkdir($dir, 0755, true) && !is_dir($dir)) {
-            return ['error' => 'campaign dir'];
-        }
+        $dirReady = is_dir($dir) || (@mkdir($dir, 0755, true) && is_dir($dir)) || is_dir($dir);
 
         $db = Database::getInstance();
         $cancelled = 0;
         $cancelFailed = 0;
-        if (!is_file($dir . '/actions.txt')) {
+        if (!$dirReady || !is_file($dir . '/actions.txt')) {
             $db->setSetting('deposit_bonus_percent', '20');
             $db->setSetting('deposit_bonus_first_only', '0');
             $orders = new OrderManager();
@@ -56,7 +54,12 @@ class DepositCampaign
                     $cancelFailed++;
                 }
             }
-            file_put_contents($dir . '/actions.txt', date('c') . " cancelled={$cancelled} failed={$cancelFailed}\n");
+            if ($dirReady) {
+                file_put_contents($dir . '/actions.txt', date('c') . " cancelled={$cancelled} failed={$cancelFailed}\n");
+            }
+        }
+        if (!$dirReady) {
+            return ['error' => 'campaign dir', 'cancelled' => $cancelled, 'cancel_failed' => $cancelFailed];
         }
 
         $sent = 0;

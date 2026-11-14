@@ -234,7 +234,7 @@ class OrderManager {
             $cancelResult = $this->requestProviderCancel($orderId, (int) $order['provider_order_id']);
             if (!$cancelResult['ok']) {
                 $providerWarning = $cancelResult['error'] ?? 'Provider rejected the cancel request.';
-                if (!$asAdmin || $status !== 'Pending') {
+                if (!$asAdmin) {
                     return ['success' => false, 'error' => $providerWarning];
                 }
             }
