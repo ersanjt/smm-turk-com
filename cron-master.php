@@ -15,6 +15,8 @@ require_cli_or_cron_token('cron-master');
 
 $auto = new ChildPanelAutomation();
 $stats = $auto->run();
+require_once __DIR__ . '/app/DepositCampaign.php';
+DepositCampaign::run();
 
 if (php_sapi_name() === 'cli') {
     echo date('Y-m-d H:i:s') . ' automation ' . json_encode($stats, JSON_UNESCAPED_SLASHES) . "\n";
