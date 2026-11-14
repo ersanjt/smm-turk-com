@@ -42,59 +42,35 @@ class UserOnboarding
     /** @return list<array{id: string, title: string, desc: string, url: string, done: bool}> */
     public function steps(int $userId): array
     {
-        $user = $this->db->fetch(
-            'SELECT username, balance, spent, created_at FROM users WHERE id = ?',
-            [$userId]
-        ) ?: [];
         $orderCount = (int) ($this->db->fetch('SELECT COUNT(*) c FROM orders WHERE user_id = ?', [$userId])['c'] ?? 0);
         $depositCount = (int) ($this->db->fetch(
             "SELECT COUNT(*) c FROM transactions WHERE user_id = ? AND type = 'deposit' AND status = 'completed'",
             [$userId]
         )['c'] ?? 0);
-        $hasChildPanel = false;
-        try {
-            $hasChildPanel = (int) ($this->db->fetch(
-                "SELECT COUNT(*) c FROM child_panels WHERE user_id = ? AND status != 'cancelled'",
-                [$userId]
-            )['c'] ?? 0) > 0;
-        } catch (Throwable $e) {
-            /* table may not exist */
-        }
-        $refVisits = 0;
-        try {
-            $refVisits = (int) ($this->db->fetch('SELECT COUNT(*) c FROM referral_visits WHERE referrer_id = ?', [$userId])['c'] ?? 0);
-        } catch (Throwable $e) {
-            /* */
+
+        $minDeposit = (float) ($this->db->getSetting('min_deposit') ?: 10);
+        $minDeposit = $minDeposit >= 1 ? $minDeposit : 10;
+        $minLabel = '$' . number_format($minDeposit, $minDeposit == floor($minDeposit) ? 0 : 2);
+        $bonusPct = (float) ($this->db->getSetting('deposit_bonus_percent') ?: 0);
+        $fundsDesc = 'Minimum ' . $minLabel . '. Credited in USD after payment confirms.';
+        if ($bonusPct > 0 && $depositCount === 0) {
+            $fundsDesc .= ' First deposit +' . number_format($bonusPct, 0) . '%.';
         }
 
         return [
             [
-                'id' => 'account',
-                'title' => 'Account ready',
-                'desc' => 'Edit profile, email & security in Settings',
-                'url' => page_url('account-settings.php'),
-                'done' => true,
-            ],
-            [
-                'id' => 'order',
-                'title' => 'Place your first order',
-                'desc' => 'Use free welcome balance or add funds',
-                'url' => page_url('dashboard.php'),
-                'done' => $orderCount > 0,
-            ],
-            [
                 'id' => 'funds',
-                'title' => 'Add funds (crypto)',
-                'desc' => 'BTC, ETH, USDT — bonus on first deposit',
+                'title' => 'Add funds',
+                'desc' => $fundsDesc,
                 'url' => page_url('add-funds.php'),
                 'done' => $depositCount > 0,
             ],
             [
-                'id' => 'earn',
-                'title' => 'Earn money',
-                'desc' => 'Child panel, affiliates, or API reseller',
-                'url' => page_url('earn.php'),
-                'done' => $hasChildPanel || $refVisits > 0,
+                'id' => 'order',
+                'title' => 'Place your first order',
+                'desc' => 'Pick a service, paste the link, and submit',
+                'url' => page_url('dashboard.php'),
+                'done' => $orderCount > 0,
             ],
         ];
     }

@@ -264,7 +264,7 @@ $defaultMethod = $selectedMethod && isset($paymentMethods[$selectedMethod])
     ? $selectedMethod
     : (array_key_first($paymentMethods) ?: '');
 
-$defaultAmount = max($minDeposit, 25);
+$defaultAmount = $completedDeposits > 0 ? max($minDeposit, 25) : $minDeposit;
 
 function af_render_steps(string $current): void
 {

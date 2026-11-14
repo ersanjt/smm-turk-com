@@ -16,6 +16,12 @@ $om = new OrderManager();
 $revenue = new RevenueEngine();
 $userId = (int) $auth->getUserId();
 $userBalance = (float)($db->fetch("SELECT balance FROM users WHERE id = ?", [$userId])['balance'] ?? 0);
+$completedDeposits = (int) ($db->fetch(
+    "SELECT COUNT(*) c FROM transactions WHERE user_id = ? AND type = 'deposit' AND status = 'completed'",
+    [$userId]
+)['c'] ?? 0);
+$minDeposit = (float) ($db->getSetting('min_deposit') ?: 10);
+$minDeposit = $minDeposit >= 1 ? $minDeposit : 10;
 $vip = $revenue->vipTier($userId);
 $promo = $revenue->promoBanner();
 $depositBonusPct = (float) ($db->getSetting('deposit_bonus_percent') ?: 0);
@@ -210,15 +216,11 @@ require_once __DIR__ . '/layouts/header.php';
   </div>
 </div>
 
-<?php if ($userBalance <= 0): ?>
+<?php if ($completedDeposits === 0): ?>
 <div class="order-onboard">
-  <h2>Get started in 3 steps</h2>
-  <ol>
-    <li><strong>Add Funds (crypto)</strong> — send BTC, ETH, USDT, or other supported coins; we email you when credited</li>
-    <li><strong>Pick a service</strong> — choose category and service below</li>
-    <li><strong>Submit order</strong> — paste your link and quantity</li>
-  </ol>
-  <a href="<?= h(path('add-funds.php')) ?>" class="btn btn-primary">Step 1: Add Funds</a>
+  <h2>Add funds to place orders</h2>
+  <p>Minimum deposit is <strong>$<?= h(number_format($minDeposit, $minDeposit == floor($minDeposit) ? 0 : 2)) ?></strong>. The balance is credited in USD after the payment is confirmed.<?php if ($userBalance > 0): ?> Your current $<?= h(number_format($userBalance, 2)) ?> can try one small order, and a deposit is what keeps the next orders running.<?php endif; ?></p>
+  <a href="<?= h(path('add-funds.php')) ?>" class="btn btn-primary">Add funds</a>
 </div>
 <?php endif; ?>
 
