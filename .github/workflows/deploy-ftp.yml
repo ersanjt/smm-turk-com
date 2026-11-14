@@ -9,8 +9,6 @@ name: Deploy to cPanel (FTP fallback)
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
 
 jobs:
   deploy:
